@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project type="activity" builder="java">
+    <name>ENTTEC Pro DMX Control Test</name>
+    <description>
+A Java Activity which controls a DMX device using an ENTTEC Pro.
+    </description>
+
+    <identifyingName>interactivespaces.example.activity.control.dmx.enttecpro</identifyingName>
+    <version>1.0.0</version>
+
+<activity type="interactivespaces_native">
+     <name>interactivespacesExampleActivityControlDmxEnttecPro</name>
+     <class>interactivespaces.example.activity.control.dmx.SerialBasedDmxControlActivity
+     </class>
+ 
+     <configuration>
+       <property name="space.hardware.serial.port">
+         <value>/dev/ttyACM0
+         </value>
+       </property>
+         value="true" />
+      </configuration>
+   </activity>
+</project>

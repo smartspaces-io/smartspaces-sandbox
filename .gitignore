@@ -1,0 +1,17 @@
+gradle.properties
+*~
+.project
+.classpath
+.settings
+.gradle
+.islintignore
+**/bin/
+**/build/
+**/dist/
+**/msg_gen/
+**/srv_gen/
+**/gen/
+**/test_output/
+**/osgi_build/
+**/target/
+
