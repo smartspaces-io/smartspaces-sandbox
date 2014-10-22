@@ -14,20 +14,19 @@
  * the License.
  */
 
-package interactivespaces.service.control.dmx.internal;
+package interactivespaces.sandbox.service.control.dmx.internal.enttecpro;
 
+import interactivespaces.sandbox.service.control.dmx.DmxControlEndpoint;
+import interactivespaces.sandbox.service.control.dmx.DmxControlService;
 import interactivespaces.service.BaseSupportedService;
 import interactivespaces.service.comm.serial.SerialCommunicationEndpointService;
-import interactivespaces.service.control.dmx.DmxControlEndpoint;
-import interactivespaces.service.control.dmx.DmxControlService;
 
 import org.apache.commons.logging.Log;
 
 /**
- *
  * @author Keith M. Hughes
  */
-public class SerialDmxControlService extends BaseSupportedService implements DmxControlService {
+public class EnttecProDmxControlService extends BaseSupportedService implements DmxControlService {
 
   @Override
   public String getName() {
@@ -45,11 +44,11 @@ public class SerialDmxControlService extends BaseSupportedService implements Dmx
    * @return the DMX control endpoint
    */
   @Override
-  public DmxControlEndpoint newDmxControlEndpoint(String portName, Log log) {
+  public DmxControlEndpoint newSerialDmxControlEndpoint(String portName, Log log) {
     SerialCommunicationEndpointService serialService =
         getSpaceEnvironment().getServiceRegistry().getRequiredService(SerialCommunicationEndpointService.SERVICE_NAME);
 
-    return new SerialDmxControlEndpoint(serialService.newSerialEndpoint(portName), getSpaceEnvironment()
+    return new EnttecProDmxControlEndpoint(serialService.newSerialEndpoint(portName), getSpaceEnvironment()
         .getExecutorService(), log);
   }
 }

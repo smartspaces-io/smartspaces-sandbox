@@ -14,50 +14,46 @@
  * the License.
  */
 
-package interactivespaces.service.control.dmx;
+package interactivespaces.sandbox.service.control.dmx;
 
 import interactivespaces.util.resource.ManagedResource;
 
 /**
  * An endpoint for controlling a DMX device.
  *
+ * <p>
+ * DMX endpoints are stateful. This means that each write will only modify what is specified in the write data and will
+ * leave all other channels at their previous value.
+ *
  * @author Keith M. Hughes
  */
 public interface DmxControlEndpoint extends ManagedResource {
 
   /**
-   * Set the value of a given channel.
-   *
-   * <p>
-   * This method does not change the channel for {@link #setValue(int)}.
+   * The minimum value for a DMX channel.
+   */
+  int DMX_CHANNEL_MINIMUM = 1;
+
+  /**
+   * The maximum value for a DMX channel.
+   */
+  int DMX_CHANNEL_MAXIMUM = 512;
+
+  /**
+   * Write DMX data onto the channel.
    *
    * @param channel
-   *          the channel to set
-   * @param value
-   *          the value for the channel
+   *          the DMX channel to write on
+   * @param data
+   *          the data to write
    */
-  void setValue(int channel, int value);
+  void writeDmxData(int channel, int... data);
 
   /**
-   * Send the supplied value to the most recently set channel.
+   * Write DMX data to the endpoint.
    *
-   * @param value
-   *          the value to send
+   * @param data
+   *          the data
    */
-  void setValue(int value);
-
-  /**
-   * Set the supplied channel to use for {@link #setValue(int)}.
-   *
-   * @param newChannel
-   *          the new channel
-   */
-  void setChannel(int newChannel);
-
-  /**
-   * Get the current DMX channel the endpoint is addressing.
-   *
-   * @return the current DMX channel
-   */
-  int getCurrentChannel();
+  void writeDmxData(DmxData data);
 }

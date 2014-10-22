@@ -14,33 +14,34 @@
  * the License.
  */
 
-package interactivespaces.service.control.dmx;
-
-import interactivespaces.service.SupportedService;
-
-import org.apache.commons.logging.Log;
+package interactivespaces.sandbox.service.control.dmx;
 
 /**
- * A service for allowing control of DMX devices.
+ * A collection of {@code DmxData} instances.
+ *
+ * <p>
+ * If DMX data overlaps, there are no guarantees in the order that added data will be written.
  *
  * @author Keith M. Hughes
  */
-public interface DmxControlService extends SupportedService {
+public interface DmxDataCollection extends DmxData, Iterable<DmxData> {
 
   /**
-   * The name for the service.
+   * Add data to the collection.
+   *
+   * @param data
+   *          the data to add
    */
-  String SERVICE_NAME = "control.dmx";
+  void addDmxData(DmxData data);
 
   /**
-   * Get a new DMX control endpoint.
+   * Remove data from the list.
    *
-   * @param portName
-   *          the port for the endpoint
-   * @param log
-   *          the logger to use
+   * <p>
+   * Does nothing if never added. Equality is object equality.
    *
-   * @return the DMX control endpoint
+   * @param data
+   *          the data to remove
    */
-  DmxControlEndpoint newDmxControlEndpoint(String portName, Log log);
+  void removeDmxData(DmxData data);
 }
