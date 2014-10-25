@@ -21,4 +21,9 @@
       </property>
     </configuration>
   </activity>
+
+  <dependencies>
+    <dependency name="interactivespaces.sandbox.service.control.dmx" minimumVersion="1.0.0"
+      maximumVersion="1.1.0" />
+  </dependencies>
 </project>

@@ -40,6 +40,16 @@ public interface DmxControlEndpoint extends ManagedResource {
   int DMX_CHANNEL_MAXIMUM = 512;
 
   /**
+   * The minimum value for a DMX channel's value.
+   */
+  int DMX_VALUE_MINIMUM = 0;
+
+  /**
+   * The maximum value for a DMX channel's value.
+   */
+  int DMX_VALUE_MAXIMUM = 255;
+
+  /**
    * Write DMX data onto the channel.
    *
    * @param channel
