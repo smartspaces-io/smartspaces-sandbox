@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>Open Sound Control Service</name>
+  <description>
+    A service for working with servers for Open Sound Control.
+  </description>
+
+  <identifyingName>interactivespaces.sandbox.service.control.opensoundcontrol</identifyingName>
+  <version>1.0.0</version>
+
+  <library>
+    <container>
+      <activator>
+        interactivespaces.sandbox.service.control.opensoundcontrol.internal.osgi.OpenSoundControlServiceOsgiBundleActivator
+      </activator>
+    </container>
+  </library>
+</project>
