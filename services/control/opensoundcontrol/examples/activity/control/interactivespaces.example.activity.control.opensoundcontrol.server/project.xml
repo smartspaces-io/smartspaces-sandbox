@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<project type="activity" builder="java">
+<project type="activity" builder="java" interactiveSpacesVersion="[1.6.2, 1.7.0)">
   <name>Open Sound Control Server Test</name>
   <description>
     A Java Activity that sets up a server which responds to Open Sound Control Messages.
-    Try /gong and /chime. This activity only plays sounds if it is activated.
+    Try /gong and /chime. This activity only plays sounds if it is activated. This is part of IS 1.7.0.
   </description>
 
   <identifyingName>

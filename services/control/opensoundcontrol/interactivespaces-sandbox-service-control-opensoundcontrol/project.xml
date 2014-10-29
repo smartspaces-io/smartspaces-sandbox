@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
-<project type="library" builder="java">
+<project type="library" builder="java" interactiveSpacesVersion="[1.6.2, 1.7.0)">
   <name>Open Sound Control Service</name>
   <description>
-    A service for working with servers for Open Sound Control.
+    A service for working with servers for Open Sound Control. This is part of IS 1.7.0
+    and this version should not be used.
   </description>
 
   <identifyingName>interactivespaces.sandbox.service.control.opensoundcontrol</identifyingName>

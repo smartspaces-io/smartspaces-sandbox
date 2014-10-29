@@ -31,6 +31,13 @@ import interactivespaces.util.resource.ManagedResource;
 public interface OpenSoundControlServerCommunicationEndpoint extends ManagedResource {
 
   /**
+   * Get the server port for the endpoint.
+   *
+   * @return the server port
+   */
+  int getServerPort();
+
+  /**
    * Register a method for a specific OSC address.
    *
    * <p>

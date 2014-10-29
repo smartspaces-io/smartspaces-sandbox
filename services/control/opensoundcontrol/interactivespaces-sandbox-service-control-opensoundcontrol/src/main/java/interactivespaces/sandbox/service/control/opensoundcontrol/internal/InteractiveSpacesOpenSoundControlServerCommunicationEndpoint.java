@@ -90,6 +90,11 @@ public class InteractiveSpacesOpenSoundControlServerCommunicationEndpoint implem
   }
 
   @Override
+  public int getServerPort() {
+    return udpServer.getServerPort();
+  }
+
+  @Override
   public void registerMethod(String oscAddress, OpenSoundControlMethod handler) {
     dispatcher.addMethod(oscAddress, handler);
   }
@@ -107,6 +112,11 @@ public class InteractiveSpacesOpenSoundControlServerCommunicationEndpoint implem
   @Override
   public void unregisterUnknownMessageMethod(OpenSoundControlMethod method) {
     dispatcher.removeUnknownMessageMethod(method);
+  }
+
+  @Override
+  public String toString() {
+    return "InteractiveSpacesOpenSoundControlServerCommunicationEndpoint [serverPort=" + getServerPort() + "]";
   }
 
   /**
