@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>OrientDB Database Service</name>
+  <description>
+    A service for working with OrientDB databases.
+  </description>
+
+  <identifyingName>interactivespaces.sandbox.service.database.document.orientdb
+  </identifyingName>
+  <version>1.0.0</version>
+
+  <library>
+    <container>
+      <activator>interactivespaces.sandbox.service.database.document.orientdb.internal.osgi.OrientDbDocumentDatabaseServiceOsgiBundleActivator
+      </activator>
+    </container>
+  </library>
+</project>
