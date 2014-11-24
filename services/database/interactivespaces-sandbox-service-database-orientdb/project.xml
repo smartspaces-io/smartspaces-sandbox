@@ -15,4 +15,8 @@
       </activator>
     </container>
   </library>
+
+  <dependencies>
+    <dependency name="com.orientechnologies.orientdb-core" minimumVersion="1.6.0" maximumVersion="1.8.0" required="true" />
+  </dependencies>
 </project>
