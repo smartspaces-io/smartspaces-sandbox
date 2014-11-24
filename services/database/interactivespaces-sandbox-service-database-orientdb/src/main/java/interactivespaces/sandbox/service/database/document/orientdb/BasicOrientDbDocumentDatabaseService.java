@@ -16,30 +16,129 @@
 
 package interactivespaces.sandbox.service.database.document.orientdb;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+
+import com.google.common.collect.ImmutableList;
+
 import interactivespaces.InteractiveSpacesException;
 import interactivespaces.service.BaseSupportedService;
 
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
+import com.orientechnologies.orient.server.config.OServerConfiguration;
+import com.orientechnologies.orient.server.config.OServerEntryConfiguration;
+import com.orientechnologies.orient.server.config.OServerNetworkConfiguration;
+import com.orientechnologies.orient.server.config.OServerNetworkListenerConfiguration;
+import com.orientechnologies.orient.server.config.OServerNetworkProtocolConfiguration;
+import com.orientechnologies.orient.server.config.OServerUserConfiguration;
+import org.apache.commons.logging.Log;
 
-import java.util.List;
+import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 /**
- *
  * @author Keith M. Hughes
  */
 public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
-
-  private static final String SERVICE_NAME = "database.orientdb";
+  /**
+   * The name of the service.
+   */
+  public static final String SERVICE_NAME = "database.orientdb";
 
   /**
-   * The database starter.
+   * Protocol used by the server.
    */
-  private DatabaseServiceStarter databaseStarter = new DatabaseServiceStarter();
+  public static final String PROTOCOL = "binary";
+
+  /**
+   * Name of the class that implements the protocol used by the server.
+   */
+  public static final String PROTOCOL_IMPLEMENTATION =
+      "com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary";
+
+  /**
+   * IP address to which server binds.
+   */
+  public static final String IP_ADDRESS = "0.0.0.0";
+
+  /**
+   * Range of ports to which the server tries to bind.
+   */
+  public static final String PORT_RANGE = "2424-2424";
+
+  /**
+   * Username of a server user.
+   */
+  public static final String SERVER_USER_LOGIN = "root";
+
+  /**
+   * Password of the server user.
+   */
+  public static final String SERVER_USER_PASSWORD = "ThisIsA_TEST";
+
+  /**
+   * Resources accessible to the server user.
+   */
+  public static final String SERVER_USER_RESOURCES = "";
+
+  /**
+   * Configuration property for caching static contents.
+   * If enabled the files will be kept in memory the first time they are loaded.
+   * Changes to the files will be taken on the next restart.
+   */
+  public static final String CONFIGURATION_CACHE_STATIC_RESOURCES = "server.cache.staticResources";
+
+  /**
+   * Configuration property for the logging level of the logger that outputs to the console.
+   */
+  public static final String CONFIGURATION_LOG_CONSOLE_LEVEL = "log.console.level";
+
+  /**
+   * Configuration property for the logging level of the logger that outputs to a file.
+   */
+  public static final String CONFIGURATION_LOG_FILE_LEVEL = "log.file.level";
+
+  /**
+   * Configuration property for attaching dynamic plugins to the server.
+   */
+  public static final String CONFIGURATION_PLUGIN_DYNAMIC = "plugin.dynamic";
+
+  /**
+   * Username of the database user.
+   */
+  public static final String DEFAULT_LOGIN = "admin";
+
+  /**
+   * Password of the database user.
+   */
+  public static final String DEFAULT_PASSWORD = "admin";
+
+  /**
+   * Protocol string to use for local databases.
+   */
+  public static final String DATABASE_URL_PROTOCOL_PLOCAL = "plocal:";
+
+  /**
+   * State of this service.
+   */
+  private final AtomicBoolean active = new AtomicBoolean();
+
+  /**
+   * Pattern for allowed db names. It is more restrictive than is required, yet it is simple
+   * and allows for more flexibility in implementation.
+   */
+  private final Pattern allowedDbName = Pattern.compile("[A-Za-z0-9_-]+");
+
+  /**
+   * OrientDB server starter/stopper.
+   */
+  private final DatabaseServiceStarter control = new DatabaseServiceStarter();
+
+
 
   @Override
   public String getName() {
@@ -48,47 +147,115 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
 
   @Override
   public void startup() {
-    databaseStarter.startup();
-
-
-    String content =
-        "{" + "\"glossary\": {" + "\"title\": \"example glossary\"," + "\"GlossDiv\": {" + "\"title\": \"S\","
-            + "\"GlossList\": {" + "\"GlossEntry\": {" + "\"ID\": \"SGML\"," + "\"SortAs\": \"SGML\","
-            + "\"GlossTerm\": \"Standard Generalized Markup Language\"," + "\"Acronym\": \"SGML\","
-            + "\"Abbrev\": \"ISO 8879:1986\"," + "\"GlossDef\": {"
-            + "\"para\": \"A meta-markup language, used to create markup languages such as DocBook.\","
-            + "\"GlossSeeAlso\": [\"GML\", \"XML\"]" + "}," + "\"GlossSee\": \"markup\"" + "}" + "}" + "}" + "}"
-            + "}";
-
-    ODatabaseDocumentTx test = new ODatabaseDocumentTx("plocal:/var/tmp/testorientdb").open("admin", "admin");
-    for (int i = 0; i < 10; i++) {
-      ODocument doc = new ODocument("foryou");
-      doc.field("number", i);
-      doc.field("bar", new ODocument("inner").field("othernumber", 2 * i).field("finalNumber", i * 12));
-      doc.save();
-    }
-    ODocument doc = new ODocument("foryou");
-    doc.fromJSON(content);
-    doc.save();
-    List<ODocument> result =
-        test.query(new OSQLSynchQuery<ODocument>("select * from foryou where glossary.GlossDiv.title = 'S'"));
-
-    System.out.println("No of ODocuments:\t" + result.size());
-
-    for (ODocument od : result) {
-      System.out.println(od.toJSON());
-      Object field = od.field("glossary.GlossDiv");
-      if (field != null)
-        System.out.println(field.getClass());
-      System.out.println(field);
-    }
-
-    test.close();
+    checkState(active.compareAndSet(false, true));
   }
 
   @Override
   public void shutdown() {
-    databaseStarter.shutdown();
+    checkState(active.compareAndSet(true, false));
+    control.shutdown();
+  }
+
+  /**
+   * Creates new endpoint for a database with the given name.
+   *
+   * @param databaseName
+   *          OrientDB database name
+   * @param log
+   *          logger
+   *
+   * @return new endpoint for accessing the database
+   */
+  public OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(
+      String databaseName, Log log) {
+    checkArgument(allowedDbName.matcher(databaseName).matches());
+    String databaseUrl = DATABASE_URL_PROTOCOL_PLOCAL
+        + getSpaceEnvironment().getFilesystem().getDataDirectory(getName()).getAbsolutePath()
+        + File.separator + databaseName;
+    return getOrientDbDocumentDatabaseEndpoint(databaseUrl, DEFAULT_LOGIN, DEFAULT_PASSWORD, log);
+  }
+
+  /**
+   * Creates new endpoint for a database with at the given location.
+   *
+   * @param dbDirectory
+   *          OrientDB database storage
+   * @param log
+   *          logger
+   *
+   * @return new endpoint for accessing the database
+   */
+  public OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(
+      File dbDirectory, Log log) {
+    String databaseUrl = DATABASE_URL_PROTOCOL_PLOCAL + dbDirectory.getAbsolutePath();
+    return getOrientDbDocumentDatabaseEndpoint(databaseUrl, DEFAULT_LOGIN, DEFAULT_PASSWORD, log);
+  }
+
+  /**
+   * Creates new endpoint for a database with the given URL and credentials.
+   *
+   * @param databaseUrl
+   *          OrientDB database URL
+   * @param login
+   *          login for the database access
+   * @param password
+   *          password for the database access
+   * @param log
+   *          logger
+   *
+   * @return new endpoint for accessing the database
+   */
+  public OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(
+      String databaseUrl, String login, String password, Log log) {
+    return new BasicOrientDbDocumentDatabaseEndpoint(this, databaseUrl, login, password, log);
+  }
+
+  /**
+   * Activates a given database connection in current thread
+   * so that newly created documents are stored in this database.
+   * A connection that is created through an endpoint is automatically
+   * activated in a thread it is created in.
+   *
+   * @param database
+   *          database to activate in current thread
+   */
+  public void activateInCurrentThread(ODatabaseDocumentTx database) {
+    checkState(active.get());
+    ODatabaseRecordThreadLocal.INSTANCE.set(database);
+  }
+
+  /**
+   * Opens a database with the given URL and credentials.
+   * If the database does not exist, it will be created.
+   *
+   * @param url
+   *          path to the database to open
+   * @param login
+   *          login for the database access
+   * @param password
+   *          password for the database access
+   *
+   * @return open database
+   */
+  ODatabaseDocumentTx createOrOpenDatabase(String url, String login, String password) {
+    checkState(active.get());
+    control.startup();
+    ODatabaseDocumentTx result = new ODatabaseDocumentTx(url);
+    if (!result.exists()) {
+      result.create();
+    } else {
+      result.open(login, password);
+    }
+    return result;
+  }
+
+  /**
+   * Convenience method that return a logger for this service.
+   *
+   * @return logger for this service
+   */
+  Log getLog() {
+    return getSpaceEnvironment().getLog();
   }
 
   /**
@@ -97,45 +264,43 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
    * @author Keith M. Hughes
    */
   private static class DatabaseServiceStarter {
-
-    /**
-     * {@code true} if the database has been started.
-     */
-    private AtomicBoolean started = new AtomicBoolean(false);
-
     /**
      * The database server.
      */
     private OServer orientDbServer;
 
-    public void startup() {
-      if (started.compareAndSet(false, true)) {
-        try {
-          String config =
-              "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                  + "<orient-server>"
-                  + "<network>"
-                  + "<protocols>"
-                  + "<protocol name=\"binary\" implementation=\"com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary\"/>"
-                  + "</protocols>"
-                  + "<listeners>"
-                  + "<listener ip-address=\"0.0.0.0\" port-range=\"2424-2430\" protocol=\"binary\"/>"
-                  + "</listeners>"
-                  + "</network>"
-                  + "<users>"
-                  + "<user name=\"root\" password=\"ThisIsA_TEST\" resources=\"\"/>"
-                  + "</users>"
-                  + "<properties>"
-                  + "<entry name=\"orientdb.www.path\" value=\"C:/work/dev/orientechnologies/orientdb/releases/1.0rc1-SNAPSHOT/www/\"/>"
-                  + "<entry name=\"orientdb.config.file\" value=\"C:/work/dev/orientechnologies/orientdb/releases/1.0rc1-SNAPSHOT/config/orientdb-server-config.xml\"/>"
-                  + "<entry name=\"server.database.path\" value=\"/var/tmp/testorientdb/databases\"/>"
-                  + "<entry name=\"server.cache.staticResources\" value=\"false\"/>"
-                  + "<entry name=\"log.console.level\" value=\"info\"/>"
-                  + "<entry name=\"log.file.level\" value=\"fine\"/>"
-                  // The following is required to eliminate an error or warning
-                  // "Error on resolving property: ORIENTDB_HOME"
-                  + "<entry name=\"plugin.dynamic\" value=\"false\"/>" + "</properties>" + "</orient-server>";
+    /**
+     * Starts the database server.
+     */
+    public synchronized void startup() {
+      if (orientDbServer == null) {
+        OServerConfiguration config = new OServerConfiguration();
 
+        config.network = new OServerNetworkConfiguration();
+
+        String implementation = PROTOCOL_IMPLEMENTATION;
+        String protocolName = PROTOCOL;
+        OServerNetworkProtocolConfiguration protocol =
+            new OServerNetworkProtocolConfiguration(protocolName, implementation);
+        config.network.protocols = ImmutableList.of(protocol);
+
+        OServerNetworkListenerConfiguration listener = new OServerNetworkListenerConfiguration();
+        listener.ipAddress = IP_ADDRESS;
+        listener.portRange = PORT_RANGE;
+        listener.protocol = protocolName;
+        config.network.listeners = ImmutableList.of(listener);
+
+        OServerUserConfiguration user =
+            new OServerUserConfiguration(SERVER_USER_LOGIN, SERVER_USER_PASSWORD, SERVER_USER_RESOURCES);
+        config.users = new OServerUserConfiguration[]{user};
+
+        config.properties = new OServerEntryConfiguration[]{
+            new OServerEntryConfiguration(CONFIGURATION_CACHE_STATIC_RESOURCES, "false"),
+            new OServerEntryConfiguration(CONFIGURATION_LOG_CONSOLE_LEVEL, "info"),
+            new OServerEntryConfiguration(CONFIGURATION_LOG_FILE_LEVEL, "fine"),
+            new OServerEntryConfiguration(CONFIGURATION_PLUGIN_DYNAMIC, "false")
+        };
+        try {
           orientDbServer = OServerMain.create();
           orientDbServer.startup(config);
           orientDbServer.activate();
@@ -145,9 +310,13 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
       }
     }
 
-    public void shutdown() {
-      if (started.compareAndSet(true, false)) {
+    /**
+     * Shuts down the database server.
+     */
+    public synchronized void shutdown() {
+      if (orientDbServer != null) {
         orientDbServer.shutdown();
+        orientDbServer = null;
       }
     }
   }
