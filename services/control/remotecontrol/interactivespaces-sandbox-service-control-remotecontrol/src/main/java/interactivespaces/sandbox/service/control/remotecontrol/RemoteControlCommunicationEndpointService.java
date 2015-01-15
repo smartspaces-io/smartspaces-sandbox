@@ -16,8 +16,6 @@
 
 package interactivespaces.sandbox.service.control.remotecontrol;
 
-import interactivespaces.service.SupportedService;
-
 import org.apache.commons.logging.Log;
 
 /**

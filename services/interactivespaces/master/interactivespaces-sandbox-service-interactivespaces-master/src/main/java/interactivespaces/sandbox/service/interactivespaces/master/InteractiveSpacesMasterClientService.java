@@ -16,8 +16,6 @@
 
 package interactivespaces.sandbox.service.interactivespaces.master;
 
-import interactivespaces.service.SupportedService;
-
 import org.apache.commons.logging.Log;
 
 /**

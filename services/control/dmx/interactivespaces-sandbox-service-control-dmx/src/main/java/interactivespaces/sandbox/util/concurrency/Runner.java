@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2014 Google Inc.
+/**
+ * Copyright (C) 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,17 +14,14 @@
  * the License.
  */
 
-package interactivespaces.sandbox.service.database.document.orientdb;
+package interactivespaces.sandbox.util.concurrency;
 
+import interactivespaces.util.resource.ManagedResource;
 
 /**
- * Endpoint for an OrientDB document database.
+ * A runner for running tasks in another thread.
+ *
+ * @author Keith M. Hughes
  */
-public interface OrientDbDocumentDatabaseEndpoint extends ManagedResource {
-  /**
-   * Creates a new connection to the database managed by this endpoint.
-   *
-   * @return OrientDB database connection
-   */
-  ODatabaseDocumentTx createConnection();
+public interface Runner extends ManagedResource, RuntimeStateMonitorable {
 }

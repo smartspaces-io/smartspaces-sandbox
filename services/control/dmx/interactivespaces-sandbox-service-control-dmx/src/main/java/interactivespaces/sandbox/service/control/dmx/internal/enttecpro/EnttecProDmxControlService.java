@@ -24,6 +24,8 @@ import interactivespaces.service.comm.serial.SerialCommunicationEndpointService;
 import org.apache.commons.logging.Log;
 
 /**
+ * A DMX control service that works with the Enttec Pro DMX interface.
+ *
  * @author Keith M. Hughes
  */
 public class EnttecProDmxControlService extends BaseSupportedService implements DmxControlService {

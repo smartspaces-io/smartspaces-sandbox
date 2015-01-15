@@ -16,7 +16,6 @@
 
 package interactivespaces.sandbox.service.control.remotecontrol.internal.lirc;
 
-import interactivespaces.SimpleInteractiveSpacesException;
 import interactivespaces.sandbox.service.control.remotecontrol.RemoteControlKeyPressEvent;
 
 /**

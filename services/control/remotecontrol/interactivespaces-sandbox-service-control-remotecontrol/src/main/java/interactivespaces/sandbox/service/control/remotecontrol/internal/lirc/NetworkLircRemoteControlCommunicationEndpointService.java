@@ -16,11 +16,8 @@
 
 package interactivespaces.sandbox.service.control.remotecontrol.internal.lirc;
 
-import interactivespaces.InteractiveSpacesException;
 import interactivespaces.sandbox.service.control.remotecontrol.RemoteControlCommunicationEndpoint;
 import interactivespaces.sandbox.service.control.remotecontrol.RemoteControlCommunicationEndpointService;
-import interactivespaces.service.BaseSupportedService;
-import interactivespaces.service.comm.network.client.TcpClientNetworkCommunicationEndpointService;
 
 import org.apache.commons.logging.Log;
 

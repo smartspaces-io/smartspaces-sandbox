@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * A DMX control endpoint which works with the Enttec Pro DMX interface.
+ * A DMX control endpoint that works with the Enttec Pro DMX interface.
  *
  * @author Keith M. Hughes
  */
@@ -247,5 +247,10 @@ public class EnttecProDmxControlEndpoint implements DmxControlEndpoint {
     }
 
     Thread.sleep(READER_LOOP_WAIT_DELAY);
+  }
+
+  @Override
+  public String toString() {
+    return "EnttecProDmxControlEndpoint [commEndpoint=" + commEndpoint + "]";
   }
 }

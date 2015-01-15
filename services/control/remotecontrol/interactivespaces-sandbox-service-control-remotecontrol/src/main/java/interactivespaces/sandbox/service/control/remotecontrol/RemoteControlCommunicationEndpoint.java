@@ -16,7 +16,6 @@
 
 package interactivespaces.sandbox.service.control.remotecontrol;
 
-import interactivespaces.util.resource.ManagedResource;
 
 /**
  * A communication endpoint for working with Infrared Remote Controls.

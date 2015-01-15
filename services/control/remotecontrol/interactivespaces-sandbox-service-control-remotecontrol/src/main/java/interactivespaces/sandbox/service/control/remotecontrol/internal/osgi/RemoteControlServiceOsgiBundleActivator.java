@@ -16,7 +16,6 @@
 
 package interactivespaces.sandbox.service.control.remotecontrol.internal.osgi;
 
-import interactivespaces.osgi.service.InteractiveSpacesServiceOsgiBundleActivator;
 import interactivespaces.sandbox.service.control.remotecontrol.internal.lirc.NetworkLircRemoteControlCommunicationEndpointService;
 
 /**

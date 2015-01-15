@@ -16,7 +16,6 @@
 
 package interactivespaces.sandbox.service.database.document.orientdb.internal.osgi;
 
-import interactivespaces.osgi.service.InteractiveSpacesServiceOsgiBundleActivator;
 import interactivespaces.sandbox.service.database.document.orientdb.BasicOrientDbDocumentDatabaseService;
 
 /**

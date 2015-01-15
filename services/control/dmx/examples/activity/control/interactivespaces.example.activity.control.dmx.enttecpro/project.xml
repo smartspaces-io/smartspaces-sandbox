@@ -2,8 +2,7 @@
 <project type="activity" builder="java">
   <name>ENTTEC Pro DMX Control Test</name>
   <description>
-    A Java Activity which controls a DMX device using an
-    ENTTEC Pro.
+    A Java Activity that controls a DMX device using an ENTTEC Pro.
   </description>
 
   <identifyingName>interactivespaces.example.activity.control.dmx.enttecpro</identifyingName>
@@ -26,4 +25,9 @@
     <dependency name="interactivespaces.sandbox.service.control.dmx" minimumVersion="1.0.0"
       maximumVersion="1.1.0" />
   </dependencies>
+
+  <deployments>
+    <deployment type="testdeploy" location="${deployment.test.deploy}" />
+    <deployment type="testimport" location="${deployment.test.import}" />
+  </deployments>
 </project>

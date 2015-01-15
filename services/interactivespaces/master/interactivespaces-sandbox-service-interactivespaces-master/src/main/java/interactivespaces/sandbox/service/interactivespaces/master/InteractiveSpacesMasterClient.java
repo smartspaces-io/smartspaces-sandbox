@@ -16,7 +16,6 @@
 
 package interactivespaces.sandbox.service.interactivespaces.master;
 
-import interactivespaces.util.resource.ManagedResource;
 
 /**
  * A client for interactive with the Interactive Spaces Master API.

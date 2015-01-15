@@ -18,6 +18,7 @@ package interactivespaces.sandbox.service.control.dmx;
 
 import interactivespaces.util.resource.ManagedResource;
 
+
 /**
  * An endpoint for controlling a DMX device.
  *

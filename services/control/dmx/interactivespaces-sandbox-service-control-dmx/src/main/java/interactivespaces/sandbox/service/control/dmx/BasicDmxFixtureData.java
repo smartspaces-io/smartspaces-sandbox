@@ -18,6 +18,7 @@ package interactivespaces.sandbox.service.control.dmx;
 
 import interactivespaces.SimpleInteractiveSpacesException;
 
+
 /**
  * A base class for implementing {@link DmxFixtureData} classes.
  *

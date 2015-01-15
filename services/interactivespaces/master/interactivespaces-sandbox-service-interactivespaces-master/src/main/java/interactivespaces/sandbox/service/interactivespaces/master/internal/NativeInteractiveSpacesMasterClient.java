@@ -16,13 +16,8 @@
 
 package interactivespaces.sandbox.service.interactivespaces.master.internal;
 
-import interactivespaces.master.api.messages.MasterApiMessages;
 import interactivespaces.sandbox.service.interactivespaces.master.InteractiveSpacesMasterApiMessageHandler;
 import interactivespaces.sandbox.service.interactivespaces.master.InteractiveSpacesMasterClient;
-import interactivespaces.service.web.WebSocketHandler;
-import interactivespaces.service.web.client.WebSocketClient;
-import interactivespaces.service.web.client.WebSocketClientService;
-import interactivespaces.util.data.json.JsonBuilder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

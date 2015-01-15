@@ -18,9 +18,6 @@ package interactivespaces.sandbox.service.control.remotecontrol.internal.lirc;
 
 import interactivespaces.sandbox.service.control.remotecontrol.BaseRemoteControlCommunicationEndpoint;
 import interactivespaces.sandbox.service.control.remotecontrol.RemoteControlCommunicationEndpoint;
-import interactivespaces.service.comm.network.client.TcpClientNetworkCommunicationEndpoint;
-import interactivespaces.service.comm.network.client.TcpClientNetworkCommunicationEndpointListener;
-import interactivespaces.service.comm.network.client.TcpClientNetworkCommunicationEndpointService;
 
 import org.apache.commons.logging.Log;
 import org.jboss.netty.util.CharsetUtil;

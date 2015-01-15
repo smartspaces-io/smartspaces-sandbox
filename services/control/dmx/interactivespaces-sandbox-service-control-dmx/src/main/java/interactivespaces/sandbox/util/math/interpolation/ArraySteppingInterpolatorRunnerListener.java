@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Google Inc.
+ * Copyright (C) 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,17 +14,22 @@
  * the License.
  */
 
-package interactivespaces.sandbox.service.database.document.orientdb;
-
+package interactivespaces.sandbox.util.math.interpolation;
 
 /**
- * Endpoint for an OrientDB document database.
+ * A listener for steps in an array interpolator.
+ *
+ * @author Keith M. Hughes
  */
-public interface OrientDbDocumentDatabaseEndpoint extends ManagedResource {
+public interface ArraySteppingInterpolatorRunnerListener {
+
   /**
-   * Creates a new connection to the database managed by this endpoint.
+   * The interpolator has made a step.
    *
-   * @return OrientDB database connection
+   * @param step
+   *          the step the interpolator is on
+   * @param currentValues
+   *          the values of the current step
    */
-  ODatabaseDocumentTx createConnection();
+  void onArrayInterpolatorStep(int step, double[] currentValues);
 }

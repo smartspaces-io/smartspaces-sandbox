@@ -16,7 +16,6 @@
 
 package interactivespaces.sandbox.service.interactivespaces.master.internal.osgi;
 
-import interactivespaces.osgi.service.InteractiveSpacesServiceOsgiBundleActivator;
 import interactivespaces.sandbox.service.interactivespaces.master.internal.NativeInteractiveSpacesMasterClientService;
 
 /**
