@@ -18,6 +18,8 @@ package interactivespaces.sandbox.service.interactivespaces.master.internal;
 
 import interactivespaces.sandbox.service.interactivespaces.master.InteractiveSpacesMasterClient;
 import interactivespaces.sandbox.service.interactivespaces.master.InteractiveSpacesMasterClientService;
+import interactivespaces.service.BaseSupportedService;
+import interactivespaces.service.web.client.WebSocketClientService;
 
 import org.apache.commons.logging.Log;
 

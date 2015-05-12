@@ -16,13 +16,16 @@
 
 package interactivespaces.sandbox.service.interactivespaces.master;
 
+import interactivespaces.util.resource.ManagedResource;
+
+import java.util.Map;
 
 /**
  * A client for interactive with the Interactive Spaces Master API.
  *
  * <p>
- * Filters use OGNL. The OGNL expressions must return true or false. For details on OGNL see
- * <a href="http://commons.apache.org/proper/commons-ognl/language-guide.html">the OGNL reference</a>.
+ * Filters use OGNL. The OGNL expressions must return true or false. For details on OGNL see <a
+ * href="http://commons.apache.org/proper/commons-ognl/language-guide.html">the OGNL reference</a>.
  *
  * @author Keith M. Hughes
  */
@@ -55,6 +58,32 @@ public interface InteractiveSpacesMasterClient extends ManagedResource {
    *          the callback to run after the response
    */
   void getAllLiveActivities(String filter, InteractiveSpacesMasterApiMessageHandler callback);
+
+  /**
+   * Get a live activity configuration.
+   *
+   * <p>
+   * The data in the response will contain the configuration.
+   *
+   * @param id
+   *          the ID of the live activity to start up
+   * @param callback
+   *          the callback for the call
+   */
+  void getLiveActivityConfiguration(String id, InteractiveSpacesMasterApiMessageHandler callback);
+
+  /**
+   * Set a live activity configuration.
+   *
+   * @param id
+   *          the ID of the live activity to start up
+   * @param newConfiguration
+   *          the new configuration
+   * @param callback
+   *          the callback for the call
+   */
+  void setLiveActivityConfiguration(String id, Map<String, String> newConfiguration,
+      InteractiveSpacesMasterApiMessageHandler callback);
 
   /**
    * Start up a live activity.

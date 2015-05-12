@@ -16,8 +16,14 @@
 
 package interactivespaces.sandbox.service.interactivespaces.master.internal;
 
+import interactivespaces.master.api.messages.MasterApiMessages;
 import interactivespaces.sandbox.service.interactivespaces.master.InteractiveSpacesMasterApiMessageHandler;
 import interactivespaces.sandbox.service.interactivespaces.master.InteractiveSpacesMasterClient;
+import interactivespaces.service.web.WebSocketHandler;
+import interactivespaces.service.web.client.WebSocketClient;
+import interactivespaces.service.web.client.WebSocketClientService;
+import interactivespaces.util.data.json.JsonBuilder;
+import interactivespaces.util.data.json.StandardJsonBuilder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,6 +32,7 @@ import org.apache.commons.logging.Log;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -127,6 +134,23 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
   @Override
   public void getAllLiveActivities(String filter, InteractiveSpacesMasterApiMessageHandler callback) {
     sendApiCall(newFilteredSearchCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_ALL, filter, callback));
+  }
+
+  @Override
+  public void getLiveActivityConfiguration(String id, InteractiveSpacesMasterApiMessageHandler callback) {
+    sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_CONFIGURATION_GET, id, callback);
+  }
+
+  @Override
+  public void setLiveActivityConfiguration(String id, Map<String, String> newConfiguration,
+      InteractiveSpacesMasterApiMessageHandler callback) {
+    JsonBuilder call =
+        newEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_CONFIGURATION_SET, id, callback);
+    call.newObject(MasterApiMessages.MASTER_API_PARAMETER_NAME_ENTITY_CONFIG);
+    for (Entry<String, String> entry : newConfiguration.entrySet()) {
+      call.put(entry.getKey(), entry.getValue());
+    }
+    sendApiCall(call);
   }
 
   @Override
@@ -293,7 +317,7 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
   private JsonBuilder newReponseCall(String command, InteractiveSpacesMasterApiMessageHandler callback) {
     Request request = newRequest(callback);
 
-    JsonBuilder builder = new JsonBuilder();
+    JsonBuilder builder = new StandardJsonBuilder();
     builder.put(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_TYPE, command);
     builder.put(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_REQUEST_ID, request.getRequestId());
     builder.newObject(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_DATA);
