@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.collect.Lists;
 
+import com.orientechnologies.orient.core.db.ODatabase;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import org.apache.commons.logging.Log;
 
 import java.util.Collection;

@@ -17,6 +17,10 @@
 package interactivespaces.sandbox.service.database.document.orientdb;
 
 
+import interactivespaces.util.resource.ManagedResource;
+
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+
 /**
  * Endpoint for an OrientDB document database.
  */

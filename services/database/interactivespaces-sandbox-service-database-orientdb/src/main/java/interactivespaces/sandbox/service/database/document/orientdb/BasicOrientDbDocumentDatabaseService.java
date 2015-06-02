@@ -16,16 +16,27 @@
 
 package interactivespaces.sandbox.service.database.document.orientdb;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.collect.ImmutableList;
 
+import interactivespaces.InteractiveSpacesException;
+import interactivespaces.service.BaseSupportedService;
+
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.server.OServer;
+import com.orientechnologies.orient.server.OServerMain;
+import com.orientechnologies.orient.server.config.OServerConfiguration;
+import com.orientechnologies.orient.server.config.OServerEntryConfiguration;
+import com.orientechnologies.orient.server.config.OServerNetworkConfiguration;
+import com.orientechnologies.orient.server.config.OServerNetworkListenerConfiguration;
+import com.orientechnologies.orient.server.config.OServerNetworkProtocolConfiguration;
+import com.orientechnologies.orient.server.config.OServerUserConfiguration;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
 
 /**
  * @author Keith M. Hughes
@@ -55,7 +66,7 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
   /**
    * Range of ports to which the server tries to bind.
    */
-  public static final String PORT_RANGE = "2424-2424";
+  public static final String PORT_RANGE = "2424-2500";
 
   /**
    * Username of a server user.
@@ -115,12 +126,6 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
   private final AtomicBoolean active = new AtomicBoolean();
 
   /**
-   * Pattern for allowed db names. It is more restrictive than is required, yet it is simple
-   * and allows for more flexibility in implementation.
-   */
-  private final Pattern allowedDbName = Pattern.compile("[A-Za-z0-9_-]+");
-
-  /**
    * OrientDB server starter/stopper.
    */
   private final DatabaseServiceStarter control = new DatabaseServiceStarter();
@@ -155,7 +160,6 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
    */
   public OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(
       String databaseName, Log log) {
-    checkArgument(allowedDbName.matcher(databaseName).matches());
     String databaseUrl = DATABASE_URL_PROTOCOL_PLOCAL
         + getSpaceEnvironment().getFilesystem().getDataDirectory(getName()).getAbsolutePath()
         + File.separator + databaseName;
