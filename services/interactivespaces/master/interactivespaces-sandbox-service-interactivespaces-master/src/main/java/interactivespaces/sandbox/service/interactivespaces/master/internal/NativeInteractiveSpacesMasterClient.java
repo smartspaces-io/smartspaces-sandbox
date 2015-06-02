@@ -43,6 +43,11 @@ import java.util.concurrent.atomic.AtomicLong;
 public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMasterClient {
 
   /**
+   * Web socket URI prefix for the master API.
+   */
+  public static final String MASTERAPI_WEBSOCKET_URI_PREFIX = "/masterapi/websocket";
+
+  /**
    * The web socket client for communicating with the master.
    */
   private final WebSocketClient webSocketClient;
@@ -86,7 +91,7 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
    */
   public NativeInteractiveSpacesMasterClient(WebSocketClientService webSocketClientService, String masterApiHost,
       int masterApiPort, Log log) {
-    masterAddress = "ws://" + masterApiHost + ":" + masterApiPort + "/";
+    masterAddress = "ws://" + masterApiHost + ":" + masterApiPort + MASTERAPI_WEBSOCKET_URI_PREFIX;
     this.webSocketClient = webSocketClientService.newWebSocketClient(masterAddress, new WebSocketHandler() {
 
       @SuppressWarnings("unchecked")
