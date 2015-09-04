@@ -142,6 +142,11 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
   }
 
   @Override
+  public void getLiveActivityFullView(String typedId, InteractiveSpacesMasterApiMessageHandler callback) {
+    sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_VIEW_FULL, typedId, callback);
+  }
+
+  @Override
   public void getLiveActivityConfiguration(String id, InteractiveSpacesMasterApiMessageHandler callback) {
     sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_CONFIGURATION_GET, id, callback);
   }
@@ -176,6 +181,11 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
   @Override
   public void shutdownLiveActivity(String id, InteractiveSpacesMasterApiMessageHandler callback) {
     sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_SHUTDOWN, id, callback);
+  }
+
+  @Override
+  public void getLiveActivityGroupFullView(String id, InteractiveSpacesMasterApiMessageHandler callback) {
+    sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_GROUP_VIEW_FULL, id, callback);
   }
 
   @Override
@@ -214,6 +224,11 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
   @Override
   public void getAllSpaces(InteractiveSpacesMasterApiMessageHandler callback) {
     getAllSpaces(null, callback);
+  }
+
+  @Override
+  public void getSpaceFullView(String id, InteractiveSpacesMasterApiMessageHandler callback) {
+    sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_SPACE_VIEW_FULL, id, callback);
   }
 
   @Override
@@ -302,7 +317,8 @@ public class NativeInteractiveSpacesMasterClient implements InteractiveSpacesMas
    *
    * @return the request message in the data section
    */
-  private JsonBuilder newEntityCall(String command, String entityId, InteractiveSpacesMasterApiMessageHandler callback) {
+  private JsonBuilder
+      newEntityCall(String command, String entityId, InteractiveSpacesMasterApiMessageHandler callback) {
     JsonBuilder builder = newReponseCall(command, callback);
     builder.put(MasterApiMessages.MASTER_API_PARAMETER_NAME_ENTITY_ID, entityId);
 

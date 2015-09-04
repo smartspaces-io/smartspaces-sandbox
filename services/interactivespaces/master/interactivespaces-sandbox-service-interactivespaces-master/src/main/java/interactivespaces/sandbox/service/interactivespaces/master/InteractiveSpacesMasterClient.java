@@ -39,6 +39,16 @@ public interface InteractiveSpacesMasterClient extends ManagedResource {
   String getMasterAddress();
 
   /**
+   * Get full live activity view.
+   *u
+   * @param typedId
+   *          the typed ID of the live activity
+   * @param callback
+   *          the callback for the call
+   */
+  void getLiveActivityFullView(String typedId, InteractiveSpacesMasterApiMessageHandler callback);
+
+  /**
    * Get all live activities.
    *
    * @param callback
@@ -126,6 +136,16 @@ public interface InteractiveSpacesMasterClient extends ManagedResource {
   void shutdownLiveActivity(String id, InteractiveSpacesMasterApiMessageHandler callback);
 
   /**
+   * Get full live activity group view.
+   *
+   * @param id
+   *          the ID of the live activity group
+   * @param callback
+   *          the callback for the call
+   */
+  void getLiveActivityGroupFullView(String id, InteractiveSpacesMasterApiMessageHandler callback);
+
+  /**
    * Get all live activity groups.
    *
    * @param callback
@@ -193,6 +213,16 @@ public interface InteractiveSpacesMasterClient extends ManagedResource {
    *          the callback to run after the response
    */
   void getAllSpaces(InteractiveSpacesMasterApiMessageHandler callback);
+
+  /**
+   * Get full space view.
+   *
+   * @param id
+   *          the ID of the lspace
+   * @param callback
+   *          the callback for the call
+   */
+  void getSpaceFullView(String id, InteractiveSpacesMasterApiMessageHandler callback);
 
   /**
    * Get all spaces that match the specified filter.
