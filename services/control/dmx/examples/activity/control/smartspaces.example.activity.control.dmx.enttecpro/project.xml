@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project type="activity" builder="java">
+  <name>ENTTEC Pro DMX Control Test</name>
+  <description>
+    A Java Activity that controls a DMX device using an ENTTEC Pro.
+  </description>
+
+  <identifyingName>smartspaces.example.activity.control.dmx.enttecpro</identifyingName>
+  <version>1.0.0</version>
+
+  <activity type="smartspaces_native">
+    <name>smartspacesExampleActivityControlDmxEnttecPro</name>
+    <class>interactivespaces.example.activity.control.dmx.EnttecProDmxControlActivity</class>
+
+    <configuration>
+      <property name="space.hardware.serial.port" required="true">
+        <description>
+          The serial port the Enttec Pro is connected to.
+        </description>
+      </property>
+    </configuration>
+  </activity>
+
+  <dependencies>
+    <dependency identifyingName="smartspaces.sandbox.service.control.dmx" version="[1.0.0, 1.1.0]" dynamic="true" />
+  </dependencies>
+
+  <deployments>
+    <deployment type="testdeploy" location="${deployment.test.deploy}" />
+    <deployment type="testimport" location="${deployment.test.import}" />
+  </deployments>
+</project>

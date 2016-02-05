@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>Sequencer Service</name>
+  <description>
+    A basic sequencer service.
+  </description>
+
+  <identifyingName>smartspaces.sandbox.service.sequencer</identifyingName>
+  <version>1.0.0</version>
+</project>

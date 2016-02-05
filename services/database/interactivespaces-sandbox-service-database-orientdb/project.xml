@@ -5,7 +5,7 @@
     A service for working with OrientDB databases.
   </description>
 
-  <identifyingName>interactivespaces.sandbox.service.database.document.orientdb
+  <identifyingName>smartspaces.sandbox.service.database.document.orientdb
   </identifyingName>
   <version>1.0.0</version>
 
@@ -17,6 +17,6 @@
   </library>
 
   <dependencies>
-    <dependency name="com.orientechnologies.orientdb-core" minimumVersion="1.7.0" maximumVersion="2.2.0" required="true" />
+    <dependency identifyingName="com.orientechnologies.orientdb-core" version="[1.7.0, 2.2.0)" required="true" />
   </dependencies>
 </project>

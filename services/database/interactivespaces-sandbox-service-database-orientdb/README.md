@@ -7,7 +7,7 @@ Master
 
 Rename `orientdb-core-2.0.10.jar` into `com.orientechnologies.orientdb-core-2.0.10.jar`
 and copy to
-`master/master/repository/interactivespaces/resources/bundles/`
+`master/master/repository/smartspaces/resources/bundles/`
 
 Controller
 ----------

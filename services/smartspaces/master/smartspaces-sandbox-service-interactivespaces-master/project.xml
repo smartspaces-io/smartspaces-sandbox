@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>Smart Spaces Master API Client Service</name>
+  <description>
+    A service for controlling an Smart Spaces environment via the Smart Spaces Master API.
+  </description>
+
+  <identifyingName>smartspaces.sandbox.service.smartspaces.master</identifyingName>
+  <version>1.0.1</version>
+
+  <library>
+    <container>
+      <activator>
+        io.smartspaces.sandbox.service.smartspaces.master.internal.osgi.SmartSpacesMasterServiceOsgiBundleActivator
+      </activator>
+    </container>
+  </library>
+</project>

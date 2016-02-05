@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>Infrared Remote Control Service</name>
+  <description>
+    A service for working with infrared remote controls.
+  </description>
+
+  <identifyingName>smartspaces.sandbox.service.control.remotecontrol
+  </identifyingName>
+  <version>1.0.0</version>
+
+  <library>
+    <container>
+      <activator>
+  io.smartspaces.sandbox.service.control.remotecontrol.internal.osgi.RemoteControlServiceOsgiBundleActivator
+      </activator>
+    </container>
+  </library>
+</project>
