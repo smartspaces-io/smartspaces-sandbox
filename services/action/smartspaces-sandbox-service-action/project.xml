@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>Action Service</name>
+  <description>
+    A basic set of action services that make it possible to store, sequence, and schedule actions.
+  </description>
+
+  <identifyingName>smartspaces.sandbox.service.action</identifyingName>
+  <version>1.0.0</version>
+  <library>
+    <container>
+      <activator>
+        io.smartspaces.sandbox.service.action.internal.osgi.ActionServiceActivator
+      </activator>
+    </container>
+  </library>
+</project>
