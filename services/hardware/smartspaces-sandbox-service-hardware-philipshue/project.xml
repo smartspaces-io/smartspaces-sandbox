@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+	<name>Smart Spaces Support for Philips Hue bulbs</name>
+	<description>
+		A collection of support for Philips Hue bulbs in Smart
+		Spaces.
+	</description>
+
+	<identifyingName>smartspaces.sandbox.service.hardware.philipshue
+	</identifyingName>
+	<version>1.0.0</version>
+
+	<library>
+		<container>
+			<activator>
+				org.robotbrains.support.internal.osgi.RobotBrainsSupportActivator
+			</activator>
+		</container>
+	</library>
+
+	<dependencies>
+		<dependency identifyingName="smartspaces.sandbox.service.action"
+			version="[1.0.0, 1.1.0)" dynamic="true" />
+	</dependencies>
+</project>
