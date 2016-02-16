@@ -56,14 +56,13 @@ public class GroupSequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(Sequencer scheduler) {
+  public void run(Sequencer sequencer) {
     for (SequenceElement element : elements) {
       if (Thread.interrupted()) {
         break;
       }
 
-      element.run(scheduler);
-
+      element.run(sequencer);
     }
   }
 }

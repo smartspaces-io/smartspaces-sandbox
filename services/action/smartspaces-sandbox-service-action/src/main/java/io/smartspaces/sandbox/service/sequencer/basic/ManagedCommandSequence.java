@@ -18,13 +18,15 @@
 package io.smartspaces.sandbox.service.sequencer.basic;
 
 import io.smartspaces.sandbox.service.sequencer.Sequence;
+import io.smartspaces.sandbox.service.sequencer.Sequence.SequenceState;
 import io.smartspaces.sandbox.service.sequencer.SequenceElement;
 import io.smartspaces.util.concurrency.ManagedCommand;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A basic implementation of the Sequencer interface.
@@ -36,17 +38,23 @@ public class ManagedCommandSequence implements Sequence {
   /**
    * The sequencer that created this sequence.
    */
-  private ManagedCommandSequencer scheduler;
+  private ManagedCommandSequencer sequencer;
 
   /**
    * The sequencer elements.
    */
-  private List<SequenceElement> sequencerElements = Lists.newArrayList();
+  private List<SequenceElement> sequencerElements = new ArrayList<>();
 
   /**
    * The managed command running this sequence.
    */
   private ManagedCommand managedCommand;
+
+  /**
+   * The current state of the sequence.
+   */
+  private AtomicReference<SequenceState> state =
+      new AtomicReference<SequenceState>(SequenceState.NOT_STARTED);
 
   /**
    * Construct a new sequence.
@@ -55,7 +63,7 @@ public class ManagedCommandSequence implements Sequence {
    *          the sequencer that created this sequence
    */
   public ManagedCommandSequence(ManagedCommandSequencer scheduler) {
-    this.scheduler = scheduler;
+    this.sequencer = scheduler;
   }
 
   @Override
@@ -66,7 +74,7 @@ public class ManagedCommandSequence implements Sequence {
   }
 
   @Override
-  public Sequence add(List<SequenceElement> elements) {
+  public Sequence add(Collection<SequenceElement> elements) {
     sequencerElements.addAll(elements);
 
     return this;
@@ -74,7 +82,7 @@ public class ManagedCommandSequence implements Sequence {
 
   @Override
   public synchronized void startup() {
-    managedCommand = scheduler.startSequence(this);
+    managedCommand = sequencer.startSequence(this);
   }
 
   @Override
@@ -82,16 +90,29 @@ public class ManagedCommandSequence implements Sequence {
     managedCommand.cancel();
   }
 
+  @Override
+  public SequenceState getState() {
+    return state.get();
+  }
+
   /**
    * Run the sequence.
    */
-  void runSequence() {
-    for (SequenceElement currentElement : sequencerElements) {
-      if (Thread.interrupted()) {
-        break;
-      }
+      void runSequence() {
+    state.set(SequenceState.RUNNING);
+    try {
+      for (SequenceElement currentElement : sequencerElements) {
+        if (Thread.interrupted()) {
+          break;
+        }
 
-      currentElement.run(scheduler);
+        currentElement.run(sequencer);
+      }
+      
+      state.set(SequenceState.COMPLETED);
+    } catch (Throwable e) {
+      state.set(SequenceState.ERROR);
+      sequencer.getLog().error("Sequence interrupted due to error", e);
     }
   }
 }

@@ -17,6 +17,7 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
+import io.smartspaces.SmartSpacesException;
 import io.smartspaces.util.events.EventDelay;
 
 /**
@@ -42,12 +43,14 @@ public class DelaySequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(Sequencer scheduler) {
+  public void run(Sequencer sequencer) {
     try {
       Thread.sleep(delay.getUnit().toMillis(delay.getDelay()));
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      sequencer.getLog().warn("Sequencer thread interrupted in a delay element");
+      
+      Thread.currentThread().interrupt();
+      throw new SmartSpacesException("Sequencer thread interrupted in a delay element");
     }
   }
 }

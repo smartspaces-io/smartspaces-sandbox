@@ -17,6 +17,8 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
+import org.apache.commons.logging.Log;
+
 /**
  * A sequencer that creates sequences of actions that take place sequentially.
  *
@@ -30,4 +32,11 @@ public interface Sequencer {
    * @return the new sequence
    */
   Sequence newSequence();
+  
+  /**
+   * Get the logger for the sequencer.
+   * 
+   * @return the logger
+   */
+  Log getLog();
 }

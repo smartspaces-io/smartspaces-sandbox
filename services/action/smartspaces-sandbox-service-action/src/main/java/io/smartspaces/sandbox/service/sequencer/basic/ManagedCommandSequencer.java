@@ -25,6 +25,7 @@ import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.concurrency.ManagedCommand;
 import io.smartspaces.util.concurrency.ManagedCommands;
 import io.smartspaces.util.concurrency.SimpleManagedCommands;
+import org.apache.commons.logging.Log;
 
 /**
  * An implementation of the Sequencer interface that uses ManagedCommands.
@@ -40,7 +41,7 @@ public class ManagedCommandSequencer implements Sequencer {
     SimpleManagedCommands commands =
         new SimpleManagedCommands(spaceEnvironment.getExecutorService(), spaceEnvironment.getLog());
 
-    ManagedCommandSequencer sequencer = new ManagedCommandSequencer(commands);
+    ManagedCommandSequencer sequencer = new ManagedCommandSequencer(commands, spaceEnvironment.getLog());
 
     Sequence sequence = sequencer.newSequence();
     sequence.add(SequenceElements.runnable(new Runnable() {
@@ -72,19 +73,32 @@ public class ManagedCommandSequencer implements Sequencer {
   private ManagedCommands managedCommands;
 
   /**
+   * The logger for the sequencer.
+   */
+  private Log log;
+
+  /**
    * Create a ManagedCommandScheduler with the given ManagedCommands instance.
    *
    * @param managedCommands
    *          an instance of ManagedCommands that will be used to schedule
-   *          runnables
+   *          sequence elements
+   * @param log
+   *          the logger to use
    */
-  public ManagedCommandSequencer(ManagedCommands managedCommands) {
+  public ManagedCommandSequencer(ManagedCommands managedCommands, Log log) {
     this.managedCommands = managedCommands;
+    this.log = log;
   }
 
   @Override
   public Sequence newSequence() {
     return new ManagedCommandSequence(this);
+  }
+
+  @Override
+  public Log getLog() {
+    return log;
   }
 
   /**
@@ -95,7 +109,7 @@ public class ManagedCommandSequencer implements Sequencer {
    *
    * @return the managed command running the sequence
    */
-  ManagedCommand startSequence(final ManagedCommandSequence sequence) {
+      ManagedCommand startSequence(final ManagedCommandSequence sequence) {
     return managedCommands.submit(new Runnable() {
       @Override
       public void run() {

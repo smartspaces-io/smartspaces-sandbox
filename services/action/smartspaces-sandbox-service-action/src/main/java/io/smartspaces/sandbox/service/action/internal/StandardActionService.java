@@ -56,12 +56,12 @@ public class StandardActionService extends BaseSupportedService implements Actio
   }
 
   @Override
-  public void addActionSource(String sourceName, ActionSource source) {
-    addActionSource(sourceName, DEFAULT_VERSION, source);
+  public void registerActionSource(String sourceName, ActionSource source) {
+    registerActionSource(sourceName, DEFAULT_VERSION, source);
   }
 
   @Override
-  public void addActionSource(String sourceName, Version sourceVersion, ActionSource source) {
+  public void registerActionSource(String sourceName, Version sourceVersion, ActionSource source) {
     sources.addResource(sourceName, sourceVersion, source);
   }
 

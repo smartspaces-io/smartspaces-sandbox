@@ -27,8 +27,8 @@ public interface SequenceElement {
   /**
    * Run this sequence element.
    *
-   * @param scheduler
-   *          the Scheduler to use for scheduling
+   * @param sequencer
+   *          the sequencer the element is running under
    */
   void run(Sequencer scheduler);
 }

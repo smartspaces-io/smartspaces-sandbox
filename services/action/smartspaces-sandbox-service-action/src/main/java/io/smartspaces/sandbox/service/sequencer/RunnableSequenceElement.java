@@ -40,7 +40,7 @@ public class RunnableSequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(Sequencer scheduler) {
+  public void run(Sequencer sequencer) {
     if (runnable != null) {
       runnable.run();
     }

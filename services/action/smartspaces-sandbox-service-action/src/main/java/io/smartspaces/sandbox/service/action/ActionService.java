@@ -37,10 +37,10 @@ public interface ActionService extends SupportedService {
   /**
    * The source to use for groups.
    */
-  String GROUP_ACTION_SOURCE = "interactivespaces.service.action";
+  String GROUP_ACTION_SOURCE = "smartspaces.service.action";
 
   /**
-   * Add in a new source for actions.
+   * Register a new source for actions.
    * 
    * <p>
    * The action source gets the {@link #DEFAULT_VERSION}.
@@ -50,10 +50,10 @@ public interface ActionService extends SupportedService {
    * @param source
    *          the source
    */
-  void addActionSource(String sourceName, ActionSource source);
+  void registerActionSource(String sourceName, ActionSource source);
 
   /**
-   * Add in a new source for actions.
+   * Register a new source for actions.
    * 
    * @param sourceName
    *          the name of the source
@@ -62,7 +62,7 @@ public interface ActionService extends SupportedService {
    * @param source
    *          the source
    */
-  void addActionSource(String sourceName, Version sourceVersion, ActionSource source);
+  void registerActionSource(String sourceName, Version sourceVersion, ActionSource source);
 
   /**
    * Perform an action.
