@@ -29,7 +29,7 @@ public abstract class BaseActionReference implements ActionReference {
   /**
    * The no data map.
    */
-  public static Map<String, ? extends Object> NO_DATA;
+  public static final Map<String, ? extends Object> NO_DATA;
 
   static {
     NO_DATA = (Map<String, ? extends Object>) Collections.unmodifiableMap(Collections.EMPTY_MAP);

@@ -66,7 +66,7 @@ public class StandardPhilipsHueEndpoint implements PhilipsHueEndpoint {
 
     ActionService actionService = new StandardActionService();
     String sourceName = "light.philipshue";
-    actionService.addActionSource(sourceName, endpoint.newActionSource());
+    actionService.registerActionSource(sourceName, endpoint.newActionSource());
 
     String lightId = "Hue Lamp 2";
 

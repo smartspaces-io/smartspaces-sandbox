@@ -17,12 +17,15 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
+import io.smartspaces.util.resource.ManagedResource;
+import org.apache.commons.logging.Log;
+
 /**
  * A sequencer that creates sequences of actions that take place sequentially.
  *
  * @author Keith M. Hughes
  */
-public interface Sequencer {
+public interface Sequencer extends ManagedResource {
 
   /**
    * Create a new sequence.
@@ -30,4 +33,11 @@ public interface Sequencer {
    * @return the new sequence
    */
   Sequence newSequence();
+  
+  /**
+   * Get the logger for the sequencer.
+   * 
+   * @return the logger
+   */
+  Log getLog();
 }

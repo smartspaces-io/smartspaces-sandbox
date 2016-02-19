@@ -25,8 +25,8 @@ import java.util.Map;
  * 
  * @author Keith M. Hughes
  */
-public class BasicSimpleActionReference extends BaseActionReference implements
-    SimpleActionReference {
+public class BasicSimpleActionReference extends BaseActionReference
+    implements SimpleActionReference {
 
   /**
    * The name of the action source.
@@ -49,10 +49,14 @@ public class BasicSimpleActionReference extends BaseActionReference implements
    * <p>
    * The data is empty.
    * 
+   * @param name
+   *          the name of the reference
+   * @param description
+   *          the description of the reference, can be {@code null}
    * @param actionSource
-   *          the source name
+   *          the name of the action source
    * @param actionSourceVersionRange
-   *          the version range for the source
+   *          the version range for the action source
    * @param actionName
    *          the action name
    */
@@ -65,18 +69,22 @@ public class BasicSimpleActionReference extends BaseActionReference implements
   /**
    * Construct a reference.
    * 
-   * <p>
-   * The data is empty.
-   * 
+   * @param name
+   *          the name of the reference
+   * @param description
+   *          the description of the reference, can be {@code null}
    * @param actionSource
-   *          the source name
+   *          the name of the action source
    * @param actionSourceVersionRange
-   *          the version range for the source
+   *          the version range for the action source
    * @param actionName
    *          the action name
+   * @param data
+   *          the data for the action
    */
   public BasicSimpleActionReference(String name, String description, String actionSource,
-      VersionRange actionSourceVersionRange, String actionName, Map<String, ? extends Object> data) {
+      VersionRange actionSourceVersionRange, String actionName,
+      Map<String, ? extends Object> data) {
     super(name, description, data);
 
     this.actionSource = actionSource;
@@ -89,7 +97,7 @@ public class BasicSimpleActionReference extends BaseActionReference implements
   }
 
   @Override
-  public VersionRange getVersionRange() {
+  public VersionRange getActionSourceVersionRange() {
     return actionSourceVersionRange;
   }
 

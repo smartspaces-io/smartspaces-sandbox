@@ -45,5 +45,5 @@ public interface SimpleActionReference extends ActionReference {
    * 
    * @return the version range
    */
-  VersionRange getVersionRange();
+  VersionRange getActionSourceVersionRange();
 }

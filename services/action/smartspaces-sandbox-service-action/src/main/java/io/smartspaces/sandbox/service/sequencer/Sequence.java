@@ -19,7 +19,7 @@ package io.smartspaces.sandbox.service.sequencer;
 
 import io.smartspaces.util.resource.ManagedResource;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * A sequence of actions to take place.
@@ -46,5 +46,40 @@ public interface Sequence extends ManagedResource {
    *
    * @return this sequence
    */
-  Sequence add(List<SequenceElement> elements);
+  Sequence add(Collection<SequenceElement> elements);
+  
+  /**
+   * Get the current state of the sequence.
+   * 
+   * @return the current state of the sequence
+   */
+  SequenceState getState();
+  
+  /**
+   * The state of the sequence.
+   * 
+   * @author Keith M. Hughes
+   */
+  enum SequenceState {
+    
+    /**
+     * The sequence hasn't been started yet.
+     */
+    NOT_STARTED,
+    
+    /**
+     * The sequence is running.
+     */
+    RUNNING,
+    
+    /**
+     * The sequence has successfully completed.
+     */
+    COMPLETED,
+    
+    /**
+     * The sequence has sopped from an error.
+     */
+    ERROR,
+  }
 }

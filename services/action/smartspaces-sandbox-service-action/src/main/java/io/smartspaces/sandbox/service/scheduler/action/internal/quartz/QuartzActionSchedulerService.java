@@ -209,14 +209,14 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
     public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
       Class<? extends Job> jobClass = bundle.getJobDetail().getJobClass();
       try {
-        if (InteractiveSpacesSchedulerJob.class.isAssignableFrom(jobClass)) {
+        if (SmartSpacesSchedulerJob.class.isAssignableFrom(jobClass)) {
           Constructor<? extends Job> constructor =
               jobClass.getConstructor(SMARTSPACES_JOB_CONSTRUCTOR_PARAMETER_TYPES);
           if (constructor != null) {
             return constructor.newInstance(actionService, getSpaceEnvironment().getLog());
           } else {
             throw new SchedulerException(String.format(
-                "Interactive Spaces job class %s does not have a proper constructor",
+                "SmartSpaces job class %s does not have a proper constructor",
                 jobClass.getName()));
           }
         } else {
@@ -228,7 +228,7 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
     }
   }
 
-  public static abstract class InteractiveSpacesSchedulerJob implements Job {
+  public static abstract class SmartSpacesSchedulerJob implements Job {
 
     /**
      * The action service.
@@ -240,7 +240,7 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
      */
     private Log log;
 
-    public InteractiveSpacesSchedulerJob(ActionService actionService, Log log) {
+    public SmartSpacesSchedulerJob(ActionService actionService, Log log) {
       this.actionService = actionService;
       this.log = log;
     }
@@ -259,7 +259,7 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
    *
    * @author Keith M. Hughes
    */
-  public static class ActionSchedulerJob extends InteractiveSpacesSchedulerJob {
+  public static class ActionSchedulerJob extends SmartSpacesSchedulerJob {
 
     public ActionSchedulerJob(ActionService actionService, Log log) {
       super(actionService, log);

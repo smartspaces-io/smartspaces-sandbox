@@ -13,13 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package io.smartspaces.sandbox.service.action;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 /**
  * A group of action references.
@@ -32,7 +32,7 @@ public class BasicGroupActionReference extends BaseActionReference implements
   /**
    * The action references in the group.
    */
-  private List<ActionReference> actionReferences = Lists.newArrayList();
+  private List<ActionReference> actionReferences = new ArrayList<>();
 
   /**
    * Construct a new group with no data.

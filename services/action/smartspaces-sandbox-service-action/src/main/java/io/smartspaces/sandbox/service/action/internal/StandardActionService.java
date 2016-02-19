@@ -47,8 +47,8 @@ public class StandardActionService extends BaseSupportedService implements Actio
   /**
    * The action sources.
    */
-  private NamedVersionedResourceCollection<ActionSource> sources = NamedVersionedResourceCollection
-      .newNamedVersionedResourceCollection();
+  private NamedVersionedResourceCollection<ActionSource> sources =
+      NamedVersionedResourceCollection.newNamedVersionedResourceCollection();
 
   @Override
   public String getName() {
@@ -56,19 +56,19 @@ public class StandardActionService extends BaseSupportedService implements Actio
   }
 
   @Override
-  public void addActionSource(String sourceName, ActionSource source) {
-    addActionSource(sourceName, DEFAULT_VERSION, source);
+  public void registerActionSource(String sourceName, ActionSource source) {
+    registerActionSource(sourceName, DEFAULT_VERSION, source);
   }
 
   @Override
-  public void addActionSource(String sourceName, Version sourceVersion, ActionSource source) {
+  public void registerActionSource(String sourceName, Version sourceVersion, ActionSource source) {
     sources.addResource(sourceName, sourceVersion, source);
   }
 
   @Override
   public void performAction(String actionSourceName, String actionName,
       Map<String, ? extends Object> data) {
-    performAction(actionSourceName, actionName, null, data);
+    performAction(actionSourceName, null, actionName, data);
   }
 
   @Override
@@ -78,21 +78,22 @@ public class StandardActionService extends BaseSupportedService implements Actio
   }
 
   @Override
-  public void performAction(String actionSourceName, String actionName, VersionRange versionRange,
+  public void performAction(String actionSourceName, VersionRange actionSourceVersionRange, String actionName,
       Map<String, ? extends Object> data) {
-    ActionSource source = sources.getHighestResource(actionSourceName);
+    ActionSource source = actionSourceVersionRange != null ? sources.getResource(actionSourceName, actionSourceVersionRange)
+        : sources.getHighestResource(actionSourceName);
     if (source != null) {
       Action action = source.getAction(actionName);
       if (action != null) {
         action.perform(data);
       } else {
-        throw new SimpleSmartSpacesException(String.format(
-            "Action %s:%s for version %s not found", actionSourceName, actionName, versionRange));
+        throw new SimpleSmartSpacesException(String.format("Action %s:%s for version %s not found",
+            actionSourceName, actionName, actionSourceVersionRange));
       }
     } else {
-      throw new SimpleSmartSpacesException(String.format(
-          "No action source found for action %s:%s for version %s", actionSourceName, actionName,
-          versionRange));
+      throw new SimpleSmartSpacesException(
+          String.format("No action source found for action %s:%s for version %s", actionSourceName,
+              actionName, actionSourceVersionRange));
     }
   }
 
@@ -101,8 +102,8 @@ public class StandardActionService extends BaseSupportedService implements Actio
       Map<String, ? extends Object> data) {
     Map<String, ? extends Object> mergedData = getMergedData(actionReference, data);
 
-    performAction(actionReference.getActionSource(), actionReference.getActionName(),
-        actionReference.getVersionRange(), mergedData);
+    performAction(actionReference.getActionSource(), actionReference.getActionSourceVersionRange(),
+        actionReference.getActionName(), mergedData);
   }
 
   @Override

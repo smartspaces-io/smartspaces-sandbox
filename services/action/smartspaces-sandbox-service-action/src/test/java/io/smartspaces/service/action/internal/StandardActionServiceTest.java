@@ -16,11 +16,7 @@
 
 package io.smartspaces.service.action.internal;
 
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
+import com.google.common.collect.Maps;
 
 import io.smartspaces.sandbox.service.action.Action;
 import io.smartspaces.sandbox.service.action.ActionSource;
@@ -29,8 +25,12 @@ import io.smartspaces.sandbox.service.action.BasicSimpleActionReference;
 import io.smartspaces.sandbox.service.action.GroupActionReference;
 import io.smartspaces.sandbox.service.action.SimpleActionReference;
 import io.smartspaces.sandbox.service.action.internal.StandardActionService;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test the {@link StandardActionService}.
@@ -54,9 +54,9 @@ public class StandardActionServiceTest {
     Mockito.when(source.getAction(actionName)).thenReturn(action);
 
     String sourceName = "foo";
-    actionService.addActionSource(sourceName, source);
+    actionService.registerActionSource(sourceName, source);
 
-    Map<String, Object> data = Maps.newHashMap();
+    Map<String, Object> data = new HashMap<>();
     actionService.performAction(sourceName, actionName, data);
 
     Mockito.verify(action, Mockito.times(1)).perform(data);
@@ -72,9 +72,9 @@ public class StandardActionServiceTest {
     Mockito.when(source.getAction(actionName)).thenReturn(action);
 
     String sourceName = "foo";
-    actionService.addActionSource(sourceName, source);
+    actionService.registerActionSource(sourceName, source);
 
-    Map<String, Object> data = Maps.newHashMap();
+    Map<String, Object> data = new HashMap<>();
 
     SimpleActionReference actionReference =
         new BasicSimpleActionReference("ref1", "test1", sourceName, null, actionName);
@@ -96,9 +96,9 @@ public class StandardActionServiceTest {
     Mockito.when(source1.getAction(actionName1)).thenReturn(action1);
 
     String sourceName1 = "foo";
-    actionService.addActionSource(sourceName1, source1);
+    actionService.registerActionSource(sourceName1, source1);
 
-    Map<String, Object> referenceData1 = Maps.newHashMap();
+    Map<String, Object> referenceData1 = new HashMap<>();
     referenceData1.put("a", "b");
     referenceData1.put("c", "d");
 
@@ -107,7 +107,7 @@ public class StandardActionServiceTest {
             referenceData1);
 
     // Overwrite one value from the reference data.
-    Map<String, Object> callData = Maps.newHashMap();
+    Map<String, Object> callData = new HashMap<>();
     callData.put("e", "f");
     callData.put("c", "g");
 
@@ -133,9 +133,9 @@ public class StandardActionServiceTest {
     Mockito.when(source1.getAction(actionName1)).thenReturn(action1);
 
     String sourceName1 = "foo";
-    actionService.addActionSource(sourceName1, source1);
+    actionService.registerActionSource(sourceName1, source1);
 
-    Map<String, Object> referenceData1 = Maps.newHashMap();
+    Map<String, Object> referenceData1 = new HashMap<>();
     referenceData1.put("a1", "b1");
     referenceData1.put("c", "d");
     referenceData1.put("g", "h");
@@ -151,9 +151,9 @@ public class StandardActionServiceTest {
     Mockito.when(source2.getAction(actionName2)).thenReturn(action2);
 
     String sourceName2 = "foo2";
-    actionService.addActionSource(sourceName2, source2);
+    actionService.registerActionSource(sourceName2, source2);
 
-    Map<String, Object> referenceData2 = Maps.newHashMap();
+    Map<String, Object> referenceData2 = new HashMap<>();
     referenceData2.put("a2", "b2");
     referenceData2.put("c", "d");
     referenceData2.put("g", "i");
@@ -162,7 +162,7 @@ public class StandardActionServiceTest {
         new BasicSimpleActionReference("ref2", "test", sourceName2, null, actionName2,
             referenceData2);
 
-    Map<String, Object> groupReferenceData = Maps.newHashMap();
+    Map<String, Object> groupReferenceData = new HashMap<>();
     groupReferenceData.put("g", "m");
     groupReferenceData.put("h", "i");
     groupReferenceData.put("j", "k");
@@ -172,7 +172,7 @@ public class StandardActionServiceTest {
             actionReference1, actionReference2);
 
     // Overwrite one value from the reference data.
-    Map<String, Object> callData = Maps.newHashMap();
+    Map<String, Object> callData = new HashMap<>();
     callData.put("e", "f");
     callData.put("c", "g");
     callData.put("h", "q");

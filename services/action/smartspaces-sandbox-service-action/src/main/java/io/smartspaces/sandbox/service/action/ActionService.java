@@ -37,10 +37,10 @@ public interface ActionService extends SupportedService {
   /**
    * The source to use for groups.
    */
-  String GROUP_ACTION_SOURCE = "interactivespaces.service.action";
+  String GROUP_ACTION_SOURCE = "smartspaces.service.action";
 
   /**
-   * Add in a new source for actions.
+   * Register a new source for actions.
    * 
    * <p>
    * The action source gets the {@link #DEFAULT_VERSION}.
@@ -50,10 +50,10 @@ public interface ActionService extends SupportedService {
    * @param source
    *          the source
    */
-  void addActionSource(String sourceName, ActionSource source);
+      void registerActionSource(String sourceName, ActionSource source);
 
   /**
-   * Add in a new source for actions.
+   * Register a new source for actions.
    * 
    * @param sourceName
    *          the name of the source
@@ -62,7 +62,7 @@ public interface ActionService extends SupportedService {
    * @param source
    *          the source
    */
-  void addActionSource(String sourceName, Version sourceVersion, ActionSource source);
+      void registerActionSource(String sourceName, Version sourceVersion, ActionSource source);
 
   /**
    * Perform an action.
@@ -78,8 +78,8 @@ public interface ActionService extends SupportedService {
    * @param data
    *          the data for the action
    */
-  void performAction(String sourceName, String actionName, Map<String, ? extends Object> data)
-      throws SmartSpacesException;
+      void performAction(String sourceName, String actionName, Map<String, ? extends Object> data)
+          throws SmartSpacesException;
 
   /**
    * Perform the given action reference.
@@ -89,7 +89,8 @@ public interface ActionService extends SupportedService {
    * @param data
    *          the data for the action invocation
    */
-  void performActionReference(ActionReference actionReference, Map<String, ? extends Object> data);
+      void performActionReference(ActionReference actionReference,
+          Map<String, ? extends Object> data);
 
   /**
    * Perform the given simple action reference.
@@ -99,8 +100,8 @@ public interface ActionService extends SupportedService {
    * @param data
    *          the data for the action invocation
    */
-  void performSimpleActionReference(SimpleActionReference actionReference,
-      Map<String, ? extends Object> data);
+      void performSimpleActionReference(SimpleActionReference actionReference,
+          Map<String, ? extends Object> data);
 
   /**
    * Perform the given group action reference.
@@ -110,21 +111,21 @@ public interface ActionService extends SupportedService {
    * @param data
    *          the data for the action invocation
    */
-  void performGroupActionReference(GroupActionReference actionReference,
-      Map<String, ? extends Object> data);
+      void performGroupActionReference(GroupActionReference actionReference,
+          Map<String, ? extends Object> data);
 
   /**
    * Perform an action.
    * 
    * @param actionSourceName
    *          the source name for the action
+   * @param actionSourceVersionRange
+   *          the version range for the action source, can be {@code null}
    * @param actionName
    *          the name of the action
-   * @param versionRange
-   *          the version range for the action
    * @param data
    *          the data for the action
    */
-  void performAction(String actionSourceName, String actionName, VersionRange versionRange,
-      Map<String, ? extends Object> data);
+      void performAction(String actionSourceName, VersionRange actionSourceVersionRange,
+          String actionName, Map<String, ? extends Object> data);
 }
