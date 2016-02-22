@@ -11,7 +11,7 @@
 
   <library>
     <container>
-      <activator>interactivespaces.sandbox.service.database.document.orientdb.internal.osgi.OrientDbDocumentDatabaseServiceOsgiBundleActivator
+      <activator>io.smartspaces.sandbox.service.database.document.orientdb.internal.osgi.OrientDbDocumentDatabaseServiceOsgiBundleActivator
       </activator>
     </container>
   </library>
