@@ -10,7 +10,7 @@
 
   <activity type="smartspaces_native">
     <name>smartspacesExampleActivityControlDmxEnttecPro</name>
-    <class>interactivespaces.example.activity.control.dmx.EnttecProDmxControlActivity</class>
+    <class>io.smartspaces.example.activity.control.dmx.EnttecProDmxControlActivity</class>
 
     <configuration>
       <property name="space.hardware.serial.port" required="true">

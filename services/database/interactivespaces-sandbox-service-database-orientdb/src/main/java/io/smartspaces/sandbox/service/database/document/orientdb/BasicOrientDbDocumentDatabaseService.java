@@ -277,7 +277,7 @@ public class BasicOrientDbDocumentDatabaseService extends BaseSupportedService {
           orientDbServer.startup(config);
           orientDbServer.activate();
         } catch (Exception e) {
-          throw new InteractiveSpacesException("Could not start up the orientDB server", e);
+          throw new SmartSpacesException("Could not start up the orientDB server", e);
         }
       }
     }
