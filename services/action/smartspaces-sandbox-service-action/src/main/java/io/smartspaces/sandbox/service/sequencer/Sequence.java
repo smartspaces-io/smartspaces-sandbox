@@ -78,7 +78,7 @@ public interface Sequence extends ManagedResource {
     COMPLETED,
     
     /**
-     * The sequence has sopped from an error.
+     * The sequence has stopped from an error.
      */
     ERROR,
   }

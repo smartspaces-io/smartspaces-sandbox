@@ -15,6 +15,8 @@
  */
 package io.smartspaces.sandbox.service.action;
 
+import io.smartspaces.resource.VersionRange;
+
 import java.util.Map;
 
 /**
@@ -58,20 +60,32 @@ public interface ActionReference {
    */
   ActionReference setDescription(String description);
 
+
+  /**
+   * Get the action source.
+   * 
+   * @return the action source
+   */
+  String getActionSource();
+
+  /**
+   * Get the name of the action.
+   * 
+   * @return the name of the action
+   */
+  String getActionName();
+
+  /**
+   * Get the version range for the action.
+   * 
+   * @return the version range
+   */
+  VersionRange getActionSourceVersionRange();
+
   /**
    * Get the data for the reference.
    * 
    * @return the data
    */
   Map<String, ? extends Object> getData();
-
-  /**
-   * Perform the action.
-   * 
-   * @param actionService
-   *          the action service to perform the action against
-   * @param data
-   *          the data for the actions
-   */
-  void performAction(ActionService actionService, Map<String, ? extends Object> data);
 }

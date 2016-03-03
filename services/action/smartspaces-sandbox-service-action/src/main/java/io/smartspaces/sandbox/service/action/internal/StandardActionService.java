@@ -16,6 +16,8 @@
 
 package io.smartspaces.sandbox.service.action.internal;
 
+import com.google.common.collect.Maps;
+
 import io.smartspaces.SimpleSmartSpacesException;
 import io.smartspaces.resource.NamedVersionedResourceCollection;
 import io.smartspaces.resource.Version;
@@ -24,11 +26,7 @@ import io.smartspaces.sandbox.service.action.Action;
 import io.smartspaces.sandbox.service.action.ActionReference;
 import io.smartspaces.sandbox.service.action.ActionService;
 import io.smartspaces.sandbox.service.action.ActionSource;
-import io.smartspaces.sandbox.service.action.GroupActionReference;
-import io.smartspaces.sandbox.service.action.SimpleActionReference;
 import io.smartspaces.service.BaseSupportedService;
-
-import com.google.common.collect.Maps;
 
 import java.util.Map;
 
@@ -74,13 +72,15 @@ public class StandardActionService extends BaseSupportedService implements Actio
   @Override
   public void performActionReference(ActionReference actionReference,
       Map<String, ? extends Object> data) {
-    actionReference.performAction(this, data);
+    performAction(actionReference.getActionSource(), actionReference.getActionSourceVersionRange(),
+        actionReference.getActionName(), data);
   }
 
   @Override
-  public void performAction(String actionSourceName, VersionRange actionSourceVersionRange, String actionName,
-      Map<String, ? extends Object> data) {
-    ActionSource source = actionSourceVersionRange != null ? sources.getResource(actionSourceName, actionSourceVersionRange)
+  public void performAction(String actionSourceName, VersionRange actionSourceVersionRange,
+      String actionName, Map<String, ? extends Object> data) {
+    ActionSource source = actionSourceVersionRange != null
+        ? sources.getResource(actionSourceName, actionSourceVersionRange)
         : sources.getHighestResource(actionSourceName);
     if (source != null) {
       Action action = source.getAction(actionName);
@@ -94,25 +94,6 @@ public class StandardActionService extends BaseSupportedService implements Actio
       throw new SimpleSmartSpacesException(
           String.format("No action source found for action %s:%s for version %s", actionSourceName,
               actionName, actionSourceVersionRange));
-    }
-  }
-
-  @Override
-  public void performSimpleActionReference(SimpleActionReference actionReference,
-      Map<String, ? extends Object> data) {
-    Map<String, ? extends Object> mergedData = getMergedData(actionReference, data);
-
-    performAction(actionReference.getActionSource(), actionReference.getActionSourceVersionRange(),
-        actionReference.getActionName(), mergedData);
-  }
-
-  @Override
-  public void performGroupActionReference(GroupActionReference actionReference,
-      Map<String, ? extends Object> data) {
-    Map<String, ? extends Object> mergedData = getMergedData(actionReference, data);
-
-    for (ActionReference reference : actionReference.getActionReferences()) {
-      performActionReference(reference, mergedData);
     }
   }
 

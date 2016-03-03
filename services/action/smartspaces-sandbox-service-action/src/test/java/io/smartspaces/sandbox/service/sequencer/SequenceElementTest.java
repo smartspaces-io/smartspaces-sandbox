@@ -18,10 +18,16 @@ package io.smartspaces.sandbox.service.sequencer;
 
 import com.google.common.collect.Lists;
 
+import io.smartspaces.sandbox.service.action.ActionReference;
+import io.smartspaces.sandbox.service.action.ActionService;
+import io.smartspaces.service.ServiceRegistry;
+import io.smartspaces.system.SmartSpacesEnvironment;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,56 +39,90 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Keith M. Hughes
  */
 public class SequenceElementTest {
-  
-  @Mock Sequencer sequencer;
 
+  @Mock
+  Sequencer sequencer;
+
+  @Mock
+  SmartSpacesEnvironment spaceEnvironment;
+
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+  }
+  
   @Test
   public void testGroupSequenceElement() {
     final List<String> actual = new ArrayList<>();
-    
+
     SequenceElement element1 = new SequenceElement() {
       @Override
-      public void run(Sequencer scheduler) {
+      public void run(SequenceEnvironment sequenceEnvironment) {
         actual.add("a");
       }
     };
     SequenceElement element2 = new SequenceElement() {
       @Override
-      public void run(Sequencer scheduler) {
+      public void run(SequenceEnvironment sequenceEnvironment) {
         actual.add("b");
       }
     };
-    
+
     GroupSequenceElement sequence = new GroupSequenceElement(element1, element2);
-    sequence.run(sequencer);
-    
-    Assert.assertEquals(Lists.newArrayList("a",  "b"), actual);
+    SequenceEnvironment sequenceEnvironment =
+        new SequenceEnvironment(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceEnvironment);
+
+    Assert.assertEquals(Lists.newArrayList("a", "b"), actual);
   }
 
   @Test
   public void testRepeatingSequenceElement() {
     final AtomicInteger actual = new AtomicInteger();
-    
+
     SequenceElement element1 = new SequenceElement() {
       @Override
-      public void run(Sequencer scheduler) {
+      public void run(SequenceEnvironment sequenceEnvironment) {
         actual.incrementAndGet();
       }
     };
-    
+
     RepeatingSequenceElement sequence = new RepeatingSequenceElement(10, element1);
-    sequence.run(sequencer);
-    
+    SequenceEnvironment sequenceEnvironment =
+        new SequenceEnvironment(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceEnvironment);
+
     Assert.assertEquals(10, actual.get());
   }
 
   @Test
   public void testRunnableSequenceElement() {
     Runnable runnable = Mockito.mock(Runnable.class);
-    
+
     RunnableSequenceElement sequence = new RunnableSequenceElement(runnable);
-    sequence.run(sequencer);
-    
+    SequenceEnvironment sequenceEnvironment =
+        new SequenceEnvironment(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceEnvironment);
+
     Mockito.verify(runnable).run();
+  }
+
+  @Test
+  public void testActionSequenceElement() {
+    ActionService actionService = Mockito.mock(ActionService.class);
+
+    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    Mockito.when(serviceRegistry.getRequiredService(ActionService.SERVICE_NAME))
+        .thenReturn(actionService);
+    
+    Mockito.when(spaceEnvironment.getServiceRegistry()).thenReturn(serviceRegistry);
+
+    ActionReference ref = Mockito.mock(ActionReference.class);
+    ActionSequenceElement sequence = new ActionSequenceElement(ref);
+    SequenceEnvironment sequenceEnvironment =
+        new SequenceEnvironment(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceEnvironment);
+
+    Mockito.verify(actionService).performActionReference(ref, null);
   }
 }

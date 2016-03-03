@@ -21,7 +21,7 @@ import io.smartspaces.SmartSpacesException;
 import io.smartspaces.util.events.EventDelay;
 
 /**
- * A sequence element that deplays for some amount of time.
+ * A sequence element that delays for some amount of time.
  *
  * @author Keith M. Hughes
  */
@@ -43,12 +43,13 @@ public class DelaySequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(Sequencer sequencer) {
+  public void run(SequenceEnvironment sequenceEnvironment) {
     try {
       Thread.sleep(delay.getUnit().toMillis(delay.getDelay()));
     } catch (InterruptedException e) {
-      sequencer.getLog().warn("Sequencer thread interrupted in a delay element");
-      
+      sequenceEnvironment.getSequencer().getLog()
+          .warn("Sequencer thread interrupted in a delay element");
+
       Thread.currentThread().interrupt();
       throw new SmartSpacesException("Sequencer thread interrupted in a delay element");
     }

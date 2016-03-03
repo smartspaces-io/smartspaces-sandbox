@@ -35,11 +35,6 @@ public interface ActionService extends SupportedService {
   String SERVICE_NAME = "action";
 
   /**
-   * The source to use for groups.
-   */
-  String GROUP_ACTION_SOURCE = "smartspaces.service.action";
-
-  /**
    * Register a new source for actions.
    * 
    * <p>
@@ -90,28 +85,6 @@ public interface ActionService extends SupportedService {
    *          the data for the action invocation
    */
       void performActionReference(ActionReference actionReference,
-          Map<String, ? extends Object> data);
-
-  /**
-   * Perform the given simple action reference.
-   * 
-   * @param actionReference
-   *          the simple action reference
-   * @param data
-   *          the data for the action invocation
-   */
-      void performSimpleActionReference(SimpleActionReference actionReference,
-          Map<String, ? extends Object> data);
-
-  /**
-   * Perform the given group action reference.
-   * 
-   * @param actionReference
-   *          the group action reference
-   * @param data
-   *          the data for the action invocation
-   */
-      void performGroupActionReference(GroupActionReference actionReference,
           Map<String, ? extends Object> data);
 
   /**
