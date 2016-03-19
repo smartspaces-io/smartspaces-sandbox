@@ -17,15 +17,6 @@
 
 package io.smartspaces.sandbox.service.smartspaces.master.internal;
 
-import io.smartspaces.master.api.messages.MasterApiMessages;
-import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterApiMessageHandler;
-import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterClient;
-import io.smartspaces.service.web.WebSocketHandler;
-import io.smartspaces.service.web.client.WebSocketClient;
-import io.smartspaces.service.web.client.WebSocketClientService;
-import io.smartspaces.util.data.json.JsonBuilder;
-import io.smartspaces.util.data.json.StandardJsonBuilder;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,6 +26,15 @@ import org.apache.commons.logging.Log;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import io.smartspaces.master.api.messages.MasterApiMessages;
+import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterApiMessageHandler;
+import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterClient;
+import io.smartspaces.service.web.WebSocketHandler;
+import io.smartspaces.service.web.client.WebSocketClient;
+import io.smartspaces.service.web.client.WebSocketClientService;
+import io.smartspaces.util.data.dynamic.DynamicObjectBuilder;
+import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
 
 /**
  * An implementation of the Smart Spaces Master API Client.
@@ -158,12 +158,11 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
   @Override
   public void setLiveActivityConfiguration(String id, Map<String, String> newConfiguration,
       SmartSpacesMasterApiMessageHandler callback) {
-    JsonBuilder call =
-        newEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_CONFIGURATION_SET, id,
-            callback);
+    DynamicObjectBuilder call = newEntityCall(
+        MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_CONFIGURATION_SET, id, callback);
     call.newObject(MasterApiMessages.MASTER_API_PARAMETER_NAME_ENTITY_CONFIG);
     for (Entry<String, String> entry : newConfiguration.entrySet()) {
-      call.put(entry.getKey(), entry.getValue());
+      call.setProperty(entry.getKey(), entry.getValue());
     }
     sendApiCall(call);
   }
@@ -190,7 +189,8 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
 
   @Override
   public void getLiveActivityGroupFullView(String id, SmartSpacesMasterApiMessageHandler callback) {
-    sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_GROUP_VIEW_FULL, id, callback);
+    sendEntityCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_GROUP_VIEW_FULL, id,
+        callback);
   }
 
   @Override
@@ -200,9 +200,8 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
 
   @Override
   public void getAllLiveActivityGroups(String filter, SmartSpacesMasterApiMessageHandler callback) {
-    JsonBuilder builder =
-        newFilteredSearchCall(MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_GROUP_ALL, filter,
-            callback);
+    DynamicObjectBuilder builder = newFilteredSearchCall(
+        MasterApiMessages.MASTER_API_COMMAND_LIVE_ACTIVITY_GROUP_ALL, filter, callback);
 
     sendApiCall(builder);
   }
@@ -240,7 +239,7 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
 
   @Override
   public void getAllSpaces(String filter, SmartSpacesMasterApiMessageHandler callback) {
-    JsonBuilder builder =
+    DynamicObjectBuilder builder =
         newFilteredSearchCall(MasterApiMessages.MASTER_API_COMMAND_SPACE_ALL, filter, callback);
 
     sendApiCall(builder);
@@ -303,12 +302,12 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    *
    * @return a message builder in the data section of the message
    */
-  private JsonBuilder newFilteredSearchCall(String searchCommand, String filter,
+  private DynamicObjectBuilder newFilteredSearchCall(String searchCommand, String filter,
       SmartSpacesMasterApiMessageHandler callback) {
-    JsonBuilder builder = newReponseCall(searchCommand, callback);
+    DynamicObjectBuilder builder = newReponseCall(searchCommand, callback);
 
     if (filter != null) {
-      builder.put(MasterApiMessages.MASTER_API_PARAMETER_NAME_FILTER, filter);
+      builder.setProperty(MasterApiMessages.MASTER_API_PARAMETER_NAME_FILTER, filter);
     }
 
     return builder;
@@ -326,10 +325,10 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    *
    * @return the request message in the data section
    */
-  private JsonBuilder newEntityCall(String command, String entityId,
+  private DynamicObjectBuilder newEntityCall(String command, String entityId,
       SmartSpacesMasterApiMessageHandler callback) {
-    JsonBuilder builder = newReponseCall(command, callback);
-    builder.put(MasterApiMessages.MASTER_API_PARAMETER_NAME_ENTITY_ID, entityId);
+    DynamicObjectBuilder builder = newReponseCall(command, callback);
+    builder.setProperty(MasterApiMessages.MASTER_API_PARAMETER_NAME_ENTITY_ID, entityId);
 
     return builder;
   }
@@ -344,12 +343,14 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    *
    * @return the builder in the data section
    */
-  private JsonBuilder newReponseCall(String command, SmartSpacesMasterApiMessageHandler callback) {
+  private DynamicObjectBuilder newReponseCall(String command,
+      SmartSpacesMasterApiMessageHandler callback) {
     Request request = newRequest(callback);
 
-    JsonBuilder builder = new StandardJsonBuilder();
-    builder.put(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_TYPE, command);
-    builder.put(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_REQUEST_ID, request.getRequestId());
+    DynamicObjectBuilder builder = new StandardDynamicObjectBuilder();
+    builder.setProperty(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_TYPE, command);
+    builder.setProperty(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_REQUEST_ID,
+        request.getRequestId());
     builder.newObject(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_DATA);
 
     return builder;
@@ -376,8 +377,8 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    * @param builder
    *          the builder containing the message to send
    */
-  private void sendApiCall(JsonBuilder builder) {
-    webSocketClient.writeDataAsJson(builder.build());
+  private void sendApiCall(DynamicObjectBuilder builder) {
+    webSocketClient.writeDataAsJson(builder.buildAsMap());
   }
 
   /**
