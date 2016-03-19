@@ -20,13 +20,12 @@ package io.smartspaces.sandbox.service.sequencer.basic;
 import io.smartspaces.sandbox.service.sequencer.Sequence;
 import io.smartspaces.sandbox.service.sequencer.SequenceElements;
 import io.smartspaces.sandbox.service.sequencer.Sequencer;
+import io.smartspaces.system.SmartSpacesEnvironment;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.concurrency.ManagedCommand;
 import io.smartspaces.util.concurrency.SimpleManagedCommands;
 import org.apache.commons.logging.Log;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * An implementation of the Sequencer interface that uses ManagedCommands.
@@ -40,7 +39,7 @@ public class ManagedCommandSequencer implements Sequencer {
         StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment();
 
     ManagedCommandSequencer sequencer =
-        new ManagedCommandSequencer(spaceEnvironment.getExecutorService(), spaceEnvironment.getLog());
+        new ManagedCommandSequencer(spaceEnvironment, spaceEnvironment.getLog());
 
     Sequence sequence = sequencer.newSequence();
     sequence.add(SequenceElements.runnable(new Runnable() {
@@ -67,25 +66,31 @@ public class ManagedCommandSequencer implements Sequencer {
   }
 
   /**
+   * THe space environment for the sequencer.
+   */
+  private final SmartSpacesEnvironment spaceEnvironment;
+
+  /**
    * The instance of ManagedCommands to use for scheduling.
    */
-  private SimpleManagedCommands managedCommands;
+  private final SimpleManagedCommands managedCommands;
 
   /**
    * The logger for the sequencer.
    */
-  private Log log;
+  private final Log log;
 
   /**
    * Create a ManagedCommandScheduler with the given ManagedCommands instance.
    *
-   * @param executorService
-   *          the executor service for scheduling threads
+   * @param spaceEnvironment
+   *          the space environment to execute under
    * @param log
    *          the logger to use
    */
-  public ManagedCommandSequencer(ScheduledExecutorService executorService, Log log) {
-    this.managedCommands = new SimpleManagedCommands(executorService, log);
+  public ManagedCommandSequencer(SmartSpacesEnvironment spaceEnvironment, Log log) {
+    this.spaceEnvironment = spaceEnvironment;
+    this.managedCommands = new SimpleManagedCommands(spaceEnvironment.getExecutorService(), log);
     this.log = log;
   }
 
@@ -118,11 +123,15 @@ public class ManagedCommandSequencer implements Sequencer {
    * @return the managed command running the sequence
    */
       ManagedCommand startSequence(final ManagedCommandSequence sequence) {
-    return managedCommands.submit(new Runnable() {
-      @Override
-      public void run() {
-        sequence.runSequence();
-      }
-    });
+    return managedCommands.submit(() -> sequence.runSequence(ManagedCommandSequencer.this));
+  }
+
+  /**
+   * Get the space environment.
+   * 
+   * @return the space environment
+   */
+      SmartSpacesEnvironment getSpaceEnvironment() {
+    return spaceEnvironment;
   }
 }

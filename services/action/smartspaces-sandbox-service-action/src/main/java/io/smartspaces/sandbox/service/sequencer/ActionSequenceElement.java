@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2016 Keith M. Hughes
- * Copyright (C) 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,32 +16,36 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
+import io.smartspaces.sandbox.service.action.ActionReference;
+import io.smartspaces.sandbox.service.action.ActionService;
+
 /**
- * A sequence element that runs a {@link Runnable}.
+ * A sequence element that performs an action.
  *
  * @author Keith M. Hughes
  */
-public class RunnableSequenceElement implements SequenceElement {
+public class ActionSequenceElement implements SequenceElement {
 
   /**
-   * The runnable to be sequenced.
+   * The action reference this element will execute.
    */
-  private final Runnable runnable;
+  private final ActionReference actionReference;
 
   /**
-   * Construct the sequence element.
-   *
-   * @param runnable
-   *          the runnable to run
+   * Construct a sequence element.
+   * 
+   * @param actionReference
+   *          the action reference the element will run
    */
-  public RunnableSequenceElement(Runnable runnable) {
-    this.runnable = runnable;
+  public ActionSequenceElement(ActionReference actionReference) {
+    this.actionReference = actionReference;
   }
 
   @Override
   public void run(SequenceEnvironment sequenceEnvironment) {
-    if (runnable != null) {
-      runnable.run();
-    }
+    ActionService actionService = sequenceEnvironment.getSpaceEnvironment().getServiceRegistry()
+        .getRequiredService(ActionService.SERVICE_NAME);
+    
+    actionService.performActionReference(actionReference, null);
   }
 }

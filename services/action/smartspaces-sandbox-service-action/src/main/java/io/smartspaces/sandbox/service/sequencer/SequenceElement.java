@@ -27,8 +27,8 @@ public interface SequenceElement {
   /**
    * Run this sequence element.
    *
-   * @param sequencer
-   *          the sequencer the element is running under
+   * @param sequenceEnvironment
+   *          the sequence environment the sequence will run under
    */
-  void run(Sequencer scheduler);
+      void run(SequenceEnvironment sequenceEnvironment);
 }

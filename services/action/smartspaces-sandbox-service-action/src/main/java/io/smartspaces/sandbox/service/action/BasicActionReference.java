@@ -15,16 +15,18 @@
  */
 package io.smartspaces.sandbox.service.action;
 
+import io.smartspaces.resource.VersionRange;
+
 import java.util.Collections;
 import java.util.Map;
 
 /**
- * A base support class for action references.
+ * A basic implementation for action references.
  * 
  * @author Keith M. Hughes
  */
 @SuppressWarnings("unchecked")
-public abstract class BaseActionReference implements ActionReference {
+public class BasicActionReference implements ActionReference {
 
   /**
    * The no data map.
@@ -46,6 +48,21 @@ public abstract class BaseActionReference implements ActionReference {
   private String description;
 
   /**
+   * The name of the action source.
+   */
+  private String actionSource;
+
+  /**
+   * The name of the action.
+   */
+  private String actionName;
+
+  /**
+   * The version range for the action source.
+   */
+  private VersionRange actionSourceVersionRange;
+
+  /**
    * The data for the reference.
    */
   private Map<String, ? extends Object> data;
@@ -58,10 +75,15 @@ public abstract class BaseActionReference implements ActionReference {
    * @param data
    *          the data
    */
-  public BaseActionReference(String name, String description, Map<String, ? extends Object> data) {
+  public BasicActionReference(String name, String description, String actionSource,
+      VersionRange actionSourceVersionRange, String actionName,
+      Map<String, ? extends Object> data) {
     this.name = name;
     this.description = description;
     this.data = (data != null) ? data : NO_DATA;
+
+    this.actionSource = actionSource;
+    this.actionName = actionName;
   }
 
   @Override
@@ -86,6 +108,21 @@ public abstract class BaseActionReference implements ActionReference {
     this.description = description;
 
     return this;
+  }
+
+  @Override
+  public String getActionSource() {
+    return actionSource;
+  }
+
+  @Override
+  public VersionRange getActionSourceVersionRange() {
+    return actionSourceVersionRange;
+  }
+
+  @Override
+  public String getActionName() {
+    return actionName;
   }
 
   @Override

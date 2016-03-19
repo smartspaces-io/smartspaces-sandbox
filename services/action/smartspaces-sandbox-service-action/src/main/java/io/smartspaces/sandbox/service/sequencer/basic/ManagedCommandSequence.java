@@ -17,9 +17,10 @@
 
 package io.smartspaces.sandbox.service.sequencer.basic;
 
+import io.smartspaces.SimpleSmartSpacesException;
 import io.smartspaces.sandbox.service.sequencer.Sequence;
-import io.smartspaces.sandbox.service.sequencer.Sequence.SequenceState;
 import io.smartspaces.sandbox.service.sequencer.SequenceElement;
+import io.smartspaces.sandbox.service.sequencer.SequenceEnvironment;
 import io.smartspaces.util.concurrency.ManagedCommand;
 
 import java.util.ArrayList;
@@ -67,21 +68,32 @@ public class ManagedCommandSequence implements Sequence {
   }
 
   @Override
-  public Sequence add(SequenceElement... elements) {
+  public synchronized Sequence add(SequenceElement... elements) {
     Collections.addAll(sequencerElements, elements);
 
     return this;
   }
 
   @Override
-  public Sequence add(Collection<SequenceElement> elements) {
+  public synchronized Sequence add(Collection<SequenceElement> elements) {
     sequencerElements.addAll(elements);
 
     return this;
   }
 
   @Override
-  public synchronized void startup() {
+  public void startup() {
+    synchronized (this) {
+      SequenceState currentState = state.get();
+      if (currentState == SequenceState.NOT_STARTED) {
+        state.set(SequenceState.RUNNING);
+      } else if (currentState == SequenceState.RUNNING) {
+        return;
+      } else {
+        throw SimpleSmartSpacesException
+            .newFormattedException("The sequence has completed with end state %s", currentState);
+      }
+    }
     managedCommand = sequencer.startSequence(this);
   }
 
@@ -91,24 +103,29 @@ public class ManagedCommandSequence implements Sequence {
   }
 
   @Override
-  public SequenceState getState() {
+  public synchronized SequenceState getState() {
     return state.get();
   }
 
   /**
    * Run the sequence.
+   * 
+   * @param sequencer
+   *          the sequencer to run under
    */
-      void runSequence() {
-    state.set(SequenceState.RUNNING);
+      void runSequence(ManagedCommandSequencer sequencer) {
+    SequenceEnvironment sequenceEnvironment =
+        new SequenceEnvironment(sequencer, this, sequencer.getSpaceEnvironment());
+
     try {
       for (SequenceElement currentElement : sequencerElements) {
         if (Thread.interrupted()) {
           break;
         }
 
-        currentElement.run(sequencer);
+        currentElement.run(sequenceEnvironment);
       }
-      
+
       state.set(SequenceState.COMPLETED);
     } catch (Throwable e) {
       state.set(SequenceState.ERROR);
