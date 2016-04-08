@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project type="library" builder="java">
+  <name>Interaction</name>
+  <description>
+    A basic set of services and classes that play with models of interactions and sensors.
+  </description>
+
+  <identifyingName>smartspaces.sandbox.interaction</identifyingName>
+  <version>1.0.0</version>
+  <library>
+    <container>
+      <activator>
+        io.smartspaces.sandbox.service.action.internal.osgi.ActionServiceActivator
+      </activator>
+    </container>
+  </library>
+</project>
