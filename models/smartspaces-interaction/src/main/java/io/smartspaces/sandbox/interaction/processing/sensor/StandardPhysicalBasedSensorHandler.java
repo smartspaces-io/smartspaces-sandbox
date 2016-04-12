@@ -16,14 +16,16 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.EntityDescription;
 import io.smartspaces.sandbox.interaction.entity.EntityMapper;
 import io.smartspaces.sandbox.interaction.entity.MemoryEntityMapper;
 import io.smartspaces.util.data.dynamic.DynamicObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The standard implementation of a physical based sensor handler.
@@ -57,6 +59,12 @@ public class StandardPhysicalBasedSensorHandler implements PhysicalBasedSensorHa
    */
   private SensorProcessor sensorProcessor;
 
+  /**
+   * The listeners for physical based sensor events.
+   */
+  private List<PhysicalBasedSensorListener> physicalBasedSensorListeners =
+      new CopyOnWriteArrayList<>();
+
   @Override
   public void setSensorProcessor(SensorProcessor sensorProcessor) {
     this.sensorProcessor = sensorProcessor;
@@ -83,6 +91,14 @@ public class StandardPhysicalBasedSensorHandler implements PhysicalBasedSensorHa
   }
 
   @Override
+  public PhysicalBasedSensorHandler
+      addPhysicalBasedSensorListener(PhysicalBasedSensorListener listener) {
+    physicalBasedSensorListeners.add(listener);
+    
+    return this;
+  }
+
+  @Override
   public PhysicalBasedSensorHandler addSensorDescription(EntityDescription sensor,
       EntityDescription physicalLocation) {
     sensors.put(sensor.getId(), sensor);
@@ -93,7 +109,7 @@ public class StandardPhysicalBasedSensorHandler implements PhysicalBasedSensorHa
   }
 
   @Override
-  public void handleSensorData(DynamicObject data) {
+  public void handleSensorData(long timestamp, DynamicObject data) {
     String sensorId = data.getString("sensor");
 
     if (sensorId == null) {
@@ -120,6 +136,14 @@ public class StandardPhysicalBasedSensorHandler implements PhysicalBasedSensorHa
     // location registered.
     EntityDescription location = physicalLocations.get(locationId);
 
-    log.formatInfo("Got data from sensor %s in location %s: %s", sensor, location, data.asMap());
+    log.formatDebug("Got data from sensor %s in location %s: %s", sensor, location, data.asMap());
+    
+    for (PhysicalBasedSensorListener listener : physicalBasedSensorListeners) {
+      try {
+        listener.handleSensorData(timestamp, sensor, location, data);
+      } catch (Throwable e) {
+        log.formatError("Error udring listener processing of physical based sensor data", e);
+      }
+    }
   }
 }

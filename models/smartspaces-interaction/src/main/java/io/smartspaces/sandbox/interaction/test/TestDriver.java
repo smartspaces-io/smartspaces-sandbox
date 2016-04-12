@@ -20,11 +20,13 @@ import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.EntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleEntityDescription;
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
+import io.smartspaces.sandbox.interaction.processing.sensor.PhysicalBasedSensorListener;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardPhysicalBasedSensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
+import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
 
 public class TestDriver {
@@ -35,7 +37,7 @@ public class TestDriver {
     spaceEnvironment.getServiceRegistry()
         .registerService(new PahoMqttCommunicationEndpointService());
 
-    ExtendedLog log = spaceEnvironment.getExtendedLog();
+    final ExtendedLog log = spaceEnvironment.getExtendedLog();
 
     EntityDescription livingRoomEsp8266 = new SimpleEntityDescription("/sensornode/nodemcu13895542",
         "ESP8266-based temperature/humidity sensor");
@@ -51,6 +53,16 @@ public class TestDriver {
 
     StandardPhysicalBasedSensorHandler sensorHandler = new StandardPhysicalBasedSensorHandler(log);
     sensorHandler.addSensorDescription(livingRoomEsp8266, livingRoom);
+    sensorHandler.addPhysicalBasedSensorListener(new PhysicalBasedSensorListener() {
+
+      @Override
+      public void handleSensorData(long timestamp, EntityDescription sensor,
+          EntityDescription physicalLocation, DynamicObject data) {
+        log.formatInfo("Got data at %d from sensor %s in location %s: %s", timestamp, sensor,
+            physicalLocation, data.asMap());
+
+      }
+    });
     sensorProcessor.addSensorHandler(sensorHandler);
 
     sensorProcessor.startup();

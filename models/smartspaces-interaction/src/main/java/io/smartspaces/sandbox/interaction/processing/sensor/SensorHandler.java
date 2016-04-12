@@ -28,10 +28,12 @@ public interface SensorHandler extends ManagedResource {
   /**
    * Handle sensor data that has come in.
    * 
+   * @param timestamp
+   *          the time the sensor event came in
    * @param data
    *          the sensor data
    */
-  void handleSensorData(DynamicObject data);
+  void handleSensorData(long timestamp, DynamicObject data);
 
   /**
    * Set the sensor processor the handler is running under.
