@@ -16,7 +16,9 @@
 
 package io.smartspaces.service.comm.bluetooth.internal.bluez5;
 
-import java.util.List;
+import io.smartspaces.service.comm.bluetooth.BluetoothAdapter;
+import io.smartspaces.service.comm.bluetooth.BluetoothDevice;
+import io.smartspaces.support.dbus.Properties;
 
 import org.bluez.Adapter1;
 import org.freedesktop.dbus.DBusConnection;
@@ -24,9 +26,7 @@ import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Path;
 import org.freedesktop.dbus.Variant;
 
-import io.smartspaces.service.comm.bluetooth.BluetoothAdapter;
-import io.smartspaces.service.comm.bluetooth.BluetoothDevice;
-import io.smartspaces.support.dbus.Properties;
+import java.util.List;
 
 /**
  * A Bluetooth Adapter using the BlueZ provider.

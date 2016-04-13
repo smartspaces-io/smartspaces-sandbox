@@ -42,6 +42,9 @@ public class TestDriver {
     EntityDescription livingRoomEsp8266 = new SimpleEntityDescription("/sensornode/nodemcu13895542",
         "ESP8266-based temperature/humidity sensor");
 
+    EntityDescription livingRoomProximity = new SimpleEntityDescription("/home/livingroom/proximity",
+        "Raspberry Pi BLE proximity sensor");
+
     EntityDescription livingRoom =
         new SimpleEntityDescription("/home/livingroom", "The living room on the first floor");
 
@@ -53,6 +56,7 @@ public class TestDriver {
 
     StandardPhysicalBasedSensorHandler sensorHandler = new StandardPhysicalBasedSensorHandler(log);
     sensorHandler.addSensorDescription(livingRoomEsp8266, livingRoom);
+    sensorHandler.addSensorDescription(livingRoomProximity, livingRoom);
     sensorHandler.addPhysicalBasedSensorListener(new PhysicalBasedSensorListener() {
 
       @Override
