@@ -87,10 +87,10 @@ public class StandardSensorProcessor implements SensorProcessor {
   }
 
   @Override
-  public void processSensorData(DynamicObject sensorDataEvent) {
+  public void processSensorData(long timestamp, DynamicObject sensorDataEvent) {
     for (SensorHandler sensorHandler : sensorHandlers) {
       try {
-        sensorHandler.handleSensorData(sensorDataEvent);
+        sensorHandler.handleSensorData(timestamp, sensorDataEvent);
       } catch (Throwable e) {
         log.error("Could not process sensor data event", e);
       }

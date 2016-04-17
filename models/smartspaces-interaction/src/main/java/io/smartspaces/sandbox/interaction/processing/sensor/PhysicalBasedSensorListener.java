@@ -13,45 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
+import io.smartspaces.sandbox.interaction.entity.EntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.resource.ManagedResource;
 
 /**
- * A processor for sensor data.
+ * A listener for physical based sensor events.
  * 
  * @author Keith M. Hughes
  */
-public interface SensorProcessor extends ManagedResource {
+public interface PhysicalBasedSensorListener {
 
   /**
-   * Add in a new sensor input.
-   * 
-   * @param sensorInput
-   *          the sensor input to add
-   * 
-   * @return this processor
-   */
-  SensorProcessor addSensorInput(SensorInput sensorInput);
-
-  /**
-   * Add in a new sensor handler.
-   * 
-   * @param sensorInput
-   *          the sensor handler to add
-   * 
-   * @return this processor
-   */
-  SensorProcessor addSensorHandler(SensorHandler sensorHandler);
-
-  /**
-   * Process the given dynamic object as sensor data.
+   * Handle sensor data that has come in.
    * 
    * @param timestamp
-   *          the time the data came in
-   * @param sensorDataEvent
+   *          the time the sensor event came in
+   * @param sensor
+   *          the sensor the data came in on
+   * @param physicalLocation
+   *          the physical location the sensor gives data for
+   * @param data
    *          the sensor data
    */
-  void processSensorData(long timestamp, DynamicObject sensorDataEvent);
+  void handleSensorData(long timestamp, EntityDescription sensor,
+      EntityDescription physicalLocation, DynamicObject data);
 }

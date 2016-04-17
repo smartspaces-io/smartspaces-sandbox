@@ -137,6 +137,10 @@ public class MqttSensorInputAggregator implements SensorInput {
     DynamicObject message = codec.decode(payload);
     log.formatDebug("Got message on topic %s", topicName);
 
-    sensorProcessor.processSensorData(message);
+    // TODO(keith): Consider also checking message to see if it has a timestamp.
+    // If so use it, otherwise use time provider.
+    long currentTime = spaceEnvironment.getTimeProvider().getCurrentTime();
+
+    sensorProcessor.processSensorData(currentTime, message);
   }
 }

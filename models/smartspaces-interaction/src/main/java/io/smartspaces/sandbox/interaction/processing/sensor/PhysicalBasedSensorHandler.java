@@ -26,6 +26,16 @@ import io.smartspaces.sandbox.interaction.entity.EntityDescription;
 public interface PhysicalBasedSensorHandler extends SensorHandler {
 
   /**
+   * Add a sensor listener to the handler.
+   * 
+   * @param listener
+   *          the listener to add
+   * 
+   * @return this handler
+   */
+  PhysicalBasedSensorHandler addPhysicalBasedSensorListener(PhysicalBasedSensorListener listener);
+
+  /**
    * Add sensor descriptions to the handler.
    * 
    * @param sensor
