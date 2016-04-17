@@ -135,7 +135,7 @@ public class MqttSensorInputAggregator implements SensorInput {
    */
   private void handleSensorMessage(String topicName, byte[] payload) {
     DynamicObject message = codec.decode(payload);
-    log.info(String.format("Got message on topic %s: %s", topicName, message.asMap()));
+    log.formatDebug("Got message on topic %s", topicName);
 
     sensorProcessor.processSensorData(message);
   }
