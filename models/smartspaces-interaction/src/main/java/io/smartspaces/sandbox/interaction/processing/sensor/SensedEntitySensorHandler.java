@@ -16,14 +16,15 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import io.smartspaces.sandbox.interaction.entity.EntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 
 /**
- * A sensor handler for physical based sensors.
+ * A sensor handler for sensors sensing for entities.
  * 
  * @author Keith M. Hughes
  */
-public interface PhysicalBasedSensorHandler extends SensorHandler {
+public interface SensedEntitySensorHandler extends SensorHandler {
 
   /**
    * Add a sensor listener to the handler.
@@ -33,18 +34,18 @@ public interface PhysicalBasedSensorHandler extends SensorHandler {
    * 
    * @return this handler
    */
-  PhysicalBasedSensorHandler addPhysicalBasedSensorListener(PhysicalBasedSensorListener listener);
+  SensedEntitySensorHandler addSensedEntitySensorListener(SensedEntitySensorListener listener);
 
   /**
    * Add sensor descriptions to the handler.
    * 
    * @param sensor
    *          the sensor description
-   * @param physicalLocation
-   *          the physical location
+   * @param sensedEntity
+   *          the entity being sensed
    * 
    * @return this handler
    */
-  PhysicalBasedSensorHandler addSensorDescription(EntityDescription sensor,
-      EntityDescription physicalLocation);
+  SensedEntitySensorHandler associateSensorWithEntity(SensorEntityDescription sensor,
+      SensedEntityDescription sensedEntity);
 }

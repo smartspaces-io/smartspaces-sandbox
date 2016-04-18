@@ -16,15 +16,20 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
+
 import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.entity.EntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimpleEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
-import io.smartspaces.sandbox.interaction.processing.sensor.PhysicalBasedSensorListener;
+import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorInput;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardPhysicalBasedSensorHandler;
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
@@ -32,9 +37,6 @@ import io.smartspaces.time.LocalTimeProvider;
 import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
-
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
 
 public class TestDriver {
 
@@ -48,21 +50,22 @@ public class TestDriver {
 
     final ExtendedLog log = spaceEnvironment.getExtendedLog();
 
-    EntityDescription livingRoomEsp8266 = new SimpleEntityDescription("/sensornode/nodemcu13895542",
-        "ESP8266-based temperature/humidity sensor");
+    SimpleSensorEntityDescription livingRoomEsp8266 = new SimpleSensorEntityDescription(
+        "/sensornode/nodemcu13895542", "ESP8266-based temperature/humidity sensor");
 
-    EntityDescription livingRoomProximity = new SimpleEntityDescription(
+    SimpleSensorEntityDescription livingRoomProximity = new SimpleSensorEntityDescription(
         "/home/livingroom/proximity", "Raspberry Pi BLE proximity sensor");
 
-    EntityDescription livingRoom =
-        new SimpleEntityDescription("/home/livingroom", "The living room on the first floor");
+    SimplePhysicalSpaceSensedEntityDescription livingRoom =
+        new SimplePhysicalSpaceSensedEntityDescription("/home/livingroom",
+            "The living room on the first floor");
 
     SensorProcessor sensorProcessor = new StandardSensorProcessor(log);
 
     File sampleFile = new File("/var/tmp/sensordata.json");
     boolean liveData = false;
     boolean samplePlayback = true;
-    
+
     StandardFilePersistenceSensorInput persistedSensorInput = null;
     if (liveData) {
       sensorProcessor.addSensorInput(
@@ -79,15 +82,15 @@ public class TestDriver {
       }
     }
 
-    StandardPhysicalBasedSensorHandler sensorHandler = new StandardPhysicalBasedSensorHandler(log);
-    sensorHandler.addSensorDescription(livingRoomEsp8266, livingRoom);
-    sensorHandler.addSensorDescription(livingRoomProximity, livingRoom);
-    sensorHandler.addPhysicalBasedSensorListener(new PhysicalBasedSensorListener() {
+    StandardSensedEntitySensorHandler sensorHandler = new StandardSensedEntitySensorHandler(log);
+    sensorHandler.associateSensorWithEntity(livingRoomEsp8266, livingRoom);
+    sensorHandler.associateSensorWithEntity(livingRoomProximity, livingRoom);
+    sensorHandler.addSensedEntitySensorListener(new SensedEntitySensorListener() {
 
       @Override
-      public void handleSensorData(long timestamp, EntityDescription sensor,
-          EntityDescription physicalLocation, DynamicObject data) {
-        log.formatInfo("Got data at %d from sensor %s in location %s: %s", timestamp, sensor,
+      public void handleSensorData(long timestamp, SensorEntityDescription sensor,
+          SensedEntityDescription physicalLocation, DynamicObject data) {
+        log.formatInfo("Got data at %d from sensor %s for entity %s: %s", timestamp, sensor,
             physicalLocation, data.asMap());
 
       }
@@ -108,7 +111,7 @@ public class TestDriver {
             latch.countDown();
           }
         });
-        
+
         latch.await();
       } else {
         // Recording

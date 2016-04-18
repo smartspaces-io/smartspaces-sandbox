@@ -16,15 +16,16 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import io.smartspaces.sandbox.interaction.entity.EntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 
 /**
- * A listener for physical based sensor events.
+ * A listener for sensor events for sensed entities.
  * 
  * @author Keith M. Hughes
  */
-public interface PhysicalBasedSensorListener {
+public interface SensedEntitySensorListener {
 
   /**
    * Handle sensor data that has come in.
@@ -33,11 +34,11 @@ public interface PhysicalBasedSensorListener {
    *          the time the sensor event came in
    * @param sensor
    *          the sensor the data came in on
-   * @param physicalLocation
-   *          the physical location the sensor gives data for
+   * @param sensedEntity
+   *          the entity the sensor gives data for
    * @param data
    *          the sensor data
    */
-  void handleSensorData(long timestamp, EntityDescription sensor,
-      EntityDescription physicalLocation, DynamicObject data);
+  void handleSensorData(long timestamp, SensorEntityDescription sensor,
+      SensedEntityDescription sensedEntity, DynamicObject data);
 }
