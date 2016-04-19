@@ -51,7 +51,7 @@ public class TestDriver {
     final ExtendedLog log = spaceEnvironment.getExtendedLog();
 
     SimpleSensorEntityDescription livingRoomEsp8266 = new SimpleSensorEntityDescription(
-        "/sensornode/nodemcu13895542", "ESP8266-based temperature/humidity sensor");
+        "/sensornode/nodemcu9107700", "ESP8266-based temperature/humidity sensor");
 
     SimpleSensorEntityDescription livingRoomProximity = new SimpleSensorEntityDescription(
         "/home/livingroom/proximity", "Raspberry Pi BLE proximity sensor");
@@ -63,23 +63,23 @@ public class TestDriver {
     SensorProcessor sensorProcessor = new StandardSensorProcessor(log);
 
     File sampleFile = new File("/var/tmp/sensordata.json");
-    boolean liveData = false;
-    boolean samplePlayback = true;
+    boolean liveData = true;
+    boolean sampleRecord = false;
 
     StandardFilePersistenceSensorInput persistedSensorInput = null;
     if (liveData) {
       sensorProcessor.addSensorInput(
-          new MqttSensorInputAggregator(new MqttBrokerDescription("tcp://192.168.188.109:1883"),
+          new MqttSensorInputAggregator(new MqttBrokerDescription("tcp://192.168.188.145:1883"),
               "/home/sensor/agregator", "/home/sensor", spaceEnvironment, log));
-    } else {
-      if (samplePlayback) {
-        persistedSensorInput = new StandardFilePersistenceSensorInput(sampleFile);
-        sensorProcessor.addSensorInput(persistedSensorInput);
-      } else {
+
+      if (sampleRecord) {
         StandardFilePersistenceSensorHandler persistenceHandler =
             new StandardFilePersistenceSensorHandler(sampleFile);
         sensorProcessor.addSensorHandler(persistenceHandler);
       }
+    } else {
+      persistedSensorInput = new StandardFilePersistenceSensorInput(sampleFile);
+      sensorProcessor.addSensorInput(persistedSensorInput);
     }
 
     StandardSensedEntitySensorHandler sensorHandler = new StandardSensedEntitySensorHandler(log);
@@ -99,24 +99,27 @@ public class TestDriver {
 
     spaceEnvironment.addManagedResource(sensorProcessor);
 
-    if (!liveData) {
-      if (samplePlayback) {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final StandardFilePersistenceSensorInput playableSensorInput = persistedSensorInput;
-        spaceEnvironment.getExecutorService().submit(new Runnable() {
-
-          @Override
-          public void run() {
-            playableSensorInput.play();
-            latch.countDown();
-          }
-        });
-
-        latch.await();
-      } else {
+    if (liveData) {
+      if (sampleRecord) {
         // Recording
-        SmartSpacesUtilities.delay(10000);
+        SmartSpacesUtilities.delay(20000);
+
+        spaceEnvironment.shutdown();
       }
+    } else {
+      // Playing back
+      final CountDownLatch latch = new CountDownLatch(1);
+      final StandardFilePersistenceSensorInput playableSensorInput = persistedSensorInput;
+      spaceEnvironment.getExecutorService().submit(new Runnable() {
+
+        @Override
+        public void run() {
+          playableSensorInput.play();
+          latch.countDown();
+        }
+      });
+
+      latch.await();
 
       spaceEnvironment.shutdown();
     }
