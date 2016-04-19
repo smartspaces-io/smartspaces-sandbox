@@ -143,7 +143,7 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
       try {
         listener.handleSensorData(timestamp, sensor, sensedEntity, data);
       } catch (Throwable e) {
-        log.formatError("Error during listener processing of physical based sensor data", e);
+        log.formatError(e, "Error during listener processing of physical based sensor data");
       }
     }
   }

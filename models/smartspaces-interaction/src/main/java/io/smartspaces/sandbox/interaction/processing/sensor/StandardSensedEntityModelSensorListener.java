@@ -22,6 +22,7 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensedValue;
 import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
+import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
 
 /**
  * A sensor listener that will update sensed entity models.
@@ -33,12 +34,20 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
   @Override
   public void handleSensorData(long timestamp, SensorEntityDescription sensor,
       SensedEntityDescription sensedEntity, DynamicObject data) {
+    // Go into the data fields.
+    data.down("data");
+
     // Go through every property in the data set, find its type, and then create
     // appropriate values
-    for (String sensedValueName : data.getProperties()) {
-      if (StandardSensorData.DOUBLE_VALUED_SENSOR_VALUES.contains(sensedValueName)) {
-        SensedValue<Double> value = new SimpleSensedValue<Double>(sensedValueName, timestamp,
-            data.getDouble(sensedValueName));
+    for (ObjectDynamicObjectEntry entry : data.getObjectEntries()) {
+      String sensedValueName = entry.getProperty();
+      System.out.println(sensedValueName);
+      entry.down();
+      String sensedType = data.getRequiredString("type");
+      if (StandardSensorData.DOUBLE_VALUED_SENSOR_VALUES.contains(sensedType)) {
+        SensedValue<Double> value = new SimpleSensedValue<Double>(sensedValueName, sensedType,
+            data.getDouble("value"), timestamp);
+        System.out.println(value);
       }
     }
   }

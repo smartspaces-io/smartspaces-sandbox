@@ -29,6 +29,7 @@ import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorLi
 import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorInput;
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelSensorListener;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
@@ -70,7 +71,7 @@ public class TestDriver {
     if (liveData) {
       sensorProcessor.addSensorInput(
           new MqttSensorInputAggregator(new MqttBrokerDescription("tcp://192.168.188.145:1883"),
-              "/home/sensor/agregator", "/home/sensor", spaceEnvironment, log));
+              "/home/sensor/agregator2", "/home/sensor", spaceEnvironment, log));
 
       if (sampleRecord) {
         StandardFilePersistenceSensorHandler persistenceHandler =
@@ -89,12 +90,17 @@ public class TestDriver {
 
       @Override
       public void handleSensorData(long timestamp, SensorEntityDescription sensor,
-          SensedEntityDescription physicalLocation, DynamicObject data) {
+          SensedEntityDescription sensedEntity, DynamicObject data) {
         log.formatInfo("Got data at %d from sensor %s for entity %s: %s", timestamp, sensor,
-            physicalLocation, data.asMap());
+            sensedEntity, data.asMap());
 
       }
     });
+
+    StandardSensedEntityModelSensorListener modelUpdater =
+        new StandardSensedEntityModelSensorListener();
+    sensorHandler.addSensedEntitySensorListener(modelUpdater);
+
     sensorProcessor.addSensorHandler(sensorHandler);
 
     spaceEnvironment.addManagedResource(sensorProcessor);

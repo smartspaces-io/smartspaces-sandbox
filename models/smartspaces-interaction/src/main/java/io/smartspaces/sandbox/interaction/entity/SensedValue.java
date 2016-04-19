@@ -34,6 +34,13 @@ public interface SensedValue<T> {
   String getValueName();
 
   /**
+   * Get the type of the sensed value.
+   * 
+   * @return the type
+   */
+  String getValueType();
+
+  /**
    * Get the timestamp of when the value was last updated.
    * 
    * @return the timestamp in milliseconds since the epoch.
