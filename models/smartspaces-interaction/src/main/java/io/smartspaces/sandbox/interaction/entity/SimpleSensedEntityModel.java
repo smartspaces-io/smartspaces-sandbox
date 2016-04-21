@@ -16,6 +16,7 @@
 
 package io.smartspaces.sandbox.interaction.entity;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +37,16 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
    */
   private Map<String, SensedValue<?>> sensedValues = new HashMap<>();
 
+  /**
+   * Construct a new sensed entity model.
+   * 
+   * @param entityDescription
+   *          the description of the entity
+   */
+  public SimpleSensedEntityModel(SensedEntityDescription entityDescription) {
+    this.entityDescription = entityDescription;
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public <T extends SensedEntityDescription> T getSensedEntityDescription() {
@@ -49,8 +60,13 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
   }
 
   @Override
+  public Collection<SensedValue<?>> getAllSensedValues() {
+    return sensedValues.values();
+  }
+
+  @Override
   public void updateSensedValue(SensedValue<?> value) {
     // TODO(keith): Needs some sort of concurrency block
-    sensedValues.put(value.getValueName(), value);
+    sensedValues.put(value.getName(), value);
   }
 }

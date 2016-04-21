@@ -16,6 +16,8 @@
 
 package io.smartspaces.sandbox.interaction.entity;
 
+import java.util.Collection;
+
 /**
  * A model of the sensor state of an entity.
  * 
@@ -39,6 +41,14 @@ public interface SensedEntityModel {
    * @return the sensed value with the specified name or {@link null} if none
    */
   SensedValue<?> getSensedValue(String valueName);
+  
+
+  /**
+   * Get all sensed values for this entity.
+    * 
+   * @return the sensed value with the specified name or {@link null} if none
+   */
+  Collection<SensedValue<?>> getAllSensedValues();
 
   /**
    * Update a sensed value.

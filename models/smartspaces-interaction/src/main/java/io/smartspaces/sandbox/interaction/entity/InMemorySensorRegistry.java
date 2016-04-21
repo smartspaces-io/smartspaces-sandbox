@@ -104,6 +104,15 @@ public class InMemorySensorRegistry {
   }
 
   /**
+   * Get all the sensed entities in the registry.
+   * 
+   * @return a collection of the entities
+   */
+  public Collection<SensedEntityDescription> getAllSensedEntities() {
+    return idToSensed.values();
+  }
+
+  /**
    * Associate a sensor with its sensed entity.
    * 
    * @param sensorId

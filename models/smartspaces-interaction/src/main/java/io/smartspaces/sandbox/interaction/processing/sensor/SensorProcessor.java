@@ -15,6 +15,7 @@
  */
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
+import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.resource.ManagedResource;
 
@@ -54,4 +55,10 @@ public interface SensorProcessor extends ManagedResource {
    *          the sensor data
    */
   void processSensorData(long timestamp, DynamicObject sensorDataEvent);
+  
+  /**
+   * get the logger for the processor.
+   * @return
+   */
+  ExtendedLog getLog();
 }

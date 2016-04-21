@@ -96,4 +96,9 @@ public class StandardSensorProcessor implements SensorProcessor {
       }
     }
   }
+
+  @Override
+  public ExtendedLog getLog() {
+    return log;
+  }
 }

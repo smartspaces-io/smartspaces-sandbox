@@ -30,6 +30,8 @@ public interface SensedEntitySensorListener {
   /**
    * Handle sensor data that has come in.
    * 
+   * @param handler
+   *          the handler the sensor data came in on
    * @param timestamp
    *          the time the sensor event came in
    * @param sensor
@@ -39,6 +41,6 @@ public interface SensedEntitySensorListener {
    * @param data
    *          the sensor data
    */
-  void handleSensorData(long timestamp, SensorEntityDescription sensor,
-      SensedEntityDescription sensedEntity, DynamicObject data);
+  void handleSensorData(SensedEntitySensorHandler handler, long timestamp,
+      SensorEntityDescription sensor, SensedEntityDescription sensedEntity, DynamicObject data);
 }

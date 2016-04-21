@@ -17,6 +17,8 @@
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.SensedValue;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensedValue;
@@ -31,9 +33,34 @@ import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
  */
 public class StandardSensedEntityModelSensorListener implements SensedEntitySensorListener {
 
+  /**
+   * The sensed entity models to be updated.
+   */
+  private SensedEntityModelCollection sensedEntityModelCollection;
+
+  /**
+   * Construct a new listener.
+   * 
+   * @param sensedEntityModelCollection
+   *          the sensed entity models to be updated.
+   */
+  public StandardSensedEntityModelSensorListener(
+      SensedEntityModelCollection sensedEntityModelCollection) {
+    this.sensedEntityModelCollection = sensedEntityModelCollection;
+  }
+
   @Override
-  public void handleSensorData(long timestamp, SensorEntityDescription sensor,
-      SensedEntityDescription sensedEntity, DynamicObject data) {
+  public void handleSensorData(SensedEntitySensorHandler handler, long timestamp,
+      SensorEntityDescription sensor, SensedEntityDescription sensedEntity, DynamicObject data) {
+    SensedEntityModel model =
+        sensedEntityModelCollection.getSensedEntityModel(sensedEntity.getId());
+    if (model == null) {
+      handler.getSensorProcessor().getLog().formatWarn("Have no sensed entity model for entity %s",
+          sensedEntity);
+    }
+
+    handler.getSensorProcessor().getLog().formatInfo("Updating model for entity %s", sensedEntity);
+
     // Go into the data fields.
     data.down("data");
 
@@ -41,13 +68,16 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
     // appropriate values
     for (ObjectDynamicObjectEntry entry : data.getObjectEntries()) {
       String sensedValueName = entry.getProperty();
-      System.out.println(sensedValueName);
+
       entry.down();
+
       String sensedType = data.getRequiredString("type");
       if (StandardSensorData.DOUBLE_VALUED_SENSOR_VALUES.contains(sensedType)) {
-        SensedValue<Double> value = new SimpleSensedValue<Double>(sensedValueName, sensedType,
-            data.getDouble("value"), timestamp);
-        System.out.println(value);
+        SensedValue<Double> value = new SimpleSensedValue<Double>(sensor, sensedValueName,
+            sensedType, data.getDouble("value"), timestamp);
+        handler.getSensorProcessor().getLog().info(value);
+
+        model.updateSensedValue(value);
       }
     }
   }

@@ -42,4 +42,11 @@ public interface SensorHandler extends ManagedResource {
    *          the sensor processor
    */
   void setSensorProcessor(SensorProcessor sensorProcessor);
+
+  /**
+   * Get the sensor processor the handler is running under.
+   * 
+   * @return the sensor processor
+   */
+  SensorProcessor getSensorProcessor();
 }

@@ -16,48 +16,39 @@
 
 package io.smartspaces.sandbox.interaction.entity;
 
+import java.util.Collection;
+
 /**
- * The value of a sensor.
- * 
- * @param <T>
- *          the type of the value
+ * A collection of sensed entity models.
  * 
  * @author Keith M. Hughes
  */
-public interface SensedValue<T> {
+public interface SensedEntityModelCollection {
+  /**
+   * Create sensed entity models from their descriptions.
+   * 
+   * @param entities
+   *          the entity descriptions
+   * 
+   * @return this collection
+   */
+  SensedEntityModelCollection
+      createModelsFromDescriptions(Collection<SensedEntityDescription> entities);
 
   /**
-   * Get the name of the sensed value.
+   * Get the model for a given entity ID.
    * 
-   * @return the name
+   * @param id
+   *          the ID of the entity
+   * 
+   * @return the model, or {@code null} if none
    */
-  String getName();
+  SensedEntityModel getSensedEntityModel(String id);
 
   /**
-   * Get the type of the sensed value.
+   * Get all models in the collection.
    * 
-   * @return the type
+   * @return the models
    */
-  String getType();
-
-  /**
-   * Get the source sensor.
-   * 
-   * @return the sensor that gve the value
-   */
-  SensorEntityDescription getSource();
-
-  /**
-   * Get the timestamp of when the value was last updated.
-   * 
-   * @return the timestamp in milliseconds since the epoch.
-   */
-  long getTimestamp();
-
-  /**
-   * Get the value of the sensor.
-   * 
-   * @return the value of the sensor
-   */
-  T getValue();
+  Collection<SensedEntityModel> getAllSensedEntityModels();
 }

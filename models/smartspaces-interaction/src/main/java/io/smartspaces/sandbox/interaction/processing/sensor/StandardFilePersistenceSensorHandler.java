@@ -120,6 +120,11 @@ public class StandardFilePersistenceSensorHandler implements SensorHandler {
     this.sensorProcessor = sensorProcessor;
   }
 
+  @Override
+  public SensorProcessor getSensorProcessor() {
+    return sensorProcessor;
+  }
+
   /**
    * Save the data in the file.
    */

@@ -66,11 +66,6 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
   private List<SensedEntitySensorListener> sensedEntitySensorListeners =
       new CopyOnWriteArrayList<>();
 
-  @Override
-  public void setSensorProcessor(SensorProcessor sensorProcessor) {
-    this.sensorProcessor = sensorProcessor;
-  }
-
   /**
    * Construct a new handler.
    * 
@@ -89,6 +84,16 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
   @Override
   public void shutdown() {
     // Nothing to do.
+  }
+
+  @Override
+  public void setSensorProcessor(SensorProcessor sensorProcessor) {
+    this.sensorProcessor = sensorProcessor;
+  }
+
+  @Override
+  public SensorProcessor getSensorProcessor() {
+    return sensorProcessor;
   }
 
   @Override
@@ -141,7 +146,7 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
 
     for (SensedEntitySensorListener listener : sensedEntitySensorListeners) {
       try {
-        listener.handleSensorData(timestamp, sensor, sensedEntity, data);
+        listener.handleSensorData(this, timestamp, sensor, sensedEntity, data);
       } catch (Throwable e) {
         log.formatError(e, "Error during listener processing of physical based sensor data");
       }

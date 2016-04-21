@@ -16,9 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
-
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
@@ -26,7 +23,9 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
+import io.smartspaces.sandbox.interaction.entity.StandardSensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
+import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler;
@@ -40,6 +39,9 @@ import io.smartspaces.time.LocalTimeProvider;
 import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
+
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
 
 public class TestDriver {
 
@@ -135,16 +137,21 @@ public class TestDriver {
     sensorHandler.addSensedEntitySensorListener(new SensedEntitySensorListener() {
 
       @Override
-      public void handleSensorData(long timestamp, SensorEntityDescription sensor,
-          SensedEntityDescription sensedEntity, DynamicObject data) {
+      public void handleSensorData(SensedEntitySensorHandler handler, long timestamp,
+          SensorEntityDescription sensor, SensedEntityDescription sensedEntity,
+          DynamicObject data) {
         log.formatInfo("Got data at %d from sensor %s for entity %s: %s", timestamp, sensor,
             sensedEntity, data.asMap());
 
       }
     });
 
+    final StandardSensedEntityModelCollection sensedEntityModelCollection =
+        new StandardSensedEntityModelCollection();
+    sensedEntityModelCollection.createModelsFromDescriptions(sensorRegistry.getAllSensedEntities());
+
     StandardSensedEntityModelSensorListener modelUpdater =
-        new StandardSensedEntityModelSensorListener();
+        new StandardSensedEntityModelSensorListener(sensedEntityModelCollection);
     sensorHandler.addSensedEntitySensorListener(modelUpdater);
 
     sensorProcessor.addSensorHandler(sensorHandler);
