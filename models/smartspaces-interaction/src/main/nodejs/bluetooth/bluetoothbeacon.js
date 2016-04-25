@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2016 Keith M. Hughes
  *
@@ -14,71 +15,180 @@
  * the License.
  */
 
-function calculateDistance(rssi) {
-
-	// Set on the beacon device.
-	var txPower = -12;
-
-	if (rssi == 0) {
-		return -1.0;
-	}
-
-	var ratio = rssi * 1.0 / txPower;
-	if (ratio < 1.0) {
-		return Math.pow(ratio, 10);
-	} else {
-		var distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-		return distance;
-	}
-}
-
+var mdns = require('mdns');
 var noble = require('noble');
 var mqtt = require('mqtt');
 
-var mqttOptions = {
-	'clientId' : "/sensornode/proximity2"
+function AveragingWindowFilter() {
+  this.MAX_SAMPLES = 10;
+  this.sampleCurrent = 0;
+  this.samples = [];
+  this.samplesSum = this.MAX_SAMPLES - 1;
+  this.samplesWrapped = false;
+  this.numberSamples = 0;
+}
+
+AveragingWindowFilter.prototype = {
+  'addSample': function(value) {
+      this.samples[this.sampleCurrent] = value;
+      this.samplesSum += value
+      if (this.samplesWrapped) {
+        var index = (this.sampleCurrent + this.MAX_SAMPLES - 1) % this.MAX_SAMPLES;
+        this.samplesSum -= this.samples[index];
+      } else {
+        this.numberSamples++;
+      }
+      this.sampleCurrent++;
+
+      if (this.sampleCurrent >= this.MAX_SAMPLES) {
+        this.sampleCurrent = 0;
+	this.samplesWrapped = true;
+      }
+
+      console.log(this.numberSamples);
+
+      return this.samplesSum / this.numberSamples;
+  }
 };
 
-var mqttClient = mqtt.connect("mqtt://192.168.188.109", mqttOptions);
-mqttClient.on('connect', function() {
-	console.log("MQTT connected");
-});
+function SensorServer() {
+  this.mdns = require('mdns');
+  this.noble = require('noble');
+  this.mqtt = require('mqtt');
 
-// The set of bluetooth MAC addresses that are being tracked.
-var addressesToTrack = new Set();
-addressesToTrack.add('fc0d12fe7e5c');
+  this.mqttClient = null;
 
-noble.on('addressChange', function(address) {
-	console.log("Address is " + address);
-});
+  this.addressesToTrack = new Set();
+  //replace with your hardware address
+  this.addressesToTrack.add('fc0d12fe7e5c'); 
 
-noble.on('discover', function(peripheral) {
-	if (addressesToTrack.has(peripheral.uuid)) {
-		var message = {
-			sensor : "/home/livingroom/proximity",
-			data : {
-				proximity : {
-					id : peripheral.uuid,
-					rssi : peripheral.rssi,
-					type : 'proximity.ble'
-				}
-			}
-		};
+  this.sensorFilter = new AveragingWindowFilter();
+}
 
-		var strMessage = JSON.stringify(message);
-		console.log(strMessage);
-		if (mqttClient) {
-			var buf = new Buffer(strMessage, 'utf8');
-			mqttClient.publish("/home/sensor", buf);
-		}
-	}
-});
+SensorServer.prototype = {
+  'startSensing': function() {
+    console.log("Starting sensors");
+    this.startNoble();
+  },
 
-noble.on('stateChange', function(state) {
-	if (state === 'poweredOn') {
-		// allows duplicates while scanning
-		noble.startScanning([], true);
-	} else {
-		noble.stopScanning();
-	}
-});
+  'sendMqttMessage': function(message) {
+    var strMessage = JSON.stringify(message);
+    console.log(JSON.stringify(message));    
+    if (this.mqttClient) {
+      var buf = new Buffer(strMessage, 'utf8');
+      this.mqttClient.publish("/home/sensor", buf);
+    }
+  },
+
+  'processBle': function(peripheral) {
+    if(this.addressesToTrack.has(peripheral.uuid)){
+      var rssi = peripheral.rssi;
+
+      var value = this.sensorFilter.addSample(rssi);
+
+      var message = {
+        sensor: "/home/livingroom/proximity", 
+        data: {
+          proximity: {
+            id: peripheral.uuid, 
+            rssi: value,
+            type: 'proximity.ble'
+          }
+        }
+      };
+
+      this.sendMqttMessage(message);
+    }
+  },
+
+  'startNoble': function() {
+    console.log("Starting noble");
+
+    var self = this;
+
+    this.noble.on('addressChange', function(address) {
+      console.log("Address is " + address);
+    });
+
+    this.noble.on('discover', function(peripheral){
+      self.processBle(peripheral);
+    });
+
+    this.noble.on('stateChange', function(state) {
+      if (state === 'poweredOn') {
+        self.noble.startScanning([], true) //allows dubplicates while scanning
+      } else {
+        self.noble.stopScanning();
+      }
+    });
+
+  },
+
+  'calculateDistance' : function(rssi) {
+    //hard coded power value. Usually ranges between -59 to -65
+    var txPower = -12 
+  
+    if (rssi == 0) {
+      return -1.0; 
+    }
+
+    var ratio = rssi*1.0/txPower;
+    if (ratio < 1.0) {
+      return Math.pow(ratio,10);
+    } else {
+      var distance =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;    
+      return distance;
+    }
+  } ,
+
+  'connectMqtt': function(host, port) {
+    // If already connect, don't connect again.
+    if (this.mqttClient) return;
+
+    var self = this;
+
+    var mqttOptions={
+      'clientId': "/sensornode/proximity2",
+      'host': host,
+      'port': port
+    };
+    this.mqttClient = mqtt.connect(mqttOptions);
+    this.mqttClient.on('connect', function() {
+      console.log("MQTT connected");
+//      self.startSensing();
+    });
+  },
+
+  'startMdns': function() {
+    var self = this;
+
+    // watch all mqtt servers 
+    var sequence = [
+      this.mdns.rst.DNSServiceResolve(),
+      'DNSServiceGetAddrInfo' in this.mdns.dns_sd ?
+          this.mdns.rst.DNSServiceGetAddrInfo() : 
+          mdns.rst.getaddrinfo({families:[4]}),
+      this.mdns.rst.makeAddressesUnique()
+    ];
+
+    var browser = mdns.createBrowser(mdns.tcp('mqtt'),
+      {resolverSequence: sequence});
+    browser.on('serviceUp', function(service) {
+      console.log("Got MQTT server: ", service);
+      self.connectMqtt(service.host, service.port);
+    });
+    browser.on('serviceDown', function(service) {
+      console.log("service down: ", service);
+    });
+    browser.start();
+  },
+
+  'start': function() {
+    this.startMdns();
+    this.startSensing();
+  },
+};
+
+var server = new SensorServer();
+server.start();
+
