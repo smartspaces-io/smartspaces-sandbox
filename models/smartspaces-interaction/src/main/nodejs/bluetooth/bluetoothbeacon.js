@@ -19,11 +19,11 @@ var mdns = require('mdns');
 var noble = require('noble');
 var mqtt = require('mqtt');
 
-function AveragingWindowFilter() {
-  this.MAX_SAMPLES = 10;
+function AveragingWindowFilter(_maxSamples) {
+  this.maxSamples = _maxSamples;
   this.sampleCurrent = 0;
   this.samples = [];
-  this.samplesSum = this.MAX_SAMPLES - 1;
+  this.samplesSum = this.maxSamples - 1;
   this.samplesWrapped = false;
   this.numberSamples = 0;
 }
@@ -33,14 +33,14 @@ AveragingWindowFilter.prototype = {
       this.samples[this.sampleCurrent] = value;
       this.samplesSum += value
       if (this.samplesWrapped) {
-        var index = (this.sampleCurrent + this.MAX_SAMPLES - 1) % this.MAX_SAMPLES;
+        var index = (this.sampleCurrent + this.maxSamples - 1) % this.maxSamples;
         this.samplesSum -= this.samples[index];
       } else {
         this.numberSamples++;
       }
       this.sampleCurrent++;
 
-      if (this.sampleCurrent >= this.MAX_SAMPLES) {
+      if (this.sampleCurrent >= this.maxSamples) {
         this.sampleCurrent = 0;
 	this.samplesWrapped = true;
       }
@@ -51,10 +51,34 @@ AveragingWindowFilter.prototype = {
   }
 };
 
-function SensorServer() {
+function FilterCollection(filterFactory) {
+  this.filterFactory = filterFactory;
+
+  this.filters = {};
+}
+
+FilterCollection.prototype = {
+  'getFilter': function(id) {
+    var filter = this.filters[id];
+    
+    if (!filter) {
+      filter = this.filterFactory();
+
+      this.filters[id] = filter;
+    }
+
+    return filter;
+  },
+};
+
+function SensorServer(mqttClientId, sensorMqttTopic, sensorId) {
   this.mdns = require('mdns');
   this.noble = require('noble');
   this.mqtt = require('mqtt');
+
+  this.mqttClientId = mqttClientId;
+  this.sensorMqttTopic = sensorMqttTopic;
+  this.sensorId = sensorId;
 
   this.mqttClient = null;
 
@@ -62,7 +86,8 @@ function SensorServer() {
   //replace with your hardware address
   this.addressesToTrack.add('fc0d12fe7e5c'); 
 
-  this.sensorFilter = new AveragingWindowFilter();
+  // For now the sensor filters will be merely an averaging window.
+  this.sensorFilters = new FilterCollection(function() { return new AveragingWindowFilter(10); });
 }
 
 SensorServer.prototype = {
@@ -71,23 +96,26 @@ SensorServer.prototype = {
     this.startNoble();
   },
 
-  'sendMqttMessage': function(message) {
+  'sendMessage': function(message) {
     var strMessage = JSON.stringify(message);
     console.log(JSON.stringify(message));    
     if (this.mqttClient) {
       var buf = new Buffer(strMessage, 'utf8');
-      this.mqttClient.publish("/home/sensor", buf);
+      this.mqttClient.publish(this.sensorMqttTopic, buf);
     }
   },
 
   'processBle': function(peripheral) {
     if(this.addressesToTrack.has(peripheral.uuid)){
+      var id = peripheral.uuid;
       var rssi = peripheral.rssi;
+      
+      var filter = this.sensorFilters.getFilter(id);
 
-      var value = this.sensorFilter.addSample(rssi);
+      var value = filter.addSample(rssi);
 
       var message = {
-        sensor: "/home/livingroom/proximity", 
+        sensor: this.sensorId,
         data: {
           proximity: {
             id: peripheral.uuid, 
@@ -97,7 +125,7 @@ SensorServer.prototype = {
         }
       };
 
-      this.sendMqttMessage(message);
+      this.sendMessage(message);
     }
   },
 
@@ -148,7 +176,7 @@ SensorServer.prototype = {
     var self = this;
 
     var mqttOptions={
-      'clientId': "/sensornode/proximity2",
+      'clientId': this.mqttClientId,
       'host': host,
       'port': port
     };
@@ -189,6 +217,6 @@ SensorServer.prototype = {
   },
 };
 
-var server = new SensorServer();
+var server = new SensorServer("/sensornode/proximity2", "/home/sensor", "/home/livingroom/proximity");
 server.start();
 
