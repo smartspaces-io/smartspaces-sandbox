@@ -28,12 +28,27 @@ import java.util.Map;
  * 
  * @author Keith M. Hughes
  */
-public class InMemorySensorRegistry {
+public class InMemorySensorRegistry implements SensorRegistry {
 
   /**
    * A map of sensor IDs to their description
    */
   private Map<String, SensorEntityDescription> idToSensor = new HashMap<>();
+
+  /**
+   * A map of marker IDs to their description.
+   */
+  private Map<String, MarkerEntityDescription> idToMarker = new HashMap<>();
+
+  /**
+   * A map of markable IDs to their description.
+   */
+  private Map<String, MarkableEntityDescription> idToMarkable = new HashMap<>();
+
+  /**
+   * A map of marker IDs to their description.
+   */
+  private Map<String, MarkableEntityDescription> markerIdToMarkable = new HashMap<>();
 
   /**
    * A map of sensed entities IDs to their description
@@ -43,101 +58,120 @@ public class InMemorySensorRegistry {
   /**
    * The associations between sensors and what entity is being sensed by them.
    */
-  private List<SimpleSensorSensedEntityAssociation> associations = new ArrayList<>();
+  private List<SimpleSensorSensedEntityAssociation> sensorSensedEntityAssociations =
+      new ArrayList<>();
 
   /**
    * The associations as an unmodifiable list.
    */
-  private List<SimpleSensorSensedEntityAssociation> associationsImmutable =
-      Collections.unmodifiableList(associations);
+  private List<SimpleSensorSensedEntityAssociation> sensorSensedEntityAssociationsImmutable =
+      Collections.unmodifiableList(sensorSensedEntityAssociations);
 
   /**
-   * Register a sensor with the registry.
-   * 
-   * @param sensor
-   *          the sensor to add
-   * 
-   * @return this registry
+   * The associations between markers and what entity is being marked by them.
    */
-  public InMemorySensorRegistry registerSensor(SensorEntityDescription sensor) {
+  private List<SimpleMarkerMarkedEntityAssociation> markerMarkedEntityAssociations =
+      new ArrayList<>();
+
+  /**
+   * The associations as an unmodifiable list.
+   */
+  private List<SimpleMarkerMarkedEntityAssociation> markerMarkedEntityAssociationsImmutable =
+      Collections.unmodifiableList(markerMarkedEntityAssociations);
+
+  @Override
+  public SensorRegistry registerSensor(SensorEntityDescription sensor) {
     idToSensor.put(sensor.getId(), sensor);
 
     return this;
   }
 
-  /**
-   * Get the sensor description associated with a given ID.
-   * 
-   * @param id
-   *          the sensor ID
-   * 
-   * @return the description, or {@code null} if no such sensor
-   */
+  @Override
   public SensorEntityDescription getSensor(String id) {
     return idToSensor.get(id);
   }
 
-  /**
-   * Register a sensed entity with the registry.
-   * 
-   * @param sensedEntity
-   *          the sensed entity to add
-   * 
-   * @return this registry
-   */
-  public InMemorySensorRegistry registerSensedEntity(SensedEntityDescription sensor) {
-    idToSensed.put(sensor.getId(), sensor);
+  @Override
+  public SensorRegistry registerMarker(MarkerEntityDescription marker) {
+    idToMarker.put(marker.getId(), marker);
 
     return this;
   }
 
-  /**
-   * Get the sensed entity description associated with a given ID.
-   * 
-   * @param id
-   *          the sensed entity ID
-   * 
-   * @return the description, or {@code null} if no such sensed entity
-   */
+  @Override
+  public MarkerEntityDescription getMarker(String id) {
+    return idToMarker.get(id);
+  }
+
+  @Override
+  public MarkableEntityDescription getMarkableEntity(String id) {
+    return idToMarkable.get(id);
+  }
+
+  @Override
+  public SensorRegistry registerSensedEntity(SensedEntityDescription sensedEntity) {
+    idToSensed.put(sensedEntity.getId(), sensedEntity);
+
+    if (sensedEntity instanceof MarkableEntityDescription) {
+      idToMarkable.put(sensedEntity.getId(), (MarkableEntityDescription) sensedEntity);
+    }
+
+    return this;
+  }
+
+  @Override
   public SensedEntityDescription getSensedEntity(String id) {
     return idToSensed.get(id);
   }
 
-  /**
-   * Get all the sensed entities in the registry.
-   * 
-   * @return a collection of the entities
-   */
+  @Override
   public Collection<SensedEntityDescription> getAllSensedEntities() {
     return idToSensed.values();
   }
 
-  /**
-   * Associate a sensor with its sensed entity.
-   * 
-   * @param sensorId
-   *          the ID of the sensor
-   * @param sensedEntityId
-   *          the ID of the sensed entity
-   * 
-   * @returns this registry
-   */
-  public InMemorySensorRegistry associateSensorWithSensedEntity(String sensorId,
-      String sensedEntityId) {
+  @Override
+  public SensorRegistry associateSensorWithSensedEntity(String sensorId, String sensedEntityId) {
     // TODO(keith) Decide what to do if neither exists
     SensorEntityDescription sensor = idToSensor.get(sensorId);
     SensedEntityDescription sensedEntity = idToSensed.get(sensedEntityId);
 
-    associations.add(new SimpleSensorSensedEntityAssociation(sensor, sensedEntity));
+    sensorSensedEntityAssociations
+        .add(new SimpleSensorSensedEntityAssociation(sensor, sensedEntity));
     return this;
   }
 
-  /**
-   * Get the associations between sensors and their sensed entities.
-   * 
-   * @return the associations as an unmodifiable list
-   */
-  public Collection<SimpleSensorSensedEntityAssociation> getAssociations() {
-    return associationsImmutable;
+  @Override
+  public Collection<SimpleSensorSensedEntityAssociation> getSensorSensedEntityAssociations() {
+    return sensorSensedEntityAssociationsImmutable;
+  }
+
+  @Override
+  public SensorRegistry associateMarkerWithMarkedEntity(String markerId, String markedEntityId) {
+    // TODO(keith) Decide what to do if neither exists
+    MarkerEntityDescription marker = idToMarker.get(markerId);
+    MarkableEntityDescription markedEntity = idToMarkable.get(markedEntityId);
+
+    return associateMarkerWithMarkedEntity(marker, markedEntity);
+  }
+
+  @Override
+  public SensorRegistry associateMarkerWithMarkedEntity(MarkerEntityDescription marker,
+      MarkableEntityDescription markableEntity) {
+    markerMarkedEntityAssociations
+        .add(new SimpleMarkerMarkedEntityAssociation(marker, markableEntity));
+
+    markerIdToMarkable.put(marker.getMarkerId(), markableEntity);
+
+    return this;
+  }
+
+  @Override
+  public Collection<SimpleMarkerMarkedEntityAssociation> getMarkerMarkedEntityAssociations() {
+    return markerMarkedEntityAssociationsImmutable;
+  }
+
+  @Override
+  public MarkableEntityDescription getMarkableEntityByMarkerId(String markerId) {
+    return markerIdToMarkable.get(markerId);
   }
 }

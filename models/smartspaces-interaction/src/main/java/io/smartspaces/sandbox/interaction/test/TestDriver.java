@@ -20,6 +20,9 @@ import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
+import io.smartspaces.sandbox.interaction.entity.SimpleMarkerEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SimplePersonSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
@@ -55,7 +58,11 @@ public class TestDriver {
 
     final ExtendedLog log = spaceEnvironment.getExtendedLog();
 
-    InMemorySensorRegistry sensorRegistry = new InMemorySensorRegistry();
+    SensorRegistry sensorRegistry = new InMemorySensorRegistry();
+    
+    sensorRegistry.registerMarker(new SimpleMarkerEntityDescription("/marker/ble/fc0d12fe7e5c", "Keith Hughes", "ble:fc0d12fe7e5c"));
+    sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription("/person/keith.hughes", "Keith Hughes"));
+    sensorRegistry.associateMarkerWithMarkedEntity("/marker/ble/fc0d12fe7e5c", "/person/keith.hughes");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/home/livingroom/proximity",
         "Raspberry Pi BLE proximity sensor"));
@@ -110,7 +117,7 @@ public class TestDriver {
 
     File sampleFile = new File("/var/tmp/sensordata.json");
     boolean liveData = true;
-    boolean sampleRecord = false;
+    boolean sampleRecord = true;
 
     StandardFilePersistenceSensorInput persistedSensorInput = null;
     if (liveData) {
@@ -129,7 +136,7 @@ public class TestDriver {
     }
 
     StandardSensedEntitySensorHandler sensorHandler = new StandardSensedEntitySensorHandler(log);
-    for (SimpleSensorSensedEntityAssociation association : sensorRegistry.getAssociations()) {
+    for (SimpleSensorSensedEntityAssociation association : sensorRegistry.getSensorSensedEntityAssociations()) {
       sensorHandler.associateSensorWithEntity(association.getSensor(),
           association.getSensedEntity());
     }
@@ -147,7 +154,7 @@ public class TestDriver {
     });
 
     final StandardSensedEntityModelCollection sensedEntityModelCollection =
-        new StandardSensedEntityModelCollection();
+        new StandardSensedEntityModelCollection(sensorRegistry);
     sensedEntityModelCollection.createModelsFromDescriptions(sensorRegistry.getAllSensedEntities());
 
     StandardSensedEntityModelSensorListener modelUpdater =
@@ -161,7 +168,7 @@ public class TestDriver {
     if (liveData) {
       if (sampleRecord) {
         // Recording
-        SmartSpacesUtilities.delay(20000);
+        SmartSpacesUtilities.delay(1000L * 60 * 2 * 10);
 
         spaceEnvironment.shutdown();
       }

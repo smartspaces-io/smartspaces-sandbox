@@ -28,9 +28,34 @@ import java.util.Map;
 public class StandardSensedEntityModelCollection implements SensedEntityModelCollection {
 
   /**
+   * The sensor registry for this collection.
+   */
+  private SensorRegistry sensorRegistry;
+
+  /**
    * Map of entity IDs to their models.
    */
   private Map<String, SensedEntityModel> idToModels = new HashMap<>();
+
+  /**
+   * Construct a new collection.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry
+   */
+  public StandardSensedEntityModelCollection(SensorRegistry sensorRegistry) {
+    this.sensorRegistry = sensorRegistry;
+  }
+
+  @Override
+  public void prepare() {
+    createModelsFromDescriptions(sensorRegistry.getAllSensedEntities());
+  }
+
+  @Override
+  public SensorRegistry getSensorRegistry() {
+    return sensorRegistry;
+  }
 
   @Override
   public SensedEntityModelCollection

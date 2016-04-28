@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Keith M. Hughes
+ * Copyright (C) 2016 Keith M. Hughes
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,12 +14,14 @@
  * the License.
  */
 
+package io.smartspaces.sandbox.interaction.entity;
+
 /**
- * An API for talking about entities, such as sensors, physical locations, etc.
- * 
- * <p>
- * Markers are things that allow something to be identified.
+ * An entity description of a person.
  * 
  * @author Keith M. Hughes
  */
-package io.smartspaces.sandbox.interaction.entity;
+public interface PersonSensedEntityDescription
+    extends SensedEntityDescription, MarkableEntityDescription {
+
+}

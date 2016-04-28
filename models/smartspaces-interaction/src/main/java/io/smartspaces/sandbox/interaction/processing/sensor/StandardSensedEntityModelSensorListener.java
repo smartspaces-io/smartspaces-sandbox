@@ -26,6 +26,9 @@ import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A sensor listener that will update sensed entity models.
  * 
@@ -39,6 +42,12 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
   private SensedEntityModelCollection sensedEntityModelCollection;
 
   /**
+   * The map of sensor types to sensor processors.
+   */
+  private Map<String, StandardBleProximitySensorValueProcessor> sensorValuesProcessors =
+      new HashMap<>();
+
+  /**
    * Construct a new listener.
    * 
    * @param sensedEntityModelCollection
@@ -47,6 +56,9 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
   public StandardSensedEntityModelSensorListener(
       SensedEntityModelCollection sensedEntityModelCollection) {
     this.sensedEntityModelCollection = sensedEntityModelCollection;
+
+    sensorValuesProcessors.put(StandardSensorData.SENSOR_TYPE_PROXIMITY_BLE,
+        new StandardBleProximitySensorValueProcessor());
   }
 
   @Override
@@ -72,12 +84,21 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
       entry.down();
 
       String sensedType = data.getRequiredString("type");
-      if (StandardSensorData.DOUBLE_VALUED_SENSOR_VALUES.contains(sensedType)) {
+      if (StandardSensorData.DOUBLE_VALUED_SENSOR_TYPES.contains(sensedType)) {
         SensedValue<Double> value = new SimpleSensedValue<Double>(sensor, sensedValueName,
             sensedType, data.getDouble("value"), timestamp);
         handler.getSensorProcessor().getLog().info(value);
 
         model.updateSensedValue(value);
+      } else {
+        StandardBleProximitySensorValueProcessor sensorValueProcessor =
+            sensorValuesProcessors.get(sensedType);
+        if (sensorValueProcessor != null) {
+          sensorValueProcessor.processData(sensedEntityModelCollection, data);
+        } else {
+          handler.getSensorProcessor().getLog().formatWarn("Got unknown sensor type %s",
+              sensedType);
+        }
       }
     }
   }

@@ -24,6 +24,15 @@ import java.util.Collection;
  * @author Keith M. Hughes
  */
 public interface SensedEntityModelCollection {
+  
+  /**
+   * Prepare the collection.
+   * 
+   * <p>
+   * This will include building sensing models.
+   */
+  void prepare();
+  
   /**
    * Create sensed entity models from their descriptions.
    * 
@@ -51,4 +60,11 @@ public interface SensedEntityModelCollection {
    * @return the models
    */
   Collection<SensedEntityModel> getAllSensedEntityModels();
+  
+  /**
+   * Get the sensor registry for the collection.
+   * 
+   * @return the sensor registry
+   */
+  SensorRegistry getSensorRegistry();
 }

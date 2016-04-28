@@ -28,18 +28,23 @@ import com.google.common.collect.ImmutableSet;
 public class StandardSensorData {
 
   /**
-   * The name of a temperature sensor value.
+   * The type of a temperature sensor value.
    */
-  public static final String SENSOR_VALUE_NAME_TEMPERATURE = "temperature";
+  public static final String SENSOR_TYPE_TEMPERATURE = "temperature";
 
   /**
-   * The name of a humidity sensor value.
+   * The type of a humidity sensor value.
    */
-  public static final String SENSOR_VALUE_NAME_HUMIDITY = "humidity";
+  public static final String SENSOR_TYPE_HUMIDITY = "humidity";
+
+  /**
+   * The type of a BLE Proximity sensor value.
+   */
+  public static final String SENSOR_TYPE_PROXIMITY_BLE = "proximity.ble";
 
   /**
    * The sensor values that are double-valued.
    */
-  public static final Set<String> DOUBLE_VALUED_SENSOR_VALUES =
-      ImmutableSet.of(SENSOR_VALUE_NAME_TEMPERATURE, SENSOR_VALUE_NAME_HUMIDITY);
+  public static final Set<String> DOUBLE_VALUED_SENSOR_TYPES =
+      ImmutableSet.of(SENSOR_TYPE_TEMPERATURE, SENSOR_TYPE_HUMIDITY);
 }
