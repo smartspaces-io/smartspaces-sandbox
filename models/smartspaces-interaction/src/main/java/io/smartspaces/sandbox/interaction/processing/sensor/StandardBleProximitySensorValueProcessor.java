@@ -17,7 +17,9 @@
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
 import io.smartspaces.sandbox.interaction.entity.MarkableEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 
 /**
@@ -35,7 +37,8 @@ public class StandardBleProximitySensorValueProcessor {
    * @param data
    *          the data to process
    */
-  public void processData(SensedEntityModelCollection sensedEntityModelCollection,
+  public void processData(long timestamp, SensorEntityDescription sensor,
+      SensedEntityDescription sensedEntity, SensedEntityModelCollection sensedEntityModelCollection,
       DynamicObject data) {
     String markerId = "ble" + ":" + data.getRequiredString("id");
     double rssi = data.getDouble("rssi");
