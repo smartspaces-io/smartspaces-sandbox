@@ -27,10 +27,10 @@ package io.smartspaces.sandbox.interaction.entity;
 public class SimpleSensedValue<T> implements SensedValue<T> {
 
   /**
-   * The source of the value.
+   * The sensor that supplied the value
    */
-  private SensorEntityDescription source;
-  
+  private SensorEntityDescription sensor;
+
   /**
    * The name of the value.
    */
@@ -54,6 +54,8 @@ public class SimpleSensedValue<T> implements SensedValue<T> {
   /**
    * Construct a new value.
    * 
+   * @param sensor
+   *          the sensor that gave the value
    * @param valueName
    *          the name of the value
    * @param valueType
@@ -63,8 +65,9 @@ public class SimpleSensedValue<T> implements SensedValue<T> {
    * @param value
    *          the value
    */
-  public SimpleSensedValue(SensorEntityDescription source, String valueName, String valueType, T value, long timestamp) {
-    this.source = source;
+  public SimpleSensedValue(SensorEntityDescription sensor, String valueName, String valueType,
+      T value, long timestamp) {
+    this.sensor = sensor;
     this.valueName = valueName;
     this.valueType = valueType;
     this.value = value;
@@ -72,8 +75,8 @@ public class SimpleSensedValue<T> implements SensedValue<T> {
   }
 
   @Override
-  public SensorEntityDescription getSource() {
-    return source;
+  public SensorEntityDescription getSensor() {
+    return sensor;
   }
 
   @Override
@@ -98,7 +101,7 @@ public class SimpleSensedValue<T> implements SensedValue<T> {
 
   @Override
   public String toString() {
-    return "SimpleSensedValue [source=" + source + ", valueName=" + valueName + ", valueType="
+    return "SimpleSensedValue [sensor=" + sensor + ", valueName=" + valueName + ", valueType="
         + valueType + ", value=" + value + ", timestamp=" + timestamp + "]";
   }
 }

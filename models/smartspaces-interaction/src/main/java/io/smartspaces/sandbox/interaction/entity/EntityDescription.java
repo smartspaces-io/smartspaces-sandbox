@@ -31,6 +31,13 @@ public interface EntityDescription {
   String getId();
 
   /**
+   * Get the display name of the entity.
+   * 
+   * @return the display name of the entity
+   */
+  String getDisplayName();
+
+  /**
    * Get the description of the entity.
    * 
    * @return the description of the entity

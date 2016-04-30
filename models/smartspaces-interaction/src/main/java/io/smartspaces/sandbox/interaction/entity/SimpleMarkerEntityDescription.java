@@ -34,14 +34,17 @@ public class SimpleMarkerEntityDescription extends SimpleEntityDescription
    * 
    * @param id
    *          the ID of the entity
+   * @param displayName
+   *          the human readable display name of the entity
    * @param description
    *          the human readable description of the entity
    * @param markerId
    *          the ID the marker will use for identification.
    */
-  public SimpleMarkerEntityDescription(String id, String description, String markerId) {
-    super(id, description);
-    
+  public SimpleMarkerEntityDescription(String id, String displayName, String description,
+      String markerId) {
+    super(id, displayName, description);
+
     this.markerId = markerId;
   }
 

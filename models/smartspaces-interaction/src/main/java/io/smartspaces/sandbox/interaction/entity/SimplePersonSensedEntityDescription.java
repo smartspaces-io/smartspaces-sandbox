@@ -29,10 +29,12 @@ public class SimplePersonSensedEntityDescription extends SimpleEntityDescription
    * 
    * @param id
    *          the ID of the entity
+   * @param displayName
+   *          the human readable display name of the entity
    * @param description
    *          the human readable description of the entity
    */
-  public SimplePersonSensedEntityDescription(String id, String description) {
-    super(id, description);
+  public SimplePersonSensedEntityDescription(String id, String displayName, String description) {
+    super(id, displayName, description);
   }
 }

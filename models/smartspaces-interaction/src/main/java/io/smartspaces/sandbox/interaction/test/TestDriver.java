@@ -16,6 +16,9 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
+
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
@@ -43,9 +46,6 @@ import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
 
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
-
 public class TestDriver {
 
   public static void main(String[] args) throws Exception {
@@ -59,58 +59,61 @@ public class TestDriver {
     final ExtendedLog log = spaceEnvironment.getExtendedLog();
 
     SensorRegistry sensorRegistry = new InMemorySensorRegistry();
-    
-    sensorRegistry.registerMarker(new SimpleMarkerEntityDescription("/marker/ble/fc0d12fe7e5c", "Keith Hughes", "ble:fc0d12fe7e5c"));
-    sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription("/person/keith.hughes", "Keith Hughes"));
-    sensorRegistry.associateMarkerWithMarkedEntity("/marker/ble/fc0d12fe7e5c", "/person/keith.hughes");
+
+    sensorRegistry.registerMarker(new SimpleMarkerEntityDescription("/marker/ble/fc0d12fe7e5c",
+        "BLE Beacon", "A Estimote BLE Beacon", "ble:fc0d12fe7e5c"));
+    sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription(
+        "/person/keith.hughes", "Keith Hughes", "Keith Hughes"));
+    sensorRegistry.associateMarkerWithMarkedEntity("/marker/ble/fc0d12fe7e5c",
+        "/person/keith.hughes");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/home/livingroom/proximity",
-        "Raspberry Pi BLE proximity sensor"));
+        "Proximity Sensor 1", "Raspberry Pi BLE proximity sensor"));
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107700",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9107700", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/livingroom", "The living room on the first floor"));
+        "/home/livingroom", "Living Room", "The living room on the first floor"));
     sensorRegistry.associateSensorWithSensedEntity("/home/livingroom/proximity",
         "/home/livingroom");
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107700",
         "/home/livingroom");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107716",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9107716", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/masterbedroom", "The master bedroom, on the second floor"));
+        "/home/masterbedroom", "Master Bedroom", "The master bedroom, on the second floor"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107716",
         "/home/masterbedroom");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107709",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9107709", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/garagestudio", "The studio in the garage"));
+        "/home/garagestudio", "Garage Studio", "The studio in the garage"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107709",
         "/home/garagestudio");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9054868",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9054868", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/basement", "The main room in the basement"));
+        "/home/basement", "Basement", "The main room in the basement"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054868", "/home/basement");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9054793",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9054793", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/kitchen", "The kitchen on the first floor"));
+        "/home/kitchen", "Kitchen", "The kitchen on the first floor"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054793", "/home/kitchen");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107713",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9107713", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/musicroom", "The music room on the second floor"));
+        "/home/musicroom", "Music Room", "The music room on the second floor"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107713", "/home/musicroom");
 
     sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9054677",
-        "ESP8266-based temperature/humidity sensor"));
+        "Sensor 9054677", "ESP8266-based temperature/humidity sensor"));
     sensorRegistry.registerSensedEntity(
-        new SimplePhysicalSpaceSensedEntityDescription("/home/attic", "The attic"));
+        new SimplePhysicalSpaceSensedEntityDescription("/home/attic", "Attic", "The attic"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054677", "/home/attic");
 
     SensorProcessor sensorProcessor = new StandardSensorProcessor(log);
@@ -136,7 +139,8 @@ public class TestDriver {
     }
 
     StandardSensedEntitySensorHandler sensorHandler = new StandardSensedEntitySensorHandler(log);
-    for (SimpleSensorSensedEntityAssociation association : sensorRegistry.getSensorSensedEntityAssociations()) {
+    for (SimpleSensorSensedEntityAssociation association : sensorRegistry
+        .getSensorSensedEntityAssociations()) {
       sensorHandler.associateSensorWithEntity(association.getSensor(),
           association.getSensedEntity());
     }

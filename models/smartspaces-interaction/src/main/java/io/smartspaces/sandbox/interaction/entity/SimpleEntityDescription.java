@@ -29,6 +29,11 @@ public class SimpleEntityDescription implements EntityDescription {
   private String id;
 
   /**
+   * The human readable display name of the entity.
+   */
+  private String displayName;
+
+  /**
    * The human readable description of the entity.
    */
   private String description;
@@ -38,11 +43,14 @@ public class SimpleEntityDescription implements EntityDescription {
    * 
    * @param id
    *          the ID of the entity
+   * @param displayName
+   *          the human readable display name of the entity
    * @param description
    *          the human readable description of the entity
    */
-  public SimpleEntityDescription(String id, String description) {
+  public SimpleEntityDescription(String id, String displayName, String description) {
     this.id = id;
+    this.displayName = displayName;
     this.description = description;
   }
 
@@ -52,12 +60,18 @@ public class SimpleEntityDescription implements EntityDescription {
   }
 
   @Override
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  @Override
   public String getDescription() {
     return description;
   }
 
   @Override
   public String toString() {
-    return "SimpleEntityDescription [id=" + id + ", description=" + description + "]";
+    return "SimpleEntityDescription [id=" + id + ", displayName=" + displayName + ", description="
+        + description + "]";
   }
 }

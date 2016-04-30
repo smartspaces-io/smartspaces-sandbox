@@ -32,6 +32,12 @@ public class StandardBleProximitySensorValueProcessor {
   /**
    * Process the incoming data.
    * 
+   * @param timestamp
+   *          when the data came in
+   * @param sensor
+   *          the sensor platform that detected the data
+   * @param sensedEntity
+   *          the sensed entity that is associated with the sensor
    * @param sensedEntityModelCollection
    *          the collection of sensed entity models
    * @param data

@@ -27,6 +27,13 @@ package io.smartspaces.sandbox.interaction.entity;
 public interface SensedValue<T> {
 
   /**
+   * Get the description of the sensor that gave the value.
+   * 
+   * @return the sensor description
+   */
+  SensorEntityDescription getSensor();
+
+  /**
    * Get the name of the sensed value.
    * 
    * @return the name
@@ -39,13 +46,6 @@ public interface SensedValue<T> {
    * @return the type
    */
   String getType();
-
-  /**
-   * Get the source sensor.
-   * 
-   * @return the sensor that gve the value
-   */
-  SensorEntityDescription getSource();
 
   /**
    * Get the timestamp of when the value was last updated.

@@ -16,6 +16,9 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityModelCollection;
@@ -25,9 +28,6 @@ import io.smartspaces.sandbox.interaction.entity.SimpleSensedValue;
 import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A sensor listener that will update sensed entity models.
@@ -94,7 +94,8 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
         StandardBleProximitySensorValueProcessor sensorValueProcessor =
             sensorValuesProcessors.get(sensedType);
         if (sensorValueProcessor != null) {
-          sensorValueProcessor.processData(sensedEntityModelCollection, data);
+          sensorValueProcessor.processData(timestamp, sensor, sensedEntity,
+              sensedEntityModelCollection, data);
         } else {
           handler.getSensorProcessor().getLog().formatWarn("Got unknown sensor type %s",
               sensedType);
