@@ -16,35 +16,23 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
-import io.smartspaces.sandbox.interaction.entity.SimpleMarkerEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimplePersonSensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
-import io.smartspaces.sandbox.interaction.entity.StandardSensedEntityModelCollection;
-import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
-import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
-import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;
-import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorInput;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelSensorListener;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.ServiceListener;
+
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.time.LocalTimeProvider;
-import io.smartspaces.util.SmartSpacesUtilities;
-import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
 
 public class TestDriver {
 
@@ -56,142 +44,86 @@ public class TestDriver {
     spaceEnvironment.getServiceRegistry()
         .registerService(new PahoMqttCommunicationEndpointService());
 
-    final ExtendedLog log = spaceEnvironment.getExtendedLog();
+    String ipAddress = getIpAddress();
+    if (ipAddress == null) {
+      return;
+    }
 
-    SensorRegistry sensorRegistry = new InMemorySensorRegistry();
+    final JmDNS jmdns = JmDNS.create(InetAddress.getByName(ipAddress));
+    String mqttServiceName = "_mqtt._tcp.local.";
+    jmdns.addServiceListener(mqttServiceName, new ServiceListener() {
+      @Override
+      public void serviceAdded(ServiceEvent event) {
+        String serviceName = event.getName() + "." + event.getType();
+        System.out.println("Service added   : " + serviceName);
+        ServiceInfo[] services = jmdns.list(mqttServiceName);
+        // jmdns.printServices();
 
-    sensorRegistry.registerMarker(new SimpleMarkerEntityDescription("/marker/ble/fc0d12fe7e5c",
-        "BLE Beacon", "A Estimote BLE Beacon", "ble:fc0d12fe7e5c"));
-    sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription(
-        "/person/keith.hughes", "Keith Hughes", "Keith Hughes"));
-    sensorRegistry.associateMarkerWithMarkedEntity("/marker/ble/fc0d12fe7e5c",
-        "/person/keith.hughes");
+        if (services.length > 0) {
+          String hostname = services[0].getHostAddresses()[0];
+          int port = services[0].getPort();
 
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/home/livingroom/proximity",
-        "Proximity Sensor 1", "Raspberry Pi BLE proximity sensor"));
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107700",
-        "Sensor 9107700", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/livingroom", "Living Room", "The living room on the first floor"));
-    sensorRegistry.associateSensorWithSensedEntity("/home/livingroom/proximity",
-        "/home/livingroom");
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107700",
-        "/home/livingroom");
+          SensorProcessingActivity activity =
+              new SensorProcessingActivity(hostname, port, spaceEnvironment);
+          new Thread(new Runnable() {
 
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107716",
-        "Sensor 9107716", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/masterbedroom", "Master Bedroom", "The master bedroom, on the second floor"));
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107716",
-        "/home/masterbedroom");
+            @Override
+            public void run() {
+              try {
+                activity.run();
+              } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+            }
+          }).start();
+          ;
 
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107709",
-        "Sensor 9107709", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/garagestudio", "Garage Studio", "The studio in the garage"));
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107709",
-        "/home/garagestudio");
-
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9054868",
-        "Sensor 9054868", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/basement", "Basement", "The main room in the basement"));
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054868", "/home/basement");
-
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9054793",
-        "Sensor 9054793", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/kitchen", "Kitchen", "The kitchen on the first floor"));
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054793", "/home/kitchen");
-
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9107713",
-        "Sensor 9107713", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-        "/home/musicroom", "Music Room", "The music room on the second floor"));
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9107713", "/home/musicroom");
-
-    sensorRegistry.registerSensor(new SimpleSensorEntityDescription("/sensornode/nodemcu9054677",
-        "Sensor 9054677", "ESP8266-based temperature/humidity sensor"));
-    sensorRegistry.registerSensedEntity(
-        new SimplePhysicalSpaceSensedEntityDescription("/home/attic", "Attic", "The attic"));
-    sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054677", "/home/attic");
-
-    SensorProcessor sensorProcessor = new StandardSensorProcessor(log);
-
-    File sampleFile = new File("/var/tmp/sensordata.json");
-    boolean liveData = true;
-    boolean sampleRecord = true;
-
-    StandardFilePersistenceSensorInput persistedSensorInput = null;
-    if (liveData) {
-      sensorProcessor.addSensorInput(
-          new MqttSensorInputAggregator(new MqttBrokerDescription("tcp://192.168.188.145:1883"),
-              "/home/sensor/agregator2", "/home/sensor", spaceEnvironment, log));
-
-      if (sampleRecord) {
-        StandardFilePersistenceSensorHandler persistenceHandler =
-            new StandardFilePersistenceSensorHandler(sampleFile);
-        sensorProcessor.addSensorHandler(persistenceHandler);
+          try {
+            jmdns.close();
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
       }
-    } else {
-      persistedSensorInput = new StandardFilePersistenceSensorInput(sampleFile);
-      sensorProcessor.addSensorInput(persistedSensorInput);
-    }
-
-    StandardSensedEntitySensorHandler sensorHandler = new StandardSensedEntitySensorHandler(log);
-    for (SimpleSensorSensedEntityAssociation association : sensorRegistry
-        .getSensorSensedEntityAssociations()) {
-      sensorHandler.associateSensorWithEntity(association.getSensor(),
-          association.getSensedEntity());
-    }
-
-    sensorHandler.addSensedEntitySensorListener(new SensedEntitySensorListener() {
 
       @Override
-      public void handleSensorData(SensedEntitySensorHandler handler, long timestamp,
-          SensorEntityDescription sensor, SensedEntityDescription sensedEntity,
-          DynamicObject data) {
-        log.formatInfo("Got data at %d from sensor %s for entity %s: %s", timestamp, sensor,
-            sensedEntity, data.asMap());
+      public void serviceRemoved(ServiceEvent event) {
+        System.out.println("Service removed : " + event.getName() + "." + event.getType());
+      }
 
+      @Override
+      public void serviceResolved(ServiceEvent event) {
+        System.out.println("Service resolved: " + event.getInfo());
       }
     });
 
-    final StandardSensedEntityModelCollection sensedEntityModelCollection =
-        new StandardSensedEntityModelCollection(sensorRegistry);
-    sensedEntityModelCollection.createModelsFromDescriptions(sensorRegistry.getAllSensedEntities());
+    // SensorProcessingActivity activity = new
+    // SensorProcessingActivity(spaceEnvironment);
+    // activity.run();
+  }
 
-    StandardSensedEntityModelSensorListener modelUpdater =
-        new StandardSensedEntityModelSensorListener(sensedEntityModelCollection);
-    sensorHandler.addSensedEntitySensorListener(modelUpdater);
-
-    sensorProcessor.addSensorHandler(sensorHandler);
-
-    spaceEnvironment.addManagedResource(sensorProcessor);
-
-    if (liveData) {
-      if (sampleRecord) {
-        // Recording
-        SmartSpacesUtilities.delay(1000L * 60 * 2 * 10);
-
-        spaceEnvironment.shutdown();
-      }
-    } else {
-      // Playing back
-      final CountDownLatch latch = new CountDownLatch(1);
-      final StandardFilePersistenceSensorInput playableSensorInput = persistedSensorInput;
-      spaceEnvironment.getExecutorService().submit(new Runnable() {
-
-        @Override
-        public void run() {
-          playableSensorInput.play();
-          latch.countDown();
+  private static String getIpAddress() {
+    Set<String> interfacesToIgnore = new HashSet<>();
+    interfacesToIgnore.add("docker0");
+    interfacesToIgnore.add("wlan0");
+    try {
+      for (NetworkInterface intf : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+        System.out.println("Checking " + intf.getName());
+        if (!intf.isLoopback() && !interfacesToIgnore.contains(intf.getName())) {
+          for (InetAddress address : Collections.list(intf.getInetAddresses())) {
+            if (address instanceof Inet4Address) {
+              return address.getHostAddress();
+            }
+          }
         }
-      });
-
-      latch.await();
-
-      spaceEnvironment.shutdown();
+      }
+    } catch (SocketException e) {
+      System.out.println(" (error retrieving network interface list)");
     }
+
+    return null;
+
   }
 }

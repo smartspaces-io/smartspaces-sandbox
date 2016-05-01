@@ -57,8 +57,9 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
       SensedEntityModelCollection sensedEntityModelCollection) {
     this.sensedEntityModelCollection = sensedEntityModelCollection;
 
+    StandardBleProximitySensorValueProcessor standardBleProximitySensorValueProcessor = new StandardBleProximitySensorValueProcessor();
     sensorValuesProcessors.put(StandardSensorData.SENSOR_TYPE_PROXIMITY_BLE,
-        new StandardBleProximitySensorValueProcessor());
+        standardBleProximitySensorValueProcessor);
   }
 
   @Override

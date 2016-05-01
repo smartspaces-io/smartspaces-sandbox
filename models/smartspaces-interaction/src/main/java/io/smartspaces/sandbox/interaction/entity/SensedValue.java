@@ -50,7 +50,7 @@ public interface SensedValue<T> {
   /**
    * Get the timestamp of when the value was last updated.
    * 
-   * @return the timestamp in milliseconds since the epoch.
+   * @return the timestamp in milliseconds since the epoch
    */
   long getTimestamp();
 

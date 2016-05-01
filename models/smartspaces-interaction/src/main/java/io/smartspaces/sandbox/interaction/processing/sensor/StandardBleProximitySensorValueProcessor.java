@@ -16,18 +16,49 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
+import io.smartspaces.event.trigger.SimpleHysteresisThresholdValueTrigger;
+import io.smartspaces.event.trigger.Trigger;
+import io.smartspaces.event.trigger.TriggerEventType;
+import io.smartspaces.event.trigger.TriggerListener;
+import io.smartspaces.event.trigger.TriggerState;
 import io.smartspaces.sandbox.interaction.entity.MarkableEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
+import io.smartspaces.util.resource.ManagedResource;
 
 /**
  * The standard processor for BLE proximity data.
  * 
  * @author Keith M. Hughes
  */
-public class StandardBleProximitySensorValueProcessor {
+public class StandardBleProximitySensorValueProcessor implements ManagedResource {
+
+  private SimpleHysteresisThresholdValueTrigger userTrigger =
+      new SimpleHysteresisThresholdValueTrigger();
+
+  @Override
+  public void startup() {
+    userTrigger.setThresholdsWithOffset(-56, 2);
+    userTrigger.addListener(new TriggerListener() {
+
+      @Override
+      public void onTrigger(Trigger trigger, TriggerState state, TriggerEventType type) {
+        if (type == TriggerEventType.RISING) {
+          System.out.println("Trigger rising");
+        } else {
+          System.out.println("Trigger falling");
+        }
+      }
+    });
+  }
+
+  @Override
+  public void shutdown() {
+    // TODO Auto-generated method stub
+
+  }
 
   /**
    * Process the incoming data.
@@ -51,6 +82,8 @@ public class StandardBleProximitySensorValueProcessor {
 
     MarkableEntityDescription markedEntity =
         sensedEntityModelCollection.getSensorRegistry().getMarkableEntityByMarkerId(markerId);
+
+    userTrigger.update((long) rssi);
 
     System.out.format("Detected ID %s,  RSSI= %f, %s\n", markerId, rssi, markedEntity);
   }
