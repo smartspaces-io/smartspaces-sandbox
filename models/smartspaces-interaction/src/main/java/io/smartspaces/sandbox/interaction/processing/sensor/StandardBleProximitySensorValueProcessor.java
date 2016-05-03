@@ -28,37 +28,34 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.resource.ManagedResource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The standard processor for BLE proximity data.
  * 
  * @author Keith M. Hughes
  */
-public class StandardBleProximitySensorValueProcessor implements ManagedResource {
+public class StandardBleProximitySensorValueProcessor {
 
-  private SimpleHysteresisThresholdValueTrigger userTrigger =
-      new SimpleHysteresisThresholdValueTrigger();
+  /**
+   * The map from the BLE IDs to the trigger for that ID.
+   */
+  private Map<String, SimpleHysteresisThresholdValueTrigger> userTriggers = new HashMap<>();
 
-  @Override
-  public void startup() {
-    userTrigger.setThresholdsWithOffset(-56, 2);
-    userTrigger.addListener(new TriggerListener() {
-
-      @Override
-      public void onTrigger(Trigger trigger, TriggerState state, TriggerEventType type) {
-        if (type == TriggerEventType.RISING) {
-          System.out.println("Trigger rising");
-        } else {
-          System.out.println("Trigger falling");
-        }
+  /**
+   * The listener for trigger events being shared across all triggers.
+   */
+  private TriggerListener triggerListener = new TriggerListener() {
+    @Override
+    public void onTrigger(Trigger trigger, TriggerState state, TriggerEventType type) {
+      if (type == TriggerEventType.RISING) {
+        System.out.println("Trigger rising");
+      } else {
+        System.out.println("Trigger falling");
       }
-    });
-  }
-
-  @Override
-  public void shutdown() {
-    // TODO Auto-generated method stub
-
-  }
+    }
+  };
 
   /**
    * Process the incoming data.
@@ -83,8 +80,23 @@ public class StandardBleProximitySensorValueProcessor implements ManagedResource
     MarkableEntityDescription markedEntity =
         sensedEntityModelCollection.getSensorRegistry().getMarkableEntityByMarkerId(markerId);
 
-    userTrigger.update((long) rssi);
+    SimpleHysteresisThresholdValueTrigger userTrigger = getTrigger(markerId);
+    userTrigger.update(rssi);
 
     System.out.format("Detected ID %s,  RSSI= %f, %s\n", markerId, rssi, markedEntity);
   }
+
+  private SimpleHysteresisThresholdValueTrigger getTrigger(String markerId) {
+    SimpleHysteresisThresholdValueTrigger userTrigger = userTriggers.get(markerId);
+    if (userTrigger == null) {
+      userTrigger = new SimpleHysteresisThresholdValueTrigger();
+      userTrigger.setThresholdsWithOffset(-56, 2);
+      userTrigger.addListener(triggerListener);
+      
+      userTriggers.put(markerId, userTrigger);
+    }
+    
+    return userTrigger;
+  }
+
 }

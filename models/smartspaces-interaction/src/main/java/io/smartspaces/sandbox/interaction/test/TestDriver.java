@@ -16,6 +16,11 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
+import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
+import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
+import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
+import io.smartspaces.time.LocalTimeProvider;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -30,19 +35,21 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
-import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
-import io.smartspaces.time.LocalTimeProvider;
-
 public class TestDriver {
 
   public static void main(String[] args) throws Exception {
-    StandaloneSmartSpacesEnvironment spaceEnvironment =
+    final StandaloneSmartSpacesEnvironment spaceEnvironment =
         StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment();
     spaceEnvironment.setTimeProvider(new LocalTimeProvider());
 
-    spaceEnvironment.getServiceRegistry()
-        .registerService(new PahoMqttCommunicationEndpointService());
+    PahoMqttCommunicationEndpointService pahoMqttCommunicationEndpointService =
+        new PahoMqttCommunicationEndpointService();
+    spaceEnvironment.addManagedResource(pahoMqttCommunicationEndpointService);
+    spaceEnvironment.getServiceRegistry().registerService(pahoMqttCommunicationEndpointService);
+    FreeTtsSpeechSynthesisService freeTtsSpeechSynthesisService =
+        new FreeTtsSpeechSynthesisService();
+    spaceEnvironment.addManagedResource(freeTtsSpeechSynthesisService);
+    spaceEnvironment.getServiceRegistry().registerService(freeTtsSpeechSynthesisService);
 
     String ipAddress = getIpAddress();
     if (ipAddress == null) {
@@ -50,7 +57,7 @@ public class TestDriver {
     }
 
     final JmDNS jmdns = JmDNS.create(InetAddress.getByName(ipAddress));
-    String mqttServiceName = "_mqtt._tcp.local.";
+    final String mqttServiceName = "_mqtt._tcp.local.";
     jmdns.addServiceListener(mqttServiceName, new ServiceListener() {
       @Override
       public void serviceAdded(ServiceEvent event) {
@@ -63,7 +70,7 @@ public class TestDriver {
           String hostname = services[0].getHostAddresses()[0];
           int port = services[0].getPort();
 
-          SensorProcessingActivity activity =
+          final SensorProcessingActivity activity =
               new SensorProcessingActivity(hostname, port, spaceEnvironment);
           new Thread(new Runnable() {
 

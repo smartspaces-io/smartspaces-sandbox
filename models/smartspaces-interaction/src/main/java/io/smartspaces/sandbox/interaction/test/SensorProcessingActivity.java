@@ -3,9 +3,6 @@
  */
 package io.smartspaces.sandbox.interaction.test;
 
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
-
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
@@ -26,10 +23,15 @@ import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersiste
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelSensorListener;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
+import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
+import io.smartspaces.service.speech.synthesis.SpeechSynthesisService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
+
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author keith
@@ -51,7 +53,12 @@ public class SensorProcessingActivity {
   }
 
   public void run() throws Exception {
-
+    
+    SpeechSynthesisService speechSynthesisService = spaceEnvironment.getServiceRegistry().getRequiredService(SpeechSynthesisService.SERVICE_NAME);
+    SpeechSynthesisPlayer speechPlayer = speechSynthesisService.newPlayer(spaceEnvironment.getLog());
+    spaceEnvironment.addManagedResource(speechPlayer);
+    speechPlayer.speak("Hello world", false);
+    
     SensorRegistry sensorRegistry = new InMemorySensorRegistry();
 
     importDescriptions(sensorRegistry);
