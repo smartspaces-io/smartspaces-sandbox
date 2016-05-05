@@ -14,7 +14,10 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity.model;
+
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
 
 import java.util.Collection;
 
@@ -24,7 +27,7 @@ import java.util.Collection;
  * @author Keith M. Hughes
  */
 public interface SensedEntityModelCollection {
-  
+
   /**
    * Prepare the collection.
    * 
@@ -32,7 +35,7 @@ public interface SensedEntityModelCollection {
    * This will include building sensing models.
    */
   void prepare();
-  
+
   /**
    * Create sensed entity models from their descriptions.
    * 
@@ -49,10 +52,12 @@ public interface SensedEntityModelCollection {
    * 
    * @param id
    *          the ID of the entity
+   * @param <T>
+   *          the complete type of the model
    * 
    * @return the model, or {@code null} if none
    */
-  SensedEntityModel getSensedEntityModel(String id);
+  <T extends SensedEntityModel> T getSensedEntityModel(String id);
 
   /**
    * Get all models in the collection.
@@ -60,7 +65,41 @@ public interface SensedEntityModelCollection {
    * @return the models
    */
   Collection<SensedEntityModel> getAllSensedEntityModels();
-  
+
+  /**
+   * Get the model for a given physical space entity ID.
+   * 
+   * @param id
+   *          the ID of the entity
+   * 
+   * @return the model, or {@code null} if none
+   */
+  PhysicalSpaceSensedEntityModel getPhysicalSpaceSensedEntityModel(String id);
+
+  /**
+   * Get all physical space models in the collection.
+   * 
+   * @return the models
+   */
+  Collection<PhysicalSpaceSensedEntityModel> getAllPhysicalSpaceSensedEntityModels();
+
+  /**
+   * Get the model for a given person entity ID.
+   * 
+   * @param id
+   *          the ID of the entity
+   * 
+   * @return the model, or {@code null} if none
+   */
+  PersonSensedEntityModel getPersonSensedEntityModel(String id);
+
+  /**
+   * Get all person models in the collection.
+   * 
+   * @return the models
+   */
+  Collection<PersonSensedEntityModel> getAllPersonSensedEntityModels();
+
   /**
    * Get the sensor registry for the collection.
    * 

@@ -14,7 +14,10 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity.model;
+
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedValue;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +36,11 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
   private SensedEntityDescription entityDescription;
 
   /**
+   * The model collection this model is in.
+   */
+  private SensedEntityModelCollection models;
+
+  /**
    * The values being sensed keyed by the value name.
    */
   private Map<String, SensedValue<?>> sensedValues = new HashMap<>();
@@ -42,8 +50,11 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
    * 
    * @param entityDescription
    *          the description of the entity
+   * @param models
+   *          the collection of models this entity is in
    */
-  public SimpleSensedEntityModel(SensedEntityDescription entityDescription) {
+  public SimpleSensedEntityModel(SensedEntityDescription entityDescription,
+      SensedEntityModelCollection models) {
     this.entityDescription = entityDescription;
   }
 
@@ -51,6 +62,11 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
   @Override
   public <T extends SensedEntityDescription> T getSensedEntityDescription() {
     return (T) entityDescription;
+  }
+
+  @Override
+  public SensedEntityModelCollection getAllModels() {
+    return models;
   }
 
   @Override
@@ -68,5 +84,12 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
   public void updateSensedValue(SensedValue<?> value) {
     // TODO(keith): Needs some sort of concurrency block
     sensedValues.put(value.getName(), value);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends SensedEntityModel, U> U
+      doTransaction(SensedEntityModelTransaction<T, U> transaction) {
+    return transaction.perform((T) this);
   }
 }

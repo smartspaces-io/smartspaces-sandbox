@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.SensedValue;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensedValue;
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;

@@ -23,8 +23,8 @@ import io.smartspaces.event.trigger.TriggerListener;
 import io.smartspaces.event.trigger.TriggerState;
 import io.smartspaces.sandbox.interaction.entity.MarkableEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.resource.ManagedResource;
 
@@ -49,11 +49,7 @@ public class StandardBleProximitySensorValueProcessor {
   private TriggerListener triggerListener = new TriggerListener() {
     @Override
     public void onTrigger(Trigger trigger, TriggerState state, TriggerEventType type) {
-      if (type == TriggerEventType.RISING) {
-        System.out.println("Trigger rising");
-      } else {
-        System.out.println("Trigger falling");
-      }
+      handleTrigger(trigger, state, type);
     }
   };
 
@@ -92,11 +88,18 @@ public class StandardBleProximitySensorValueProcessor {
       userTrigger = new SimpleHysteresisThresholdValueTrigger();
       userTrigger.setThresholdsWithOffset(-56, 2);
       userTrigger.addListener(triggerListener);
-      
+
       userTriggers.put(markerId, userTrigger);
     }
-    
+
     return userTrigger;
   }
 
+  private void handleTrigger(Trigger trigger, TriggerState state, TriggerEventType type) {
+    if (type == TriggerEventType.RISING) {
+      System.out.println("Trigger rising");
+    } else {
+      System.out.println("Trigger falling");
+    }
+  }
 }

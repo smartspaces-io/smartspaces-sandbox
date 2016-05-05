@@ -13,7 +13,7 @@ import io.smartspaces.sandbox.interaction.entity.SimplePersonSensedEntityDescrip
 import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
-import io.smartspaces.sandbox.interaction.entity.StandardSensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.model.StandardSensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;

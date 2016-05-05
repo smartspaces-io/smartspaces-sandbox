@@ -14,7 +14,10 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity.model;
+
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensedValue;
 
 import java.util.Collection;
 
@@ -24,6 +27,13 @@ import java.util.Collection;
  * @author Keith M. Hughes
  */
 public interface SensedEntityModel {
+  
+  /**
+   * Get the sensed entity model collection this model is in.
+   * 
+   * @return the sensed entity model collection
+   */
+  SensedEntityModelCollection getAllModels();
 
   /**
    * Get the entity description for the entity being modeled.
@@ -41,11 +51,10 @@ public interface SensedEntityModel {
    * @return the sensed value with the specified name or {@link null} if none
    */
   SensedValue<?> getSensedValue(String valueName);
-  
 
   /**
    * Get all sensed values for this entity.
-    * 
+   * 
    * @return the sensed value with the specified name or {@link null} if none
    */
   Collection<SensedValue<?>> getAllSensedValues();
@@ -57,4 +66,14 @@ public interface SensedEntityModel {
    *          the value being updated
    */
   void updateSensedValue(SensedValue<?> value);
+
+  /**
+   * Perform a set of operations within a transaction.
+   * 
+   * @param transaction
+   *          the code to run inside the transaction
+   * 
+   * @return the value returned
+   */
+  <T extends SensedEntityModel, U> U doTransaction(SensedEntityModelTransaction<T, U> transaction);
 }
