@@ -16,10 +16,12 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
+import io.smartspaces.sandbox.interaction.entity.MarkerMarkedEntityAssociation;
 import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
+import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,18 +55,25 @@ public class StandardSensedEntityModelCollection implements SensedEntityModelCol
   private Map<String, PersonSensedEntityModel> idToPersonModels = new HashMap<>();
 
   /**
+   * Map of marker IDs to their models.
+   */
+  private Map<String, PersonSensedEntityModel> markerIdToPersonModels = new HashMap<>();
+
+  /**
+   * Not staying! Just here until event listeners are in.
+   */
+  private SpeechSynthesisPlayer speechPlayer;
+
+  /**
    * Construct a new collection.
    * 
    * @param sensorRegistry
    *          the sensor registry
    */
-  public StandardSensedEntityModelCollection(SensorRegistry sensorRegistry) {
+  public StandardSensedEntityModelCollection(SensorRegistry sensorRegistry,
+      SpeechSynthesisPlayer speechPlayer) {
     this.sensorRegistry = sensorRegistry;
-  }
-
-  @Override
-  public void prepare() {
-    createModelsFromDescriptions(sensorRegistry.getAllSensedEntities());
+    this.speechPlayer = speechPlayer;
   }
 
   @Override
@@ -73,28 +82,49 @@ public class StandardSensedEntityModelCollection implements SensedEntityModelCol
   }
 
   @Override
-  public SensedEntityModelCollection
-      createModelsFromDescriptions(Collection<SensedEntityDescription> entities) {
-    for (SensedEntityDescription entityDescription : entities) {
-      String id = entityDescription.getId();
+  public void prepare() {
+    createModelsFromDescriptions();
+  }
 
-      SensedEntityModel model = null;
-      if (entityDescription instanceof PhysicalSpaceSensedEntityDescription) {
-        model = new SimplePhysicalSpaceSensedEntityModel(
-            (PhysicalSpaceSensedEntityDescription) entityDescription, this);
-        idToPhysicalSpaceModels.put(id, (PhysicalSpaceSensedEntityModel) model);
-      } else if (entityDescription instanceof PersonSensedEntityDescription) {
-        model =
-            new SimplePersonSensedEntityModel((PersonSensedEntityDescription) entityDescription, this);
-        idToPersonModels.put(id, (PersonSensedEntityModel) model);
-      } else {
-        model = new SimpleSensedEntityModel(entityDescription, this);
-      }
-
-      idToModels.put(id, model);
+  /**
+   * Create all models from the descriptions in the registry.
+   */
+  private void createModelsFromDescriptions() {
+    for (SensedEntityDescription entityDescription : sensorRegistry.getAllSensedEntities()) {
+      addNewSensedEntity(entityDescription);
     }
 
-    return this;
+    for (MarkerMarkedEntityAssociation association : sensorRegistry
+        .getMarkerMarkedEntityAssociations()) {
+      markerIdToPersonModels.put(association.getMarker().getMarkerId(),
+          idToPersonModels.get(association.getMarkedEntity().getId()));
+    }
+
+  }
+
+  /**
+   * Add in a new sensed entity into the collection.
+   * 
+   * @param entityDescription
+   *          the new description
+   */
+  private void addNewSensedEntity(SensedEntityDescription entityDescription) {
+    String id = entityDescription.getId();
+
+    SensedEntityModel model = null;
+    if (entityDescription instanceof PhysicalSpaceSensedEntityDescription) {
+      model = new SimplePhysicalSpaceSensedEntityModel(
+          (PhysicalSpaceSensedEntityDescription) entityDescription, this, speechPlayer);
+      idToPhysicalSpaceModels.put(id, (PhysicalSpaceSensedEntityModel) model);
+    } else if (entityDescription instanceof PersonSensedEntityDescription) {
+      model = new SimplePersonSensedEntityModel((PersonSensedEntityDescription) entityDescription,
+          this);
+      idToPersonModels.put(id, (PersonSensedEntityModel) model);
+    } else {
+      model = new SimpleSensedEntityModel(entityDescription, this);
+    }
+
+    idToModels.put(id, model);
   }
 
   @SuppressWarnings("unchecked")
@@ -126,5 +156,10 @@ public class StandardSensedEntityModelCollection implements SensedEntityModelCol
   @Override
   public Collection<PersonSensedEntityModel> getAllPersonSensedEntityModels() {
     return idToPersonModels.values();
+  }
+
+  @Override
+  public PersonSensedEntityModel getMarkedSensedEntityModel(String markerId) {
+    return markerIdToPersonModels.get(markerId);
   }
 }

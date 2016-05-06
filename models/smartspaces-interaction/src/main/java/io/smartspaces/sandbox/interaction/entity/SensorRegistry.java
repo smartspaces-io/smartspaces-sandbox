@@ -146,7 +146,7 @@ public interface SensorRegistry {
    * 
    * @return the associations as an unmodifiable list
    */
-  Collection<SimpleMarkerMarkedEntityAssociation> getMarkerMarkedEntityAssociations();
+  Collection<MarkerMarkedEntityAssociation> getMarkerMarkedEntityAssociations();
 
   /**
    * Associate a sensor with its sensed entity.

@@ -21,40 +21,20 @@ package io.smartspaces.sandbox.interaction.entity;
  * 
  * @author Keith M. Hughes
  */
-public class SimpleMarkerMarkedEntityAssociation implements MarkerMarkedEntityAssociation {
+public interface MarkerMarkedEntityAssociation {
 
   /**
-   * The marker.
-   */
-  private MarkerEntityDescription marker;
-
-  /**
-   * The sensed entity.
-   */
-  private MarkableEntityDescription markedEntity;
-
-  /**
-   * Construct a new association.
+   * Get the marker.
    * 
-   * @param marker
-   *          the marker
-   * @param markedEntity
-   *          the associated marked entity
+   * @return the marker
    */
-  public SimpleMarkerMarkedEntityAssociation(MarkerEntityDescription marker,
-      MarkableEntityDescription markedEntity) {
-    this.marker = marker;
-    this.markedEntity = markedEntity;
-  }
+  MarkerEntityDescription getMarker();
 
-  @Override
-  public MarkerEntityDescription getMarker() {
-    return marker;
-  }
-
-  @Override
-  public MarkableEntityDescription getMarkedEntity() {
-    return markedEntity;
-  }
+  /**
+   * Get the sensed entity.
+   * 
+   * @return the sensed entity
+   */
+  MarkableEntityDescription getMarkedEntity();
 
 }

@@ -37,17 +37,6 @@ public interface SensedEntityModelCollection {
   void prepare();
 
   /**
-   * Create sensed entity models from their descriptions.
-   * 
-   * @param entities
-   *          the entity descriptions
-   * 
-   * @return this collection
-   */
-  SensedEntityModelCollection
-      createModelsFromDescriptions(Collection<SensedEntityDescription> entities);
-
-  /**
    * Get the model for a given entity ID.
    * 
    * @param id
@@ -99,6 +88,16 @@ public interface SensedEntityModelCollection {
    * @return the models
    */
   Collection<PersonSensedEntityModel> getAllPersonSensedEntityModels();
+
+  /**
+   * Get the model for a given marked entity ID.
+   * 
+   * @param markerId
+   *          the marker ID associated with the entity
+   * 
+   * @return the model, or {@code null} if none
+   */
+  PersonSensedEntityModel getMarkedSensedEntityModel(String markerId);
 
   /**
    * Get the sensor registry for the collection.

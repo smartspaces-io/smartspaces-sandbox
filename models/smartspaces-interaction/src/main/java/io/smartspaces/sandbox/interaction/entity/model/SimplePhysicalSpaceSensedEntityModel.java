@@ -16,8 +16,8 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
-import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
+import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +36,11 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
   private Set<PersonSensedEntityModel> occupants = new HashSet<>();
 
   /**
+   * Not staying! Just until vent listeners in.
+   */
+  private SpeechSynthesisPlayer speechPlayer;
+
+  /**
    * Construct a new sensed entity model.
    * 
    * @param entityDescription
@@ -44,26 +49,38 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
    *          the collection of models this entity is in
    */
   public SimplePhysicalSpaceSensedEntityModel(
-      PhysicalSpaceSensedEntityDescription entityDescription,
-      SensedEntityModelCollection models) {
+      PhysicalSpaceSensedEntityDescription entityDescription, SensedEntityModelCollection models,
+      SpeechSynthesisPlayer speechPlayer) {
     super(entityDescription, models);
+
+    this.speechPlayer = speechPlayer;
   }
 
   @Override
   public PhysicalSpaceSensedEntityModel occupantEntered(PersonSensedEntityModel person) {
 
     occupants.add(person);
-    
+
     person.setPhysicalSpaceLocation(this);
-    
+
+    speechPlayer.speak(
+        String.format("%s has entered %s", person.getSensedEntityDescription().getDisplayName(),
+            getSensedEntityDescription().getDisplayName()),
+        false);
+
     return this;
   }
 
   @Override
   public PhysicalSpaceSensedEntityModel occupantExited(PersonSensedEntityModel person) {
     occupants.remove(person);
-    
+
     person.setPhysicalSpaceLocation(null);
+
+    speechPlayer.speak(
+        String.format("%s has exited %s", person.getSensedEntityDescription().getDisplayName(),
+            getSensedEntityDescription().getDisplayName()),
+        false);
 
     return this;
   }

@@ -65,9 +65,9 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
   @Override
   public void handleSensorData(SensedEntitySensorHandler handler, long timestamp,
       SensorEntityDescription sensor, SensedEntityDescription sensedEntity, DynamicObject data) {
-    SensedEntityModel model =
+    SensedEntityModel sensedEntityModel =
         sensedEntityModelCollection.getSensedEntityModel(sensedEntity.getId());
-    if (model == null) {
+    if (sensedEntityModel == null) {
       handler.getSensorProcessor().getLog().formatWarn("Have no sensed entity model for entity %s",
           sensedEntity);
     }
@@ -90,12 +90,12 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
             sensedType, data.getDouble("value"), timestamp);
         handler.getSensorProcessor().getLog().info(value);
 
-        model.updateSensedValue(value);
+        sensedEntityModel.updateSensedValue(value);
       } else {
         StandardBleProximitySensorValueProcessor sensorValueProcessor =
             sensorValuesProcessors.get(sensedType);
         if (sensorValueProcessor != null) {
-          sensorValueProcessor.processData(timestamp, sensor, sensedEntity,
+          sensorValueProcessor.processData(timestamp, sensor, sensedEntityModel,
               sensedEntityModelCollection, data);
         } else {
           handler.getSensorProcessor().getLog().formatWarn("Got unknown sensor type %s",

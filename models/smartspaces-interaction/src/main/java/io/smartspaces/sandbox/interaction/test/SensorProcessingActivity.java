@@ -1,6 +1,19 @@
-/**
- * 
+/*
+ * Copyright (C) 2016 Keith M. Hughes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
+
 package io.smartspaces.sandbox.interaction.test;
 
 import io.smartspaces.logging.ExtendedLog;
@@ -34,8 +47,9 @@ import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @author keith
- *
+ * An activity to merge sensors across the entire space.
+ * 
+ * @author Keith M. Hughes
  */
 public class SensorProcessingActivity {
 
@@ -53,12 +67,14 @@ public class SensorProcessingActivity {
   }
 
   public void run() throws Exception {
-    
-    SpeechSynthesisService speechSynthesisService = spaceEnvironment.getServiceRegistry().getRequiredService(SpeechSynthesisService.SERVICE_NAME);
-    SpeechSynthesisPlayer speechPlayer = speechSynthesisService.newPlayer(spaceEnvironment.getLog());
+
+    SpeechSynthesisService speechSynthesisService = spaceEnvironment.getServiceRegistry()
+        .getRequiredService(SpeechSynthesisService.SERVICE_NAME);
+    SpeechSynthesisPlayer speechPlayer =
+        speechSynthesisService.newPlayer(spaceEnvironment.getLog());
     spaceEnvironment.addManagedResource(speechPlayer);
     speechPlayer.speak("Hello world", false);
-    
+
     SensorRegistry sensorRegistry = new InMemorySensorRegistry();
 
     importDescriptions(sensorRegistry);
@@ -108,8 +124,8 @@ public class SensorProcessingActivity {
     });
 
     final StandardSensedEntityModelCollection sensedEntityModelCollection =
-        new StandardSensedEntityModelCollection(sensorRegistry);
-    sensedEntityModelCollection.createModelsFromDescriptions(sensorRegistry.getAllSensedEntities());
+        new StandardSensedEntityModelCollection(sensorRegistry, speechPlayer);
+    sensedEntityModelCollection.prepare();
 
     StandardSensedEntityModelSensorListener modelUpdater =
         new StandardSensedEntityModelSensorListener(sensedEntityModelCollection);

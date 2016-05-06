@@ -70,13 +70,12 @@ public class InMemorySensorRegistry implements SensorRegistry {
   /**
    * The associations between markers and what entity is being marked by them.
    */
-  private List<SimpleMarkerMarkedEntityAssociation> markerMarkedEntityAssociations =
-      new ArrayList<>();
+  private List<MarkerMarkedEntityAssociation> markerMarkedEntityAssociations = new ArrayList<>();
 
   /**
    * The associations as an unmodifiable list.
    */
-  private List<SimpleMarkerMarkedEntityAssociation> markerMarkedEntityAssociationsImmutable =
+  private List<MarkerMarkedEntityAssociation> markerMarkedEntityAssociationsImmutable =
       Collections.unmodifiableList(markerMarkedEntityAssociations);
 
   @Override
@@ -166,7 +165,7 @@ public class InMemorySensorRegistry implements SensorRegistry {
   }
 
   @Override
-  public Collection<SimpleMarkerMarkedEntityAssociation> getMarkerMarkedEntityAssociations() {
+  public Collection<MarkerMarkedEntityAssociation> getMarkerMarkedEntityAssociations() {
     return markerMarkedEntityAssociationsImmutable;
   }
 
