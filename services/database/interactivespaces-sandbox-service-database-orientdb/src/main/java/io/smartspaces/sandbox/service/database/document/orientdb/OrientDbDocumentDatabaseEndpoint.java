@@ -17,6 +17,10 @@
 
 package io.smartspaces.sandbox.service.database.document.orientdb;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+
+import io.smartspaces.util.resource.ManagedResource;
+
 /**
  * Endpoint for an OrientDB document database.
  */

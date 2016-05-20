@@ -17,7 +17,8 @@
 
 package io.smartspaces.sandbox.service.database.document.orientdb.internal.osgi;
 
-import src.main.java.interactivespaces.sandbox.service.database.document.orientdb.BasicOrientDbDocumentDatabaseService;
+import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
+import io.smartspaces.sandbox.service.database.document.orientdb.BasicOrientDbDocumentDatabaseService;
 
 /**
  * OSGi bundle activator for the OrientDB database service.

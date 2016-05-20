@@ -17,6 +17,14 @@
 
 package io.smartspaces.sandbox.service.database.document.orientdb;
 
+import java.util.Collection;
+
+import org.apache.commons.logging.Log;
+
+import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.db.ODatabase;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+
 /**
  * Endpoint for an OrientDB document database.
  */
@@ -76,7 +84,7 @@ public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDa
 
   @Override
   public synchronized ODatabaseDocumentTx createConnection() {
-    checkState(connections != null, url);
+    //checkState(connections != null, url);
     log.debug("Creating connection to " + url);
     ODatabaseDocumentTx result = service.createOrOpenDatabase(url, login, password);
     connections.add(result);
@@ -85,7 +93,7 @@ public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDa
 
   @Override
   public synchronized void startup() {
-    checkState(connections == null, url);
+    //checkState(connections == null, url);
     connections = Lists.newArrayList();
   }
 
