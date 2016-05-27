@@ -67,12 +67,21 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
       new CopyOnWriteArrayList<>();
 
   /**
+   * The handler for unknown sensor and sensed entity IDs.
+   */
+  private UnknownSensedEntityHandler unknownSensedEntityHandler;
+
+  /**
    * Construct a new handler.
    * 
+   * @param unknownSensedEntityHandler
+   *          the unknown sensed entity handler
    * @param log
    *          the log to use
    */
-  public StandardSensedEntitySensorHandler(ExtendedLog log) {
+  public StandardSensedEntitySensorHandler(UnknownSensedEntityHandler unknownSensedEntityHandler,
+      ExtendedLog log) {
+    this.unknownSensedEntityHandler = unknownSensedEntityHandler;
     this.log = log;
   }
 
@@ -116,7 +125,7 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
 
   @Override
   public void handleSensorData(long timestamp, DynamicObject data) {
-    String sensorId = data.getString("sensor");
+    String sensorId = data.getString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_SENSOR);
 
     if (sensorId == null) {
       log.warn("Got data from unknown sensor, the sensor ID is missing");
@@ -127,6 +136,8 @@ public class StandardSensedEntitySensorHandler implements SensedEntitySensorHand
     if (sensor == null) {
       log.formatWarn("Got data from unregistered sensor %s, the data is %s", sensorId,
           data.asMap());
+      unknownSensedEntityHandler.handleUnknownSensor(sensorId);
+      
       return;
     }
 

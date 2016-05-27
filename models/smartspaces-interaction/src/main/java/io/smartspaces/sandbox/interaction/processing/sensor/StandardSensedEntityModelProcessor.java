@@ -19,6 +19,7 @@ package io.smartspaces.sandbox.interaction.processing.sensor;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedValue;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
@@ -30,11 +31,12 @@ import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
 
 /**
- * A sensor listener that will update sensed entity models.
+ * A sensor processor that will update sensed entity models.
  * 
  * @author Keith M. Hughes
  */
-public class StandardSensedEntityModelSensorListener implements SensedEntitySensorListener {
+public class StandardSensedEntityModelProcessor
+    implements SensedEntityModelProcessor, SensedEntitySensorListener {
 
   /**
    * The sensed entity models to be updated.
@@ -44,22 +46,39 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
   /**
    * The map of sensor types to sensor processors.
    */
-  private Map<String, StandardBleProximitySensorValueProcessor> sensorValuesProcessors =
-      new HashMap<>();
+  private Map<String, SensorValueProcessor> sensorValuesProcessors = new HashMap<>();
+
+  /**
+   * The context for sensor value processors.
+   */
+  private SensorValueProcessorContext processorContext;
+
+  /**
+   * The logger to use.
+   */
+  private ExtendedLog log;
 
   /**
    * Construct a new listener.
    * 
    * @param sensedEntityModelCollection
-   *          the sensed entity models to be updated.
+   *          the sensed entity models to be updated
+   * @param log
+   *          the logger to use
    */
-  public StandardSensedEntityModelSensorListener(
-      SensedEntityModelCollection sensedEntityModelCollection) {
+  public StandardSensedEntityModelProcessor(SensedEntityModelCollection sensedEntityModelCollection,
+      ExtendedLog log) {
     this.sensedEntityModelCollection = sensedEntityModelCollection;
+    this.log = log;
 
-    StandardBleProximitySensorValueProcessor standardBleProximitySensorValueProcessor = new StandardBleProximitySensorValueProcessor();
-    sensorValuesProcessors.put(StandardSensorData.SENSOR_TYPE_PROXIMITY_BLE,
-        standardBleProximitySensorValueProcessor);
+    processorContext = new SensorValueProcessorContext(sensedEntityModelCollection, log);
+  }
+
+  @Override
+  public SensedEntityModelProcessor addSensorValueProcessor(SensorValueProcessor processor) {
+    sensorValuesProcessors.put(processor.getSensorValueType(), processor);
+
+    return this;
   }
 
   @Override
@@ -68,14 +87,14 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
     SensedEntityModel sensedEntityModel =
         sensedEntityModelCollection.getSensedEntityModel(sensedEntity.getId());
     if (sensedEntityModel == null) {
-      handler.getSensorProcessor().getLog().formatWarn("Have no sensed entity model for entity %s",
-          sensedEntity);
+      log.formatWarn("Have no sensed entity model for entity %s", sensedEntity);
+      return;
     }
 
-    handler.getSensorProcessor().getLog().formatInfo("Updating model for entity %s", sensedEntity);
+    log.formatInfo("Updating model for entity %s", sensedEntity);
 
     // Go into the data fields.
-    data.down("data");
+    data.down(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA);
 
     // Go through every property in the data set, find its type, and then create
     // appropriate values
@@ -84,22 +103,22 @@ public class StandardSensedEntityModelSensorListener implements SensedEntitySens
 
       entry.down();
 
-      String sensedType = data.getRequiredString("type");
+      String sensedType =
+          data.getRequiredString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE);
       if (StandardSensorData.DOUBLE_VALUED_SENSOR_TYPES.contains(sensedType)) {
-        SensedValue<Double> value = new SimpleSensedValue<Double>(sensor, sensedValueName,
-            sensedType, data.getDouble("value"), timestamp);
+        SensedValue<Double> value =
+            new SimpleSensedValue<Double>(sensor, sensedValueName, sensedType,
+                data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp);
         handler.getSensorProcessor().getLog().info(value);
 
         sensedEntityModel.updateSensedValue(value);
       } else {
-        StandardBleProximitySensorValueProcessor sensorValueProcessor =
-            sensorValuesProcessors.get(sensedType);
+        SensorValueProcessor sensorValueProcessor = sensorValuesProcessors.get(sensedType);
         if (sensorValueProcessor != null) {
-          sensorValueProcessor.processData(timestamp, sensor, sensedEntityModel,
-              sensedEntityModelCollection, data);
+          sensorValueProcessor.processData(timestamp, sensor, sensedEntityModel, processorContext,
+              data);
         } else {
-          handler.getSensorProcessor().getLog().formatWarn("Got unknown sensor type %s",
-              sensedType);
+          log.formatWarn("Got unknown sensor type %s", sensedType);
         }
       }
     }

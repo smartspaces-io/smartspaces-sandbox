@@ -16,6 +16,9 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.smartspaces.event.trigger.SimpleHysteresisThresholdValueTrigger;
 import io.smartspaces.event.trigger.Trigger;
 import io.smartspaces.event.trigger.TriggerEventType;
@@ -26,19 +29,16 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.PhysicalSpaceSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.model.updater.PersonPhysicalSpaceModelUpdater;
+import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The standard processor for BLE proximity data.
  * 
  * @author Keith M. Hughes
  */
-public class StandardBleProximitySensorValueProcessor {
+public class StandardBleProximitySensorValueProcessor implements SensorValueProcessor {
 
   /**
    * The map from the BLE IDs to the trigger for that ID.
@@ -61,34 +61,27 @@ public class StandardBleProximitySensorValueProcessor {
     }
   };
 
-  /**
-   * Process the incoming data.
-   * 
-   * @param timestamp
-   *          when the data came in
-   * @param sensor
-   *          the sensor platform that detected the data
-   * @param sensedEntityModel
-   *          the sensed entity model that is associated with the sensor
-   * @param sensedEntityModelCollection
-   *          the collection of sensed entity models
-   * @param data
-   *          the data to process
-   */
+  @Override
+  public String getSensorValueType() {
+    return StandardSensorData.SENSOR_TYPE_PROXIMITY_BLE;
+  }
+
+  @Override
   public void processData(long timestamp, SensorEntityDescription sensor,
-      SensedEntityModel sensedEntityModel, SensedEntityModelCollection sensedEntityModelCollection,
+      SensedEntityModel sensedEntityModel, SensorValueProcessorContext processorContext,
       DynamicObject data) {
     String markerId = "ble" + ":" + data.getRequiredString("id");
     double rssi = data.getDouble("rssi");
 
-    MarkableEntityDescription markedEntity =
-        sensedEntityModelCollection.getSensorRegistry().getMarkableEntityByMarkerId(markerId);
+    MarkableEntityDescription markedEntity = processorContext.getSensedEntityModelCollection()
+        .getSensorRegistry().getMarkableEntityByMarkerId(markerId);
 
     SimpleHysteresisThresholdValueTrigger userTrigger =
-        getTrigger(markerId, sensedEntityModel, sensedEntityModelCollection);
+        getTrigger(markerId, sensedEntityModel, processorContext);
     userTrigger.update(rssi);
 
-    System.out.format("Detected ID %s,  RSSI= %f, %s\n", markerId, rssi, markedEntity);
+    processorContext.getLog().formatInfo("Detected ID %s,  RSSI= %f, %s\n", markerId, rssi,
+        markedEntity);
   }
 
   /**
@@ -100,15 +93,14 @@ public class StandardBleProximitySensorValueProcessor {
    * @param markerId
    *          the marker ID for the trigger
    * @param sensedEntityModel
-   *          the sensed entity model that is associated with the sensor
-   * @param sensedEntityModelCollection
-   *          the collection of sensed entity models
+   *          the sensed entity model that is assodciated with the sensor
+   * @param processorContext
+   *          the context for processor handling
    * 
    * @return the trigger for the marker
    */
   private SimpleHysteresisThresholdValueTrigger getTrigger(String markerId,
-      SensedEntityModel sensedEntityModel,
-      SensedEntityModelCollection sensedEntityModelCollection) {
+      SensedEntityModel sensedEntityModel, SensorValueProcessorContext processorContext) {
     SimpleHysteresisThresholdValueTrigger userTrigger = userTriggers.get(markerId);
     if (userTrigger == null) {
       userTrigger = new SimpleHysteresisThresholdValueTrigger();
@@ -121,7 +113,7 @@ public class StandardBleProximitySensorValueProcessor {
       userTriggers.put(markerId, userTrigger);
 
       PersonSensedEntityModel person =
-          sensedEntityModelCollection.getMarkedSensedEntityModel(markerId);
+          processorContext.getSensedEntityModelCollection().getMarkedSensedEntityModel(markerId);
       PersonPhysicalSpaceModelUpdater modelUpdater = new PersonPhysicalSpaceModelUpdater(
           (PhysicalSpaceSensedEntityModel) sensedEntityModel, person);
       userTriggerToUpdaters.put(userTrigger, modelUpdater);

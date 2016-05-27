@@ -31,11 +31,13 @@ import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggre
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardBleProximitySensorValueProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorInput;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelSensorListener;
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardUnknownSensedEntityHandler;
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
@@ -104,7 +106,11 @@ public class SensorProcessingActivity {
       sensorProcessor.addSensorInput(persistedSensorInput);
     }
 
-    StandardSensedEntitySensorHandler sensorHandler = new StandardSensedEntitySensorHandler(log);
+    StandardUnknownSensedEntityHandler unknownSensedEntityHandler =
+        new StandardUnknownSensedEntityHandler();
+
+    StandardSensedEntitySensorHandler sensorHandler =
+        new StandardSensedEntitySensorHandler(unknownSensedEntityHandler, log);
     for (SimpleSensorSensedEntityAssociation association : sensorRegistry
         .getSensorSensedEntityAssociations()) {
       sensorHandler.associateSensorWithEntity(association.getSensor(),
@@ -127,9 +133,11 @@ public class SensorProcessingActivity {
         new StandardSensedEntityModelCollection(sensorRegistry, speechPlayer);
     sensedEntityModelCollection.prepare();
 
-    StandardSensedEntityModelSensorListener modelUpdater =
-        new StandardSensedEntityModelSensorListener(sensedEntityModelCollection);
-    sensorHandler.addSensedEntitySensorListener(modelUpdater);
+    StandardSensedEntityModelProcessor modelProcessor =
+        new StandardSensedEntityModelProcessor(sensedEntityModelCollection, log);
+    modelProcessor.addSensorValueProcessor(new StandardBleProximitySensorValueProcessor());
+
+    sensorHandler.addSensedEntitySensorListener(modelProcessor);
 
     sensorProcessor.addSensorHandler(sensorHandler);
 
