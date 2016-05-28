@@ -16,14 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
@@ -31,6 +23,14 @@ import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Tests for the {@link StandardSensedEntityModelProcessor}.
@@ -80,11 +80,12 @@ public class StandardSensedEntityModelProcessorTest {
     SensedEntityDescription sensedEntity = Mockito.mock(SensedEntityDescription.class);
     String sensedEntityId = "sensed.entity.1";
     Mockito.when(sensedEntity.getId()).thenReturn(sensedEntityId);
-   
+
     processor.handleSensorData(handler, timestamp, sensor, sensedEntity, data);
 
-    Mockito.verify(sensorValueProcessor, Mockito.never()).processData(Mockito.anyLong(), Mockito.any(),
-        Mockito.any(), Mockito.any(), Mockito.any());
+    Mockito.verify(sensorValueProcessor, Mockito.never()).processData(Mockito.anyLong(),
+        Mockito.any(SensorEntityDescription.class), Mockito.any(SensedEntityModel.class),
+        Mockito.any(SensorValueProcessorContext.class), Mockito.any(DynamicObject.class));
   }
 
   /**
