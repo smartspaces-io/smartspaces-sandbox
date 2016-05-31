@@ -1,9 +1,22 @@
-package io.smartspaces.sandbox.interaction.event;
+/*
+ * Copyright (C) 2016 Keith M. Hughes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.event.StandardEventObservableService.EventObservable;
+package io.smartspaces.sandbox.service.event.observable;
+
 import io.smartspaces.service.SupportedService;
-
 import rx.Observable;
 
 /**
@@ -13,18 +26,11 @@ import rx.Observable;
  * @author Keith M. Hughes
  */
 public interface EventObservableService extends SupportedService {
-
+  
   /**
-   * Create a new event observable.
-   * 
-   * @param log
-   *          the logger to use
-   * @param <T>
-   *          the type of the event class
-   * 
-   * @return the new event observable
+   * The service name.
    */
-  <T> EventObservable<T> newEventObservable(ExtendedLog log);
+  public static final String SERVICE_NAME = "event.observable";
 
   /**
    * Add in a new observable.
@@ -60,5 +66,4 @@ public interface EventObservableService extends SupportedService {
    * @return the named observable, or {@code null} if no such observable
    */
   <T extends Observable<?>> T getObservable(String observableName);
-
 }
