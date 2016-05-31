@@ -26,7 +26,7 @@ import rx.Observable;
  * @author Keith M. Hughes
  */
 public interface EventObservableService extends SupportedService {
-  
+
   /**
    * The service name.
    */
@@ -66,4 +66,19 @@ public interface EventObservableService extends SupportedService {
    * @return the named observable, or {@code null} if no such observable
    */
   <T extends Observable<?>> T getObservable(String observableName);
+
+  /**
+   * Get the observable with a given name.
+   * 
+   * <p>
+   * If the observable doesn't exist yet, it will be created.
+   * 
+   * @param observableName
+   *          the name of the observable
+   * @param creator
+   *          the creator for new observables
+   * 
+   * @return the named observable
+   */
+  <T extends Observable<?>> T getObservable(String observableName, ObservableCreator<T> creator);
 }

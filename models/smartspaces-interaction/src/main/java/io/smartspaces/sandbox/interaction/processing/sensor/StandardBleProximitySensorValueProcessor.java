@@ -107,7 +107,7 @@ public class StandardBleProximitySensorValueProcessor implements SensorValueProc
 
       // TODO(keith): Need some system to have persisted thresholds for a given
       // marker and room.
-      userTrigger.setThresholdsWithOffset(-49, 2);
+      userTrigger.setThresholdsWithOffset(-63.5, 2);
       userTrigger.addListener(triggerListener);
 
       userTriggers.put(markerId, userTrigger);

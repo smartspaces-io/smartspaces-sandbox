@@ -51,8 +51,8 @@ public class EventObservable<T> extends Observable<T> {
    * @param log
    *          the logger to use
    */
-  EventObservable(ExtendedLog log) {
-    this(new CopyOnWriteArrayList<>(), log);
+  public EventObservable(ExtendedLog log) {
+    this(new CopyOnWriteArrayList<Subscriber<? super T>>(), log);
   }
 
   /**

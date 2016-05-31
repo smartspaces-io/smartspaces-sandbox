@@ -16,8 +16,11 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
+import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
-import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,9 +39,9 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
   private Set<PersonSensedEntityModel> occupants = new HashSet<>();
 
   /**
-   * Not staying! Just until vent listeners in.
+   * The observable for occupancy events.
    */
-  private SpeechSynthesisPlayer speechPlayer;
+  private EventObservable<PhysicalLocationOccupancyEvent> occupancyObservable;
 
   /**
    * Construct a new sensed entity model.
@@ -47,41 +50,52 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
    *          the description of the entity
    * @param models
    *          the collection of models this entity is in
+   * @param occupancyObservable
+   *          the observable for occupancy events
    */
   public SimplePhysicalSpaceSensedEntityModel(
       PhysicalSpaceSensedEntityDescription entityDescription, SensedEntityModelCollection models,
-      SpeechSynthesisPlayer speechPlayer) {
+      EventObservable<PhysicalLocationOccupancyEvent> occupancyObservable) {
     super(entityDescription, models);
 
-    this.speechPlayer = speechPlayer;
+    this.occupancyObservable = occupancyObservable;
   }
 
   @Override
   public PhysicalSpaceSensedEntityModel occupantEntered(PersonSensedEntityModel person) {
 
-    occupants.add(person);
+    boolean hasBeenAdded = occupants.add(person);
 
-    person.setPhysicalSpaceLocation(this);
+    if (hasBeenAdded) {
+      person.setPhysicalSpaceLocation(this);
 
-    speechPlayer.speak(
-        String.format("%s has entered %s", person.getSensedEntityDescription().getDisplayName(),
-            getSensedEntityDescription().getDisplayName()),
-        false);
+      Set<PersonSensedEntityModel> entered = ImmutableSet.of(person);
+
+      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, entered, null));
+    }
 
     return this;
   }
 
   @Override
   public PhysicalSpaceSensedEntityModel occupantExited(PersonSensedEntityModel person) {
-    occupants.remove(person);
+    System.out.println("Called exit");
+    boolean wasHere = occupants.remove(person);
+ 
+    if (wasHere) {
+      person.setPhysicalSpaceLocation(null);
 
-    person.setPhysicalSpaceLocation(null);
+      Set<PersonSensedEntityModel> exited = ImmutableSet.of(person);
 
-    speechPlayer.speak(
-        String.format("%s has exited %s", person.getSensedEntityDescription().getDisplayName(),
-            getSensedEntityDescription().getDisplayName()),
-        false);
+      System.out.println("Emitting event " + exited);
+      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, null, exited));
+    }
 
     return this;
+  }
+
+  @Override
+  public Set<PersonSensedEntityModel> getOccupants() {
+    return Sets.newHashSet(occupants);
   }
 }

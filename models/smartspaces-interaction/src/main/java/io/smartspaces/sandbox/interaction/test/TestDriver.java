@@ -16,6 +16,7 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
+import io.smartspaces.sandbox.service.event.observable.StandardEventObservableService;
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
 import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
@@ -50,6 +51,10 @@ public class TestDriver {
         new FreeTtsSpeechSynthesisService();
     spaceEnvironment.addManagedResource(freeTtsSpeechSynthesisService);
     spaceEnvironment.getServiceRegistry().registerService(freeTtsSpeechSynthesisService);
+
+    StandardEventObservableService observableService = new StandardEventObservableService();
+    spaceEnvironment.addManagedResource(observableService);
+    spaceEnvironment.getServiceRegistry().registerService(observableService);
 
     String ipAddress = getIpAddress();
     if (ipAddress == null) {

@@ -17,6 +17,8 @@
 package io.smartspaces.sandbox.interaction.test;
 
 import io.smartspaces.logging.ExtendedLog;
+import io.smartspaces.sandbox.event.observable.EventObservable;
+import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
@@ -26,7 +28,9 @@ import io.smartspaces.sandbox.interaction.entity.SimplePersonSensedEntityDescrip
 import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
+import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent;
 import io.smartspaces.sandbox.interaction.entity.model.StandardSensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.model.reactive.SubscriberSpeechSpeaker;
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;
@@ -38,6 +42,7 @@ import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntity
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardUnknownSensedEntityHandler;
+import io.smartspaces.sandbox.service.event.observable.EventObservableService;
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
@@ -76,6 +81,9 @@ public class SensorProcessingActivity {
         speechSynthesisService.newPlayer(spaceEnvironment.getLog());
     spaceEnvironment.addManagedResource(speechPlayer);
     speechPlayer.speak("Hello world", false);
+
+    EventObservableService eventObservableService = spaceEnvironment.getServiceRegistry()
+        .getRequiredService(EventObservableService.SERVICE_NAME);
 
     SensorRegistry sensorRegistry = new InMemorySensorRegistry();
 
@@ -130,7 +138,7 @@ public class SensorProcessingActivity {
     });
 
     final StandardSensedEntityModelCollection sensedEntityModelCollection =
-        new StandardSensedEntityModelCollection(sensorRegistry, speechPlayer);
+        new StandardSensedEntityModelCollection(sensorRegistry, eventObservableService, log);
     sensedEntityModelCollection.prepare();
 
     StandardSensedEntityModelProcessor modelProcessor =
@@ -142,6 +150,14 @@ public class SensorProcessingActivity {
     sensorProcessor.addSensorHandler(sensorHandler);
 
     spaceEnvironment.addManagedResource(sensorProcessor);
+
+    EventObservable<PhysicalLocationOccupancyEvent> eventObservable =
+        eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME);
+    if (eventObservable != null) {
+      SequentialSpeechSpeaker speechSpeaker = new SequentialSpeechSpeaker(spaceEnvironment, log);
+      spaceEnvironment.addManagedResource(speechSpeaker);
+      eventObservable.subscribe(new SubscriberSpeechSpeaker(speechSpeaker));
+    }
 
     if (liveData) {
       if (sampleRecord) {
@@ -229,5 +245,4 @@ public class SensorProcessingActivity {
         new SimplePhysicalSpaceSensedEntityDescription("/home/attic", "Attic", "The attic"));
     sensorRegistry.associateSensorWithSensedEntity("/sensornode/nodemcu9054677", "/home/attic");
   }
-
 }

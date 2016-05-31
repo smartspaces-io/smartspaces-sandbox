@@ -16,12 +16,17 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
+import io.smartspaces.logging.ExtendedLog;
+import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.entity.MarkerMarkedEntityAssociation;
 import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
-import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
+import io.smartspaces.sandbox.service.event.observable.EventObservableService;
+import io.smartspaces.sandbox.service.event.observable.ObservableCreator;
+
+import rx.Observable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -60,20 +65,42 @@ public class StandardSensedEntityModelCollection implements SensedEntityModelCol
   private Map<String, PersonSensedEntityModel> markerIdToPersonModels = new HashMap<>();
 
   /**
-   * Not staying! Just here until event listeners are in.
+   * The service for getting event observables.
    */
-  private SpeechSynthesisPlayer speechPlayer;
+  private EventObservableService eventObservableService;
+
+  /**
+   * The creator for physical occupancy observables.
+   */
+  private ObservableCreator<EventObservable<PhysicalLocationOccupancyEvent>> physicalLocationOccupancyEventCreator =
+      new ObservableCreator<EventObservable<PhysicalLocationOccupancyEvent>>() {
+
+        @Override
+        public EventObservable<PhysicalLocationOccupancyEvent> newObservable() {
+          return new EventObservable<PhysicalLocationOccupancyEvent>(log);
+        }
+      };
+
+  /**
+   * The logger to use.
+   */
+  private ExtendedLog log;
 
   /**
    * Construct a new collection.
    * 
    * @param sensorRegistry
    *          the sensor registry
+   * @param eventObservableService
+   *          the service for event observables
+   * @param log
+   *          the logger to use
    */
   public StandardSensedEntityModelCollection(SensorRegistry sensorRegistry,
-      SpeechSynthesisPlayer speechPlayer) {
+      EventObservableService eventObservableService, ExtendedLog log) {
     this.sensorRegistry = sensorRegistry;
-    this.speechPlayer = speechPlayer;
+    this.eventObservableService = eventObservableService;
+    this.log = log;
   }
 
   @Override
@@ -113,8 +140,11 @@ public class StandardSensedEntityModelCollection implements SensedEntityModelCol
 
     SensedEntityModel model = null;
     if (entityDescription instanceof PhysicalSpaceSensedEntityDescription) {
+      EventObservable<PhysicalLocationOccupancyEvent> observable =
+          eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME,
+              physicalLocationOccupancyEventCreator);
       model = new SimplePhysicalSpaceSensedEntityModel(
-          (PhysicalSpaceSensedEntityDescription) entityDescription, this, speechPlayer);
+          (PhysicalSpaceSensedEntityDescription) entityDescription, this, observable);
       idToPhysicalSpaceModels.put(id, (PhysicalSpaceSensedEntityModel) model);
     } else if (entityDescription instanceof PersonSensedEntityDescription) {
       model = new SimplePersonSensedEntityModel((PersonSensedEntityDescription) entityDescription,

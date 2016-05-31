@@ -16,11 +16,12 @@
 
 package io.smartspaces.sandbox.service.event.observable;
 
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-
 import io.smartspaces.service.BaseSupportedService;
+
 import rx.Observable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The standard event observable service.
@@ -33,7 +34,7 @@ public class StandardEventObservableService extends BaseSupportedService
   /**
    * The map of observables.
    */
-  private ConcurrentMap<String, Observable<?>> observables = new ConcurrentSkipListMap<>();
+  private Map<String, Observable<?>> observables = new HashMap<>();
 
   @Override
   public String getName() {
@@ -41,7 +42,7 @@ public class StandardEventObservableService extends BaseSupportedService
   }
 
   @Override
-  public EventObservableService registerObservable(String observableName,
+  public synchronized EventObservableService registerObservable(String observableName,
       Observable<?> observable) {
     observables.put(observableName, observable);
 
@@ -49,7 +50,7 @@ public class StandardEventObservableService extends BaseSupportedService
   }
 
   @Override
-  public EventObservableService unregisterObservable(String observableName) {
+  public synchronized EventObservableService unregisterObservable(String observableName) {
     observables.remove(observableName);
 
     return this;
@@ -57,7 +58,21 @@ public class StandardEventObservableService extends BaseSupportedService
 
   @Override
   @SuppressWarnings("unchecked")
-  public <T extends Observable<?>> T getObservable(String observableName) {
+  public synchronized <T extends Observable<?>> T getObservable(String observableName) {
     return (T) observables.get(observableName);
+  }
+
+  @Override
+  public synchronized <T extends Observable<?>> T getObservable(String observableName,
+      ObservableCreator<T> creator) {
+    T observable = getObservable(observableName);
+
+    if (observable == null) {
+      observable = creator.newObservable();
+
+      registerObservable(observableName, observable);
+    }
+
+    return observable;
   }
 }

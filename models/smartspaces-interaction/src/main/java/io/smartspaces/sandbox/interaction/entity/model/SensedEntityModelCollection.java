@@ -16,7 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
 
 import java.util.Collection;

@@ -16,6 +16,8 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
+import java.util.Set;
+
 /**
  * A sensed entity model for a physical space.
  * 
@@ -48,4 +50,11 @@ public interface PhysicalSpaceSensedEntityModel extends SensedEntityModel {
    * @return this model
    */
   PhysicalSpaceSensedEntityModel occupantExited(PersonSensedEntityModel person);
+
+  /**
+   * Get the current occupants of the space.
+   * 
+   * @return
+   */
+  Set<PersonSensedEntityModel> getOccupants();
 }

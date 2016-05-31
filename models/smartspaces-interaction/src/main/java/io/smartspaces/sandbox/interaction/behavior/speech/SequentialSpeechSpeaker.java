@@ -30,7 +30,7 @@ import io.smartspaces.system.SmartSpacesEnvironment;
  * 
  * @author Keith M. Hughes
  */
-public class StandardRoutableSpeechSpeaker implements SpeechSpeaker {
+public class SequentialSpeechSpeaker implements SpeechSpeaker {
 
   /**
    * The queue of text to speak.
@@ -65,7 +65,7 @@ public class StandardRoutableSpeechSpeaker implements SpeechSpeaker {
    * @param log
    *          logger to use the
    */
-  public StandardRoutableSpeechSpeaker(SmartSpacesEnvironment spaceEnvironment, Log log) {
+  public SequentialSpeechSpeaker(SmartSpacesEnvironment spaceEnvironment, Log log) {
     this.spaceEnvironment = spaceEnvironment;
     this.log = log;
   }
@@ -97,14 +97,20 @@ public class StandardRoutableSpeechSpeaker implements SpeechSpeaker {
     speechToSpeak.offer(content);
   }
 
+  /**
+   * Keep speaking until the speaking thread is interrupted.
+   * 
+   * <p>
+   * Blocks while waiting for something in the speech queue.
+   */
   private void speakNextContent() {
-    try {
-      String content = speechToSpeak.take();
-      speechPlayer.speak(content, true);
-    } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    while (!Thread.interrupted()) {
+      try {
+        String content = speechToSpeak.take();
+        speechPlayer.speak(content, true);
+      } catch (InterruptedException e) {
+        log.warn("Sequential speech speaker interrupted in speech loop");
+      }
     }
   }
-
 }
