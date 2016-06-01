@@ -37,4 +37,10 @@ public class SimplePersonSensedEntityDescription extends SimpleEntityDescription
   public SimplePersonSensedEntityDescription(String id, String displayName, String description) {
     super(id, displayName, description);
   }
+
+  @Override
+  public String toString() {
+    return "SimplePersonSensedEntityDescription [getId()=" + getId() + ", getDisplayName()="
+        + getDisplayName() + ", getDescription()=" + getDescription() + "]";
+  }
 }

@@ -79,7 +79,6 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
 
   @Override
   public PhysicalSpaceSensedEntityModel occupantExited(PersonSensedEntityModel person) {
-    System.out.println("Called exit");
     boolean wasHere = occupants.remove(person);
  
     if (wasHere) {
@@ -87,7 +86,6 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
 
       Set<PersonSensedEntityModel> exited = ImmutableSet.of(person);
 
-      System.out.println("Emitting event " + exited);
       occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, null, exited));
     }
 

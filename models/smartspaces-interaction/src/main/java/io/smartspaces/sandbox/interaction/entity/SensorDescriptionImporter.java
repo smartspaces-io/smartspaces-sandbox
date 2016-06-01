@@ -16,10 +16,25 @@
 
 package io.smartspaces.sandbox.interaction.entity;
 
-/**
- * @author keith
- *
- */
-public class SensorDescriptionImporter {
+import java.io.InputStream;
 
+/**
+ * An importer for sensor descriptions into a registry.
+ * 
+ * @author Keith M. Hughes
+ */
+public interface SensorDescriptionImporter {
+
+  /**
+   * Import a description into a particular registry.
+   * 
+   * @param register
+   *          the sensor registry
+   * @param descriptionStream
+   *          the stream containing the description
+   * 
+   * @return this importer
+   */
+  SensorDescriptionImporter importDescriptions(SensorRegistry register,
+      InputStream descriptionStream);
 }

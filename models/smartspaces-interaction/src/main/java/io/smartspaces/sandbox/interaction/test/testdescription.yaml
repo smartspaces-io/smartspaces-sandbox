@@ -1,0 +1,82 @@
+markers:
+  - id: /marker/ble/fc0d12fe7e5c
+    name: BLE Beacon
+    description: An Estimote BLE Beacon
+    markerId: ble:fc0d12fe7e5c
+
+people:
+  - id: /person/keith.hughes
+    name: Keith Hughes
+    description: Keith Hughes
+
+markerAssociations:
+  - marker: /marker/ble/fc0d12fe7e5c
+    marked: /person/keith.hughes
+
+sensors:
+  - id: /home/livingroom/proximity
+    name: Proximity Sensor 1
+    description: Raspberry Pi BLE proximity sensor
+  - id: /sensornode/nodemcu9107700
+    name: Sensor 9107700
+    description: ESP8266-based temperature/humidity sensor
+  - id: /sensornode/nodemcu9107716
+    name: Sensor 9107716
+    description: ESP8266-based temperature/humidity sensor
+  - id: /sensornode/nodemcu9107709
+    name: Sensor 9107709
+    description: ESP8266-based temperature/humidity sensor
+  - id: /sensornode/nodemcu9054868
+    name: Sensor 9054868
+    description: ESP8266-based temperature/humidity sensor
+  - id: /sensornode/nodemcu9054793
+    name: Sensor 9054793
+    description: ESP8266-based temperature/humidity sensor
+  - id: /sensornode/nodemcu9107713
+    name: Sensor 9107713
+    description: ESP8266-based temperature/humidity sensor
+  - id: /sensornode/nodemcu9054677
+    name: Sensor 9054677
+    description: ESP8266-based temperature/humidity sensor
+
+physicalLocations:
+  - id: /home/livingroom
+    name: Living Room
+    description: The living room on the first floor
+  - id: /home/masterbedroom
+    name: Master Bedroom
+    description: The master bedroom, on the second floor
+  - id: /home/garagestudio
+    name: Garage Studio
+    description: The studio in the garage
+  - id: /home/basement
+    name: Basement
+    description: The main room in the basement
+  - id: /home/kitchen
+    name: Kitchen
+    description: The kitchen on the first floor
+  - id: /home/musicroom
+    name: Music Room
+    description: The music room on the second floor
+  - id: /home/attic
+    name: Attic
+    description: The attic
+
+sensorAssociations:
+  - sensor: /home/livingroom/proximity
+    sensed: /home/livingroom
+  - sensor: /sensornode/nodemcu9107700
+    sensed: /home/livingroom
+  - sensor: /sensornode/nodemcu9107716
+    sensed: /home/masterbedroom
+  - sensor: /sensornode/nodemcu9107709
+    sensed: /home/garagestudio
+  - sensor: /sensornode/nodemcu9054868
+    sensed: /home/basement
+  - sensor: /sensornode/nodemcu9054793
+    sensed: /home/kitchen
+  - sensor: /sensornode/nodemcu9107713
+    sensed: /home/musicroom
+  - sensor: /sensornode/nodemcu9054677
+    sensed: /home/attic
+

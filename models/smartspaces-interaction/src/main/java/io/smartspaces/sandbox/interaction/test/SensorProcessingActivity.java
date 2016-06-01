@@ -21,6 +21,7 @@ import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorDescriptionImporter;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SimpleMarkerEntityDescription;
@@ -28,6 +29,7 @@ import io.smartspaces.sandbox.interaction.entity.SimplePersonSensedEntityDescrip
 import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
+import io.smartspaces.sandbox.interaction.entity.YamlSensorDescriptionImporter;
 import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent;
 import io.smartspaces.sandbox.interaction.entity.model.StandardSensedEntityModelCollection;
 import io.smartspaces.sandbox.interaction.entity.model.reactive.SubscriberSpeechSpeaker;
@@ -151,13 +153,7 @@ public class SensorProcessingActivity {
 
     spaceEnvironment.addManagedResource(sensorProcessor);
 
-    EventObservable<PhysicalLocationOccupancyEvent> eventObservable =
-        eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME);
-    if (eventObservable != null) {
-      SequentialSpeechSpeaker speechSpeaker = new SequentialSpeechSpeaker(spaceEnvironment, log);
-      spaceEnvironment.addManagedResource(speechSpeaker);
-      eventObservable.subscribe(new SubscriberSpeechSpeaker(speechSpeaker));
-    }
+    setUpObservables(eventObservableService, log);
 
     if (liveData) {
       if (sampleRecord) {
@@ -185,12 +181,33 @@ public class SensorProcessingActivity {
     }
   }
 
+  private void setUpObservables(EventObservableService eventObservableService,
+      final ExtendedLog log) {
+    EventObservable<PhysicalLocationOccupancyEvent> eventObservable =
+        eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME);
+    if (eventObservable != null) {
+      SequentialSpeechSpeaker speechSpeaker = new SequentialSpeechSpeaker(spaceEnvironment, log);
+      spaceEnvironment.addManagedResource(speechSpeaker);
+      eventObservable.subscribe(new SubscriberSpeechSpeaker(speechSpeaker));
+    }
+  }
+
   /**
    * @param sensorRegistry
    */
   private void importDescriptions(SensorRegistry sensorRegistry) {
+    SensorDescriptionImporter descriptionImporter = new YamlSensorDescriptionImporter();
+
+    descriptionImporter.importDescriptions(sensorRegistry,
+        getClass().getResourceAsStream("testdescription.yaml"));
+  }
+
+  /**
+   * @param sensorRegistry
+   */
+  private void ximportDescriptions(SensorRegistry sensorRegistry) {
     sensorRegistry.registerMarker(new SimpleMarkerEntityDescription("/marker/ble/fc0d12fe7e5c",
-        "BLE Beacon", "A Estimote BLE Beacon", "ble:fc0d12fe7e5c"));
+        "BLE Beacon", "An Estimote BLE Beacon", "ble:fc0d12fe7e5c"));
     sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription(
         "/person/keith.hughes", "Keith Hughes", "Keith Hughes"));
     sensorRegistry.associateMarkerWithMarkedEntity("/marker/ble/fc0d12fe7e5c",
