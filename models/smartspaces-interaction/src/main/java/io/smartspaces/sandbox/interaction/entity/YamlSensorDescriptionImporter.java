@@ -16,16 +16,17 @@
 
 package io.smartspaces.sandbox.interaction.entity;
 
-import io.smartspaces.SmartSpacesException;
-import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.data.dynamic.DynamicObject.ArrayDynamicObjectEntry;
-import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
+import java.io.InputStream;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import java.io.InputStream;
-import java.util.Map;
+import io.smartspaces.SmartSpacesException;
+import io.smartspaces.util.data.dynamic.DynamicObject;
+import io.smartspaces.util.data.dynamic.DynamicObject.ArrayDynamicObjectEntry;
+import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
+import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
 
 /**
  * A YAML-based sensor description importer.
@@ -34,10 +35,85 @@ import java.util.Map;
  */
 public class YamlSensorDescriptionImporter implements SensorDescriptionImporter {
 
+  /**
+   * The field in all entity descriptions for the entity ID.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_ID = "id";
+
+  /**
+   * The field in all entity descriptions for the entity name.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_NAME = "name";
+
+  /**
+   * The field in all entity descriptions for the entity description.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_DESCRIPTION = "description";
+  
+  /**
+   * The section header for the people section of the file.
+   */
+  public static final String SECTION_HEADER_PEOPLE = "people";
+  
+  /**
+   * The section header for the sensor section of the file.
+   */
+  public static final String SECTION_HEADER_SENSORS = "sensors";
+  
+  /**
+   * The section header for the physical location section of the file.
+   */
+  public static final String SECTION_HEADER_PHYSICAL_LOCATIONS = "physicalLocations";
+
+  /**
+   * The section header for the marker section of the file.
+   */
+  public static final String SECTION_HEADER_MARKERS = "markers";
+
+  /**
+   * The field in a marker entity description for the marker ID.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_MARKER_ID = "markerId";
+
+  /**
+   * The section header for the marker association of the file.
+   */
+  public static final String SECTION_HEADER_MARkER_ASSOCIATIONS = "markerAssociations";
+
+  /**
+   * The field in a marker association for the marker ID.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKER = "marker";
+
+  /**
+   * The field in a marker association for the marked item ID.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKED = "marked";
+
+  /**
+   * The section header for the sensor association section of the file.
+   */
+  public static final String SECTION_HEADER_SENSOR_ASSOCIATIONS = "sensorAssociations";
+
+  /**
+   * The field in a sensor association for the sensor ID.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSOR = "sensor";
+
+  /**
+   * The field in a sensor association for the sensed item ID.
+   */
+  public static final String ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSED = "sensed";
+
+  /**
+   * The section header for the configuration section of the file.
+   */
+  public static final String SECTION_HEADER_CONFIGURATIONS = "configurations";
+
   @Override
   public SensorDescriptionImporter importDescriptions(SensorRegistry sensorRegistry,
       InputStream descriptionStream) {
-    Map<String, Object> configuration = readConfiguration(descriptionStream);
+    Map<String, ? extends Object> configuration = readConfiguration(descriptionStream);
 
     DynamicObject data = new StandardDynamicObjectNavigator(configuration);
 
@@ -48,84 +124,162 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
 
     getSensorSensedEntityAssociations(sensorRegistry, data);
     getMarkerAssociations(sensorRegistry, data);
+    getEntityConfigurations(sensorRegistry, data);
 
     return this;
   }
 
-  private void getPeople(SensorRegistry sensorRegistry, DynamicObject data) {
-    data.down("people");
+  /**
+   * Get all the people data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getPeople(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_PEOPLE);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject personData = entry.down();
 
-      sensorRegistry.registerSensedEntity(
-          new SimplePersonSensedEntityDescription(personData.getRequiredString("id"),
-              personData.getRequiredString("name"), personData.getRequiredString("description")));
+      sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription(
+          personData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          personData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          personData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
     }
     data.up();
   }
 
-  private void getSensors(SensorRegistry sensorRegistry, DynamicObject data) {
-    data.down("sensors");
+  /**
+   * Get all the sensor data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getSensors(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_SENSORS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject sensorData = entry.down();
 
-      sensorRegistry
-          .registerSensor(new SimpleSensorEntityDescription(sensorData.getRequiredString("id"),
-              sensorData.getRequiredString("name"), sensorData.getRequiredString("description")));
+      sensorRegistry.registerSensor(new SimpleSensorEntityDescription(
+          sensorData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          sensorData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          sensorData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
     }
     data.up();
   }
 
-  private void getMarkers(SensorRegistry sensorRegistry, DynamicObject data) {
-    data.down("markers");
+  /**
+   * Get all the marker data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getMarkers(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_MARKERS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject markerData = entry.down();
 
       sensorRegistry.registerMarker(new SimpleMarkerEntityDescription(
-          markerData.getRequiredString("id"), markerData.getRequiredString("name"),
-          markerData.getRequiredString("description"), markerData.getRequiredString("markerId")));
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ID)));
     }
     data.up();
   }
 
-  private void getPhysicalLocations(SensorRegistry sensorRegistry, DynamicObject data) {
-    data.down("physicalLocations");
+  /**
+   * Get all the physical location data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getPhysicalLocations(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_PHYSICAL_LOCATIONS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject markerData = entry.down();
 
-      sensorRegistry.registerSensedEntity(
-          new SimplePhysicalSpaceSensedEntityDescription(markerData.getRequiredString("id"),
-              markerData.getRequiredString("name"), markerData.getRequiredString("description")));
+      sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
     }
 
     data.up();
   }
 
-  private void getSensorSensedEntityAssociations(SensorRegistry sensorRegistry,
-      DynamicObject data) {
-    data.down("sensorAssociations");
+  /**
+   * Get all the sensor/sensed entity association data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getSensorSensedEntityAssociations(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_SENSOR_ASSOCIATIONS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject markerData = entry.down();
 
-      sensorRegistry.associateSensorWithSensedEntity(markerData.getRequiredString("sensor"),
-          markerData.getRequiredString("sensed"));
+      sensorRegistry.associateSensorWithSensedEntity(
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSOR),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSED));
     }
     data.up();
   }
 
-  private void getMarkerAssociations(SensorRegistry sensorRegistry, DynamicObject data) {
-    data.down("markerAssociations");
+  /**
+   * Get all the marker/marked entity association data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getMarkerAssociations(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_MARkER_ASSOCIATIONS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject markerData = entry.down();
 
-      sensorRegistry.associateMarkerWithMarkedEntity(markerData.getRequiredString("marker"),
-          markerData.getRequiredString("marked"));
+      sensorRegistry.associateMarkerWithMarkedEntity(
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKER),
+          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKED));
+    }
+
+    data.up();
+  }
+
+  /**
+   * Get all the entity configuration data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getEntityConfigurations(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_CONFIGURATIONS);
+
+    for (ObjectDynamicObjectEntry entry : data.getObjectEntries()) {
+      String entityId = entry.getProperty();
+
+      DynamicObject configurationData = entry.getValue().down(entityId);
+      if (configurationData.isObject()) {
+        sensorRegistry.addConfigurationData(entityId, configurationData.asMap());
+      }
     }
 
     data.up();
@@ -139,7 +293,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
    * 
    * @return the configuration
    */
-  private Map<String, Object> readConfiguration(InputStream inputStream) {
+  private Map<String, ? extends Object> readConfiguration(InputStream inputStream) {
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     try {

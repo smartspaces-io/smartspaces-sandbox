@@ -80,3 +80,10 @@ sensorAssociations:
   - sensor: /sensornode/nodemcu9054677
     sensed: /home/attic
 
+configurations:
+  /marker/ble/fc0d12fe7e5c:
+    sensors:
+      /home/livingroom/proximity:
+        rssi.trigger: -63.5
+        rssi.spread: 2
+

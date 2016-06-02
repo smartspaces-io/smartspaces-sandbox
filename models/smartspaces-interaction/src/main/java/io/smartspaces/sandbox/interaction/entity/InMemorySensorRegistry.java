@@ -48,6 +48,11 @@ public class InMemorySensorRegistry implements SensorRegistry {
   /**
    * A map of marker IDs to their description.
    */
+  private Map<String, MarkerEntityDescription> markerIdToMarker = new HashMap<>();
+
+  /**
+   * A map of marker IDs to their description.
+   */
   private Map<String, MarkableEntityDescription> markerIdToMarkable = new HashMap<>();
 
   /**
@@ -78,6 +83,11 @@ public class InMemorySensorRegistry implements SensorRegistry {
   private List<MarkerMarkedEntityAssociation> markerMarkedEntityAssociationsImmutable =
       Collections.unmodifiableList(markerMarkedEntityAssociations);
 
+  /**
+   * The entity configurations.
+   */
+  private Map<String, Map<String, Object>> configurations = new HashMap<>();
+
   @Override
   public SensorRegistry registerSensor(SensorEntityDescription sensor) {
     idToSensor.put(sensor.getId(), sensor);
@@ -93,6 +103,7 @@ public class InMemorySensorRegistry implements SensorRegistry {
   @Override
   public SensorRegistry registerMarker(MarkerEntityDescription marker) {
     idToMarker.put(marker.getId(), marker);
+    markerIdToMarker.put(marker.getMarkerId(), marker);
 
     return this;
   }
@@ -170,7 +181,53 @@ public class InMemorySensorRegistry implements SensorRegistry {
   }
 
   @Override
+  public MarkerEntityDescription getMarkerEntityByMarkerId(String markerId) {
+    return markerIdToMarker.get(markerId);
+  }
+
+  @Override
   public MarkableEntityDescription getMarkableEntityByMarkerId(String markerId) {
     return markerIdToMarkable.get(markerId);
+  }
+
+  @Override
+  public SensorRegistry addConfigurationData(String entityId,
+      Map<String, ? extends Object> configurationData) {
+    Map<String, Object> map = getConfigurationMap(entityId);
+
+    map.putAll(configurationData);
+
+    return this;
+  }
+
+  @Override
+  public Map<String, Object> getConfigurationData(String entityId) {
+    Map<String, Object> map = getConfigurationMap(entityId);
+
+    // TODO(keith): Mostly likely should make unmodifiable.
+
+    return map;
+  }
+
+  /**
+   * Get the configuration map for the given entity ID.
+   * 
+   * <p>
+   * Create a map if there isn't one yet.
+   * 
+   * @param entityId
+   *          the ID of the entity
+   * 
+   * @return the map for the entity
+   */
+  private Map<String, Object> getConfigurationMap(String entityId) {
+    Map<String, Object> map = configurations.get(entityId);
+    if (map == null) {
+      map = new HashMap<>();
+
+      configurations.put(entityId, map);
+    }
+
+    return map;
   }
 }

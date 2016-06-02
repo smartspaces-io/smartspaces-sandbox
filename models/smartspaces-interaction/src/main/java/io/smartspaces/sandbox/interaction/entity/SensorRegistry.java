@@ -17,6 +17,7 @@
 package io.smartspaces.sandbox.interaction.entity;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * A registry of known sensors and entities that are being sensed.
@@ -74,6 +75,20 @@ public interface SensorRegistry {
    * @return the description, or {@code null} if no such markable entity
    */
   MarkableEntityDescription getMarkableEntity(String id);
+
+  /**
+   * Get the marker entity description associated with a given marker ID.
+   * 
+   * <p>
+   * The {@code markerId} is the value of
+   * {@link MarkerEntityDescription.getMarkerId()}.
+   * 
+   * @param markerId
+   *          the marker ID
+   * 
+   * @return the description, or {@code null} if no such marker entity
+   */
+  MarkerEntityDescription getMarkerEntityByMarkerId(String markerId);
 
   /**
    * Get the markable entity description associated with a given marker ID.
@@ -166,4 +181,30 @@ public interface SensorRegistry {
    * @return the associations as an unmodifiable list
    */
   Collection<SimpleSensorSensedEntityAssociation> getSensorSensedEntityAssociations();
+
+  /**
+   * Add in configuration data for a given entity.
+   * 
+   * <p>
+   * This data will be merged with any previous data.
+   * 
+   * @param entityId
+   *          the ID of the entity
+   * @param configurationData
+   *          the configuration data to add
+   * 
+   * @return this registry
+   */
+  SensorRegistry addConfigurationData(String entityId, Map<String, ? extends Object> configurationData);
+
+  /**
+   * Get the configuration data for the given entity.
+   * 
+   * @param entityId
+   *          the entity ID
+   * 
+   * @return the configuration data known for the entity, will never be
+   *         {@code null}
+   */
+  Map<String, Object> getConfigurationData(String entityId);
 }
