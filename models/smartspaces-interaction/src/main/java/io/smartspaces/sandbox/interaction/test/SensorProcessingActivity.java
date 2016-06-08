@@ -16,6 +16,9 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
+
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker;
@@ -44,16 +47,13 @@ import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntity
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardUnknownSensedEntityHandler;
-import io.smartspaces.sandbox.service.event.observable.EventObservableService;
+import io.smartspaces.service.event.observable.EventObservableService;
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
-
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * An activity to merge sensors across the entire space.

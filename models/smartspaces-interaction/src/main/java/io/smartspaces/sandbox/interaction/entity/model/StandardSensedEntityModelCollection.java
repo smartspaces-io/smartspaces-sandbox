@@ -16,6 +16,10 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.entity.MarkerMarkedEntityAssociation;
@@ -23,14 +27,8 @@ import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
-import io.smartspaces.sandbox.service.event.observable.EventObservableService;
-import io.smartspaces.sandbox.service.event.observable.ObservableCreator;
-
-import rx.Observable;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import io.smartspaces.service.event.observable.EventObservableService;
+import io.smartspaces.service.event.observable.ObservableCreator;
 
 /**
  * A collection of sensed entity models.

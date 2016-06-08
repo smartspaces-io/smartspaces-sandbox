@@ -16,12 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
-import io.smartspaces.sandbox.service.event.observable.StandardEventObservableService;
-import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
-import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
-import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
-import io.smartspaces.time.LocalTimeProvider;
-
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -35,6 +29,12 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+
+import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
+import io.smartspaces.service.event.observable.StandardEventObservableService;
+import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
+import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
+import io.smartspaces.time.LocalTimeProvider;
 
 public class TestDriver {
 
