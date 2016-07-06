@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="library" builder="java" smartSpacesVersion="[1.6.2, 1.7.0)">
+<project type="library" language="java" smartSpacesVersion="[1.6.2, 1.7.0)">
   <name>Open Sound Control Service</name>
   <description>
     A service for working with servers for Open Sound Control. This is part of IS 1.7.0

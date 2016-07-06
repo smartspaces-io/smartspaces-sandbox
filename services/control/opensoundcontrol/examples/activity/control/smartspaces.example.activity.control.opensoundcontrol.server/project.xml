@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="activity" builder="java" smartSpacesVersion="[1.6.2, 1.7.0)">
+<project type="activity" language="java" smartSpacesVersion="[1.6.2, 1.7.0)">
   <name>Open Sound Control Server Test</name>
   <description>
     A Java Activity that sets up a server which responds to Open Sound Control Messages.

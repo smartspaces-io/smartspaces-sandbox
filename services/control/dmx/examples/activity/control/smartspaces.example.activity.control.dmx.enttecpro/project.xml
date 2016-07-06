@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="activity" builder="java">
+<project type="activity" language="java">
   <name>ENTTEC Pro DMX Control Test</name>
   <description>
     A Java Activity that controls a DMX device using an ENTTEC Pro.

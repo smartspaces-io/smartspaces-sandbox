@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="library" builder="java">
+<project type="library" language="java">
   <name>DMX Control Service</name>
   <description>
     A service for working with DMX.
