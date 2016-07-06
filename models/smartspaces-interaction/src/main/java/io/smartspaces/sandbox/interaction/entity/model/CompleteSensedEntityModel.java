@@ -25,7 +25,7 @@ import java.util.Collection;
  * 
  * @author Keith M. Hughes
  */
-public interface SensedEntityModelCollection {
+public interface CompleteSensedEntityModel {
 
   /**
    * Prepare the collection.

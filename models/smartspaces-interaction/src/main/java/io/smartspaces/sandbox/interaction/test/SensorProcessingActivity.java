@@ -19,8 +19,8 @@ package io.smartspaces.sandbox.interaction.test;
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
+import io.smartspaces.event.observable.EventObservable;
 import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
@@ -34,7 +34,7 @@ import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
 import io.smartspaces.sandbox.interaction.entity.YamlSensorDescriptionImporter;
 import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent;
-import io.smartspaces.sandbox.interaction.entity.model.StandardSensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.model.StandardCompleteSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.reactive.SubscriberSpeechSpeaker;
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
@@ -139,8 +139,8 @@ public class SensorProcessingActivity {
       }
     });
 
-    final StandardSensedEntityModelCollection sensedEntityModelCollection =
-        new StandardSensedEntityModelCollection(sensorRegistry, eventObservableService, log);
+    final StandardCompleteSensedEntityModel sensedEntityModelCollection =
+        new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log);
     sensedEntityModelCollection.prepare();
 
     StandardSensedEntityModelProcessor modelProcessor =

@@ -16,14 +16,14 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
-import io.smartspaces.sandbox.event.observable.EventObservable;
-import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-import java.util.HashSet;
-import java.util.Set;
+import io.smartspaces.event.observable.EventObservable;
+import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
 
 /**
  * A model of a physical space.
@@ -54,7 +54,7 @@ public class SimplePhysicalSpaceSensedEntityModel extends SimpleSensedEntityMode
    *          the observable for occupancy events
    */
   public SimplePhysicalSpaceSensedEntityModel(
-      PhysicalSpaceSensedEntityDescription entityDescription, SensedEntityModelCollection models,
+      PhysicalSpaceSensedEntityDescription entityDescription, CompleteSensedEntityModel models,
       EventObservable<PhysicalLocationOccupancyEvent> occupancyObservable) {
     super(entityDescription, models);
 

@@ -20,7 +20,7 @@ import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
 
@@ -42,7 +42,7 @@ public class StandardSensedEntityModelProcessorTest {
   private StandardSensedEntityModelProcessor processor;
 
   @Mock
-  private SensedEntityModelCollection sensedEntityModelCollection;
+  private CompleteSensedEntityModel completeSensedEntityModel;
 
   @Mock
   private ExtendedLog log;
@@ -54,7 +54,7 @@ public class StandardSensedEntityModelProcessorTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    processor = new StandardSensedEntityModelProcessor(sensedEntityModelCollection, log);
+    processor = new StandardSensedEntityModelProcessor(completeSensedEntityModel, log);
   }
 
   /**
@@ -114,7 +114,7 @@ public class StandardSensedEntityModelProcessorTest {
 
     SensedEntityModel sensedEntityModel = Mockito.mock(SensedEntityModel.class);
 
-    Mockito.when(sensedEntityModelCollection.getSensedEntityModel(sensedEntityId))
+    Mockito.when(completeSensedEntityModel.getSensedEntityModel(sensedEntityId))
         .thenReturn(sensedEntityModel);
 
     DynamicObject data = builder.toDynamicObject();
@@ -142,7 +142,7 @@ public class StandardSensedEntityModelProcessorTest {
         sensorValueProcessorContextCaptor.getValue();
 
     Assert.assertEquals(log, sensorValueProcessorContext.getLog());
-    Assert.assertEquals(sensedEntityModelCollection,
-        sensorValueProcessorContext.getSensedEntityModelCollection());
+    Assert.assertEquals(completeSensedEntityModel,
+        sensorValueProcessorContext.getCompleteSensedEntityModel());
   }
 }

@@ -38,7 +38,7 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
   /**
    * The model collection this model is in.
    */
-  private SensedEntityModelCollection models;
+  private CompleteSensedEntityModel models;
 
   /**
    * The values being sensed keyed by the value name.
@@ -54,7 +54,7 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
    *          the collection of models this entity is in
    */
   public SimpleSensedEntityModel(SensedEntityDescription entityDescription,
-      SensedEntityModelCollection models) {
+      CompleteSensedEntityModel models) {
     this.entityDescription = entityDescription;
   }
 
@@ -65,7 +65,7 @@ public class SimpleSensedEntityModel implements SensedEntityModel {
   }
 
   @Override
-  public SensedEntityModelCollection getAllModels() {
+  public CompleteSensedEntityModel getAllModels() {
     return models;
   }
 

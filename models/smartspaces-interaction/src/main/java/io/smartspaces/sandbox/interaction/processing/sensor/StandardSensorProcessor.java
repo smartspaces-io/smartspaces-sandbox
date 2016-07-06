@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.smartspaces.logging.ExtendedLog;
+import io.smartspaces.resource.managed.ManagedResources;
+import io.smartspaces.resource.managed.StandardManagedResources;
 import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.resource.ManagedResources;
-import io.smartspaces.util.resource.StandardManagedResources;
 
 /**
  * The standard processor for sensor data.

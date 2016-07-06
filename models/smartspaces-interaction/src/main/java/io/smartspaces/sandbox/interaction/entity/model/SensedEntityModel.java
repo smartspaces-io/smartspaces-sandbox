@@ -33,7 +33,7 @@ public interface SensedEntityModel {
    * 
    * @return the sensed entity model collection
    */
-  SensedEntityModelCollection getAllModels();
+  CompleteSensedEntityModel getAllModels();
 
   /**
    * Get the entity description for the entity being modeled.

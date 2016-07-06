@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="library" builder="java">
+<project type="library" language="java">
   <name>Interaction</name>
   <description>
     A basic set of services and classes that play with models of interactions and sensors.

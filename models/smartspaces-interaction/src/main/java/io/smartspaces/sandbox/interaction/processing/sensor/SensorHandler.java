@@ -15,8 +15,8 @@
  */
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
+import io.smartspaces.resource.managed.ManagedResource;
 import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.resource.ManagedResource;
 
 /**
  * A handler for sensor data in a sensor processor.

@@ -84,7 +84,7 @@ public class StandardBleProximitySensorValueProcessor implements SensorValueProc
         getTrigger(markerId, sensor, sensedEntityModel, processorContext);
     userTrigger.update(rssi);
 
-    MarkableEntityDescription markedEntity = processorContext.getSensedEntityModelCollection()
+    MarkableEntityDescription markedEntity = processorContext.getCompleteSensedEntityModel()
         .getSensorRegistry().getMarkableEntityByMarkerId(markerId);
     processorContext.getLog().formatInfo("Detected ID %s,  RSSI= %f, %s\n", markerId, rssi,
         markedEntity);
@@ -112,10 +112,10 @@ public class StandardBleProximitySensorValueProcessor implements SensorValueProc
     if (userTrigger == null) {
       userTrigger = new SimpleHysteresisThresholdValueTrigger();
 
-      MarkerEntityDescription markerEntity = processorContext.getSensedEntityModelCollection()
+      MarkerEntityDescription markerEntity = processorContext.getCompleteSensedEntityModel()
           .getSensorRegistry().getMarkerEntityByMarkerId(markerId);
 
-      Map<String, Object> configData = processorContext.getSensedEntityModelCollection()
+      Map<String, Object> configData = processorContext.getCompleteSensedEntityModel()
           .getSensorRegistry().getConfigurationData(markerEntity.getId());
       bleProximitySupport.configureTrigger(userTrigger, configData, sensor, processorContext);
 
@@ -123,7 +123,7 @@ public class StandardBleProximitySensorValueProcessor implements SensorValueProc
       userTriggers.put(markerId, userTrigger);
 
       PersonSensedEntityModel person =
-          processorContext.getSensedEntityModelCollection().getMarkedSensedEntityModel(markerId);
+          processorContext.getCompleteSensedEntityModel().getMarkedSensedEntityModel(markerId);
       PersonPhysicalSpaceModelUpdater modelUpdater = new PersonPhysicalSpaceModelUpdater(
           (PhysicalSpaceSensedEntityModel) sensedEntityModel, person);
       userTriggerToUpdaters.put(userTrigger, modelUpdater);

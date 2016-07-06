@@ -16,11 +16,9 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.event.observable.EventObservable;
-import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
+import java.util.List;
+import java.util.Set;
 
-import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +26,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.Sets;
+
+import io.smartspaces.event.observable.EventObservable;
+import io.smartspaces.logging.ExtendedLog;
+import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
 import rx.Observer;
 import rx.observers.TestSubscriber;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Tests for the {@link SimplePhysicalSpaceSensedEntityModel}
@@ -49,7 +50,7 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
   private PhysicalSpaceSensedEntityDescription entityDescription;
 
   @Mock
-  private SensedEntityModelCollection sensedEntityModelCollection;
+  private CompleteSensedEntityModel completeSensedEntityModel;
 
   @Mock
   private ExtendedLog log;
@@ -68,7 +69,7 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     occupancySubscriber = TestSubscriber.create(occupancyObserver);
     occupancyObservable.subscribe(occupancySubscriber);
 
-    model = new SimplePhysicalSpaceSensedEntityModel(entityDescription, sensedEntityModelCollection,
+    model = new SimplePhysicalSpaceSensedEntityModel(entityDescription, completeSensedEntityModel,
         occupancyObservable);
   }
 
@@ -114,7 +115,7 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     Mockito.verify(occupancyObserver, Mockito.times(2)).onNext(argumentCaptor.capture());
 
     Set<PersonSensedEntityModel> peopleEntered = Sets.newHashSet(personModel);
-    
+
     // The last event will be captured.
     List<PhysicalLocationOccupancyEvent> allValues = argumentCaptor.getAllValues();
     Assert.assertEquals(peopleEntered, allValues.get(1).getExited());

@@ -16,7 +16,7 @@
 
 package io.smartspaces.sandbox.interaction.behavior.speech;
 
-import io.smartspaces.util.resource.ManagedResource;
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**.
  * A speaker for speech

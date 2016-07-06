@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.smartspaces.event.observable.EventObservable;
 import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.event.observable.EventObservable;
 import io.smartspaces.sandbox.interaction.entity.MarkerMarkedEntityAssociation;
 import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
@@ -35,7 +35,7 @@ import io.smartspaces.service.event.observable.ObservableCreator;
  * 
  * @author Keith M. Hughes
  */
-public class StandardSensedEntityModelCollection implements SensedEntityModelCollection {
+public class StandardCompleteSensedEntityModel implements CompleteSensedEntityModel {
 
   /**
    * The sensor registry for this collection.
@@ -94,7 +94,7 @@ public class StandardSensedEntityModelCollection implements SensedEntityModelCol
    * @param log
    *          the logger to use
    */
-  public StandardSensedEntityModelCollection(SensorRegistry sensorRegistry,
+  public StandardCompleteSensedEntityModel(SensorRegistry sensorRegistry,
       EventObservableService eventObservableService, ExtendedLog log) {
     this.sensorRegistry = sensorRegistry;
     this.eventObservableService = eventObservableService;

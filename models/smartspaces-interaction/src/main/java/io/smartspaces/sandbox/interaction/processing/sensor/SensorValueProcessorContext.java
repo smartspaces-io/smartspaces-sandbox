@@ -17,7 +17,7 @@
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
 import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
 
 /**
  * A context containing values useful for {@link SensorValueProcessor}
@@ -30,7 +30,7 @@ public class SensorValueProcessorContext {
   /**
    * The collection of all models for all sensed entities.
    */
-  private SensedEntityModelCollection sensedEntityModelCollection;
+  private CompleteSensedEntityModel completeSensedEntityModel;
 
   /**
    * The logger to use for all processing.O
@@ -40,30 +40,30 @@ public class SensorValueProcessorContext {
   /**
    * Construct a new context.
    * 
-   * @param sensedEntityModelCollection
+   * @param completeSensedEntityModel
    *          the collection of all models for all sensed entities
    * @param log
    *          the logger to use
    */
-  public SensorValueProcessorContext(SensedEntityModelCollection sensedEntityModelCollection,
+  public SensorValueProcessorContext(CompleteSensedEntityModel completeSensedEntityModel,
       ExtendedLog log) {
-    this.sensedEntityModelCollection = sensedEntityModelCollection;
+    this.completeSensedEntityModel = completeSensedEntityModel;
     this.log = log;
   }
 
   /**
    * Get the collection of all models for all sensed entities.
    * 
-   * @returnthe collection of all models for all sensed entities
+   * @return the collection of all models for all sensed entities
    */
-  public SensedEntityModelCollection getSensedEntityModelCollection() {
-    return sensedEntityModelCollection;
+  public CompleteSensedEntityModel getCompleteSensedEntityModel() {
+    return completeSensedEntityModel;
   }
 
   /**
    * Get the logger.
    * 
-   * @return terhe logg
+   * @return the log
    */
   public ExtendedLog getLog() {
     return log;

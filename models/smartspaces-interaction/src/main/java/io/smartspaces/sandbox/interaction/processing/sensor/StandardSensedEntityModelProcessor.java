@@ -25,7 +25,7 @@ import io.smartspaces.sandbox.interaction.entity.SensedValue;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensedValue;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModelCollection;
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
@@ -41,7 +41,7 @@ public class StandardSensedEntityModelProcessor
   /**
    * The sensed entity models to be updated.
    */
-  private SensedEntityModelCollection sensedEntityModelCollection;
+  private CompleteSensedEntityModel completeSensedEntityModel;
 
   /**
    * The map of sensor types to sensor processors.
@@ -61,17 +61,17 @@ public class StandardSensedEntityModelProcessor
   /**
    * Construct a new listener.
    * 
-   * @param sensedEntityModelCollection
+   * @param completeSensedEntityModel
    *          the sensed entity models to be updated
    * @param log
    *          the logger to use
    */
-  public StandardSensedEntityModelProcessor(SensedEntityModelCollection sensedEntityModelCollection,
+  public StandardSensedEntityModelProcessor(CompleteSensedEntityModel completeSensedEntityModel,
       ExtendedLog log) {
-    this.sensedEntityModelCollection = sensedEntityModelCollection;
+    this.completeSensedEntityModel = completeSensedEntityModel;
     this.log = log;
 
-    processorContext = new SensorValueProcessorContext(sensedEntityModelCollection, log);
+    processorContext = new SensorValueProcessorContext(completeSensedEntityModel, log);
   }
 
   @Override
@@ -85,7 +85,7 @@ public class StandardSensedEntityModelProcessor
   public void handleSensorData(SensedEntitySensorHandler handler, long timestamp,
       SensorEntityDescription sensor, SensedEntityDescription sensedEntity, DynamicObject data) {
     SensedEntityModel sensedEntityModel =
-        sensedEntityModelCollection.getSensedEntityModel(sensedEntity.getId());
+        completeSensedEntityModel.getSensedEntityModel(sensedEntity.getId());
     if (sensedEntityModel == null) {
       log.formatWarn("Have no sensed entity model for entity %s", sensedEntity);
       return;

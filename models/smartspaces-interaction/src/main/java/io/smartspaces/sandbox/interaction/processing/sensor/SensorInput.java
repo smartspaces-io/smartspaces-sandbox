@@ -16,7 +16,7 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import io.smartspaces.util.resource.ManagedResource;
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**
  * An aggregator for sensor data over a given communication channel.

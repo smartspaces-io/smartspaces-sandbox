@@ -40,7 +40,7 @@ public class SimplePersonSensedEntityModel extends SimpleSensedEntityModel
    *          the collection of models this entity is in
    */
   public SimplePersonSensedEntityModel(PersonSensedEntityDescription entityDescription,
-      SensedEntityModelCollection models) {
+      CompleteSensedEntityModel models) {
     super(entityDescription, models);
   }
 
