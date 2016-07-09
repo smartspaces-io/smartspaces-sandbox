@@ -19,10 +19,14 @@ package io.smartspaces.sandbox.interaction.processing.sensor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
+
+import scala.collection.JavaConversions$;
 
 /**
  * Tests for {@link StandardUnknownSensedEntityHandler}.
@@ -56,7 +60,8 @@ public class StandardUnknownSensedEntityHandlerTest {
     String sensorId2 = "foo2";
     handler.handleUnknownSensor(sensorId2);
 
-    assertEquals(Sets.newHashSet(sensorId1, sensorId2), handler.getAllUnknownSensorIds());
+    Set<String> result = Sets.newHashSet(sensorId1, sensorId2);
+   assertEquals(JavaConversions$.MODULE$.asScalaSet(result).toSet(), handler.getAllUnknownSensorIds());
   }
 
   /**
@@ -71,7 +76,8 @@ public class StandardUnknownSensedEntityHandlerTest {
     String sensorId2 = "foo2";
     handler.handleUnknownSensor(sensorId2);
 
-    assertEquals(Sets.newHashSet(sensorId1, sensorId2), handler.getAllUnknownSensorIds());
+    Set<String> result = Sets.newHashSet(sensorId1, sensorId2);
+    assertEquals(JavaConversions$.MODULE$.asScalaSet(result).toSet(), handler.getAllUnknownSensorIds());
   }
 
   /**
@@ -87,7 +93,8 @@ public class StandardUnknownSensedEntityHandlerTest {
 
     handler.removeUnknownSensorId(sensorId1);
 
-    assertEquals(Sets.newHashSet(sensorId2), handler.getAllUnknownSensorIds());
+    Set<String> result = Sets.newHashSet(sensorId2);
+    assertEquals(JavaConversions$.MODULE$.asScalaSet(result).toSet(), handler.getAllUnknownSensorIds());
   }
 
 }

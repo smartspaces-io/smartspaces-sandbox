@@ -27,6 +27,9 @@ import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ArrayDynamicObjectEntry;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
+import scala.Predef;
+import scala.Tuple2;
+import scala.collection.JavaConverters;
 
 /**
  * A YAML-based sensor description importer.
@@ -49,17 +52,17 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
    * The field in all entity descriptions for the entity description.
    */
   public static final String ENTITY_DESCRIPTION_FIELD_DESCRIPTION = "description";
-  
+
   /**
    * The section header for the people section of the file.
    */
   public static final String SECTION_HEADER_PEOPLE = "people";
-  
+
   /**
    * The section header for the sensor section of the file.
    */
   public static final String SECTION_HEADER_SENSORS = "sensors";
-  
+
   /**
    * The section header for the physical location section of the file.
    */
@@ -278,7 +281,9 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
 
       DynamicObject configurationData = entry.getValue().down(entityId);
       if (configurationData.isObject()) {
-        sensorRegistry.addConfigurationData(entityId, configurationData.asMap());
+        sensorRegistry.addConfigurationData(entityId,
+            JavaConverters.mapAsScalaMapConverter(configurationData.asMap()).asScala()
+                .toMap(Predef.<Tuple2<String, Object>>conforms()));
       }
     }
 

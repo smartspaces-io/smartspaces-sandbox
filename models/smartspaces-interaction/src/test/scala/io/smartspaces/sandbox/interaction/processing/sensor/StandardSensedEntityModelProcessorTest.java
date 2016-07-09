@@ -16,14 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
-import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +23,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import io.smartspaces.logging.ExtendedLog;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
+import io.smartspaces.util.data.dynamic.DynamicObject;
+import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
+import scala.Option;
 
 /**
  * Tests for the {@link StandardSensedEntityModelProcessor}.
@@ -80,6 +81,10 @@ public class StandardSensedEntityModelProcessorTest {
     SensedEntityDescription sensedEntity = Mockito.mock(SensedEntityDescription.class);
     String sensedEntityId = "sensed.entity.1";
     Mockito.when(sensedEntity.getId()).thenReturn(sensedEntityId);
+    
+    Option<SensedEntityModel> none = Option.apply(null);
+    Mockito.when(completeSensedEntityModel.getSensedEntityModel(sensedEntityId))
+        .thenReturn(none);
 
     processor.handleSensorData(handler, timestamp, sensor, sensedEntity, data);
 
@@ -115,7 +120,7 @@ public class StandardSensedEntityModelProcessorTest {
     SensedEntityModel sensedEntityModel = Mockito.mock(SensedEntityModel.class);
 
     Mockito.when(completeSensedEntityModel.getSensedEntityModel(sensedEntityId))
-        .thenReturn(sensedEntityModel);
+        .thenReturn(scala.Option.apply(sensedEntityModel));
 
     DynamicObject data = builder.toDynamicObject();
     processor.handleSensorData(handler, timestamp, sensor, sensedEntity, data);
@@ -141,8 +146,8 @@ public class StandardSensedEntityModelProcessorTest {
     SensorValueProcessorContext sensorValueProcessorContext =
         sensorValueProcessorContextCaptor.getValue();
 
-    Assert.assertEquals(log, sensorValueProcessorContext.getLog());
+    Assert.assertEquals(log, sensorValueProcessorContext.log());
     Assert.assertEquals(completeSensedEntityModel,
-        sensorValueProcessorContext.getCompleteSensedEntityModel());
+        sensorValueProcessorContext.completeSensedEntityModel());
   }
 }

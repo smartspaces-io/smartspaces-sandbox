@@ -35,6 +35,8 @@ import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescri
 import rx.Observer;
 import rx.observers.TestSubscriber;
 
+import scala.collection.JavaConversions$;
+
 /**
  * Tests for the {@link SimplePhysicalSpaceSensedEntityModel}
  * 
@@ -91,8 +93,8 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     Mockito.verify(occupancyObserver, Mockito.times(1)).onNext(argumentCaptor.capture());
 
     Set<PersonSensedEntityModel> peopleEntered = Sets.newHashSet(personModel);
-    Assert.assertEquals(peopleEntered, argumentCaptor.getValue().getEntered());
-    Assert.assertEquals(peopleEntered, model.getOccupants());
+    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), argumentCaptor.getValue().getEntered());
+    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), model.getOccupants());
   }
 
   /**
@@ -114,11 +116,11 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     // First call will be person entering.
     Mockito.verify(occupancyObserver, Mockito.times(2)).onNext(argumentCaptor.capture());
 
-    Set<PersonSensedEntityModel> peopleEntered = Sets.newHashSet(personModel);
+   Set<PersonSensedEntityModel> peopleEntered = Sets.newHashSet(personModel);
 
     // The last event will be captured.
     List<PhysicalLocationOccupancyEvent> allValues = argumentCaptor.getAllValues();
-    Assert.assertEquals(peopleEntered, allValues.get(1).getExited());
+    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), allValues.get(1).getExited());
     Assert.assertTrue(model.getOccupants().isEmpty());
   }
 }
