@@ -34,14 +34,24 @@ trait SensorRegistry {
   def registerMeasurementType(measurementType: MeasurementTypeDescription): SensorRegistry
 
   /**
-   * Register a measurement type with the registry.
+   * Get a measurement type from the registry.
    *
-   * @param measurementType
-   *          the measurement type to add
+   * @param id
+   *          id of the the measurement type
    *
    * @return the measurement type
    */
   def getMeasurementType(id: String): Option[MeasurementTypeDescription]
+
+  /**
+   * Get a measurement unit from the registry.
+   *
+   * @param id
+   *          id of the the measurement unit
+   *
+   * @return the measurement unit
+   */
+  def getMeasurementUnit(id: String): Option[MeasurementUnitDescription]
 
   /**
    * Register a sensor with the registry.

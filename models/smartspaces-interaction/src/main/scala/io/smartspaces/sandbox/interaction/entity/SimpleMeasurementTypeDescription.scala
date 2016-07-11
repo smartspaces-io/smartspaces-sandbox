@@ -66,4 +66,8 @@ case class SimpleMeasurementTypeDescription(private val id: String, private val 
   override def getAllMeasurementUnits(): List[MeasurementUnitDescription] = {
     measurementUnits.toList
   }
+  
+  override def getMeasurementUnit(id: String): Option[MeasurementUnitDescription] = {
+    measurementUnits.find(_.getId == id)
+  }
 }

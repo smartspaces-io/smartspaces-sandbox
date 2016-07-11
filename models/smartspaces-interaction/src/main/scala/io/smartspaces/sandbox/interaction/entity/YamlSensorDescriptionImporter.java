@@ -27,6 +27,7 @@ import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.DynamicObject.ArrayDynamicObjectEntry;
 import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
+import scala.Option;
 import scala.Predef;
 import scala.Tuple2;
 import scala.collection.JavaConverters;
@@ -174,23 +175,35 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), null);
-      sensorRegistry.registerMeasurementType(measurementType);
+
+      String defaultUnitId =
+          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT);
 
       measurementTypeData.down(SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS);
       for (ArrayDynamicObjectEntry measurementUnitEntry : data.getArrayEntries()) {
         DynamicObject measurementUnitData = measurementUnitEntry.down();
 
         MeasurementUnitDescription measurementUnit = new SimpleMeasurementUnitDescription(
-            measurementType,measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+            measurementType, measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
             measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
             measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION));
-        
-        measurementType.addMeasurementUnit(measurementUnit);
-        System.out.println(measurementUnit);
-      }
-      System.out.println(measurementType);
 
+        measurementType.addMeasurementUnit(measurementUnit);
+        
+        measurementUnitData.up();
+      }
+
+      Option<MeasurementUnitDescription> measurementUnit =
+          measurementType.getMeasurementUnit(defaultUnitId);
+      if (measurementUnit.isDefined()) {
+        measurementType.setDefaultUnit(measurementUnit.get());
+      } else {
+        // Need an error message
+      }
+      
       measurementTypeData.up();
+
+      sensorRegistry.registerMeasurementType(measurementType);
     }
     data.up();
   }

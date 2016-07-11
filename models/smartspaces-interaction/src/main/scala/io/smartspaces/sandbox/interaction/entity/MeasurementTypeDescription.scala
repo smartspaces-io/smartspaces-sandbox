@@ -61,10 +61,24 @@ trait MeasurementTypeDescription extends Displayable {
   def addMeasurementUnit(measurementUnit: MeasurementUnitDescription): Unit
   
   /**
-   * Add in a new measurement unit to the measurement type.
+   * Get all measurement units for this measurement type.
    *
    * @return all of the measurement units for this type
    */
   def getAllMeasurementUnits(): List[MeasurementUnitDescription]
+
+   
+  /**
+   * Get a measurement unit of this measurement type.
+   * 
+   * <p>
+   * The unit must be a unit of this type to be found.
+   * 
+   * @param id
+   *     the ID of the measurement unit
+   *
+   * @return the measurement unit
+   */
+  def getMeasurementUnit(id: String): Option[MeasurementUnitDescription]
 
 }
