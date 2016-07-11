@@ -14,19 +14,30 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity
 
 /**
- * The description of an entity.
- * 
+ * The description of a measurement unit.
+ *
  * @author Keith M. Hughes
  */
-trait EntityDescription extends Displayable {
+case class SimpleMeasurementUnitDescription(private val measurementType: MeasurementTypeDescription, private val id: String, private val displayName: String, private val displayDescription: String) extends MeasurementUnitDescription {
 
-  /**
-   * Get the ID of the entity.
-   * 
-   * @return the ID of the entity
-   */
-  def getId(): String
+  override def getId(): String = {
+    id
+  }
+
+  override def getDisplayName(): String = {
+    displayName
+  }
+
+  override def getDisplayDescription(): String = {
+    displayDescription
+  }
+
+  override def getMeasurementType(): MeasurementTypeDescription = {
+    measurementType
+  }
+
+  
 }

@@ -18,6 +18,19 @@
  * An API for talking about entities, such as sensors, physical locations, etc.
  * 
  * <p>
+ * A sensor is a small hardware or platform that can contain multiple subsensor
+ * values. An example may be a small board with a WIFI chip and multiple
+ * invidual sensors, such as temperature and humidity.
+ * 
+ * <p>
+ * A sensor channel gives the value that a particular subsensor is reading from
+ * a sensor platform. For example, one channel may give the temperature of the
+ * room while another gives the humidity of the room. Multiple channels could
+ * give the same sort of measurement, though for something else, for example the
+ * sensor platform could have two temperature sensors, one to read room
+ * temperature and another to read the fish tank temperature.
+ * 
+ * <p>
  * Markers are things that allow something to be identified.
  * 
  * @author Keith M. Hughes

@@ -14,19 +14,26 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity
 
 /**
- * The description of an entity.
+ * An item that is displayable to users.
  * 
  * @author Keith M. Hughes
  */
-trait EntityDescription extends Displayable {
+trait Displayable {
+  
+  /**
+   * Get the display name of the entity.
+   * 
+   * @return the display name of the entity
+   */
+  def getDisplayName(): String
 
   /**
-   * Get the ID of the entity.
+   * Get the description of the entity.
    * 
-   * @return the ID of the entity
+   * @return the description of the entity
    */
-  def getId(): String
+  def getDisplayDescription(): String
 }

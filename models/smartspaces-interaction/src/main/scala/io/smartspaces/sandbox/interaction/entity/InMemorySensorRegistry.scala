@@ -26,7 +26,12 @@ import scala.collection.mutable._
 class InMemorySensorRegistry extends SensorRegistry {
 
   /**
-   * A map of sensor IDs to their description
+   * A map of measurement types to their description.
+   */
+  private val idToMeasurementType: Map[String, MeasurementTypeDescription] = new HashMap
+
+  /**
+   * A map of sensor IDs to their description.
    */
   private val idToSensor: Map[String, SensorEntityDescription] = new HashMap
 
@@ -70,6 +75,16 @@ class InMemorySensorRegistry extends SensorRegistry {
    * The entity configurations.
    */
   private val configurations: Map[String, Map[String, AnyRef]] = new HashMap
+  
+  override def registerMeasurementType(measurementType: MeasurementTypeDescription): SensorRegistry = {
+    idToMeasurementType.put(measurementType.getId(), measurementType)
+    
+    this
+  }
+
+  override def getMeasurementType(id: String): Option[MeasurementTypeDescription] = {
+    idToMeasurementType.get(id)
+  }
 
   override def registerSensor(sensor: SensorEntityDescription): SensorRegistry = {
     idToSensor.put(sensor.getId(), sensor)

@@ -24,6 +24,26 @@ package io.smartspaces.sandbox.interaction.entity;
 trait SensorRegistry {
 
   /**
+   * Register a measurement type with the registry.
+   *
+   * @param measurementType
+   *          the measurement type to add
+   *
+   * @return this registry
+   */
+  def registerMeasurementType(measurementType: MeasurementTypeDescription): SensorRegistry
+
+  /**
+   * Register a measurement type with the registry.
+   *
+   * @param measurementType
+   *          the measurement type to add
+   *
+   * @return the measurement type
+   */
+  def getMeasurementType(id: String): Option[MeasurementTypeDescription]
+
+  /**
    * Register a sensor with the registry.
    *
    * @param sensor

@@ -14,19 +14,19 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity
 
 /**
- * The description of an entity.
+ * Details about a sensor.
  * 
  * @author Keith M. Hughes
  */
-trait EntityDescription extends Displayable {
-
+trait SensorDetails extends Displayable {
+  
   /**
-   * Get the ID of the entity.
+   * Get the ID of the sensor detail.
    * 
-   * @return the ID of the entity
+   * @ the sensor detail ID
    */
   def getId(): String
 }

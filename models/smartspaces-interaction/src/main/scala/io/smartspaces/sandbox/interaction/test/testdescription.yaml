@@ -1,13 +1,13 @@
+people:
+  - id: /person/keith.hughes
+    name: Keith Hughes
+    description: Keith Hughes
+
 markers:
   - id: /marker/ble/fc0d12fe7e5c
     name: BLE Beacon
     description: An Estimote BLE Beacon
     markerId: ble:fc0d12fe7e5c
-
-people:
-  - id: /person/keith.hughes
-    name: Keith Hughes
-    description: Keith Hughes
 
 markerAssociations:
   - marker: /marker/ble/fc0d12fe7e5c
@@ -20,25 +20,72 @@ sensors:
   - id: /sensornode/nodemcu9107700
     name: Sensor 9107700
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
   - id: /sensornode/nodemcu9107716
     name: Sensor 9107716
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
   - id: /sensornode/nodemcu9107709
     name: Sensor 9107709
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
   - id: /sensornode/nodemcu9054868
     name: Sensor 9054868
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
   - id: /sensornode/nodemcu9054793
     name: Sensor 9054793
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
   - id: /sensornode/nodemcu9107713
     name: Sensor 9107713
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
   - id: /sensornode/nodemcu9054677
     name: Sensor 9054677
     description: ESP8266-based temperature/humidity sensor
+    sensorDetail: /sensor/smartspaces/test/esp8266/foo  
 
+sensorDetails:
+  - id: /sensor/smartspaces/test/esp8266/foo
+    name: ESP8266 Foo
+    description: The absolute Foo-iest of the ESP8266 boards.  
+    channels:
+      - id: temperature
+        name: Temperature
+        description: The temperature
+        type: /sensor/measurement/temperature
+      - id: humidity
+        name: Humidity
+        description: The humidity
+        type: /sensor/measurement/humidity
+        unit: /measurement/units/humidity/relative
+
+measurementTypes:
+  - id: /sensor/measurement/temperature
+    name: Temperature
+    description: The temperature
+    defaultUnit: /measurement/units/temperature/celcius
+    aliases: 
+      - temperature
+    measurementUnits: 
+      - id: /measurement/units/temperature/celcius
+        name: Celcius
+        description: The temperature in degrees celcius
+      - id: /measurement/units/temperature/fahrenheit
+        name: Fahrenheight
+        description: The temperature in degrees fahrenheit
+  - id: /sensor/measurement/humidity
+    name: Humidity
+    description: The humidity
+    defaultUnit: /measurement/units/humidity/relative
+    aliases: 
+      - humidity
+    measurementUnits: 
+      - id: /measurement/units/humidity/relative
+        name: Relative Humidity
+        description: The relative humidity
+  
 physicalLocations:
   - id: /home/livingroom
     name: Living Room

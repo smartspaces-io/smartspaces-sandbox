@@ -31,6 +31,6 @@ class SimpleMarkerEntityDescription(id: String, displayName: String, description
 
   override def toString(): String = {
     "SimpleMarkerEntityDescription [getId()=" + getId() + ", getDescription()=" +
-      getDescription() + ", markerId=" + markerId + "]"
+      getDisplayDescription() + ", markerId=" + markerId + "]"
   }
 }

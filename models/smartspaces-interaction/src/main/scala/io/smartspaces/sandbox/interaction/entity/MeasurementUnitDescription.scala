@@ -14,19 +14,26 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity
 
 /**
- * The description of an entity.
- * 
+ * The description of a measurement unit.
+ *
  * @author Keith M. Hughes
  */
-trait EntityDescription extends Displayable {
+trait MeasurementUnitDescription extends Displayable {
 
   /**
-   * Get the ID of the entity.
-   * 
-   * @return the ID of the entity
+   * Get the ID of the measurement unit.
+   *
+   * @return the measurement unit ID
    */
   def getId(): String
+
+  /**
+   * Get the measurement type of the unit.
+   *
+   * @return the measurement type of the unit
+   */
+  def getMeasurementType(): MeasurementTypeDescription
 }

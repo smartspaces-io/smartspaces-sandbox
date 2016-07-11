@@ -30,6 +30,10 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
+import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
+import io.smartspaces.sandbox.interaction.entity.SensorDescriptionImporter;
+import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
+import io.smartspaces.sandbox.interaction.entity.YamlSensorDescriptionImporter;
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
 import io.smartspaces.service.event.observable.StandardEventObservableService;
 import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
@@ -39,6 +43,19 @@ import io.smartspaces.time.LocalTimeProvider;
 public class TestDriver {
 
   public static void main(String[] args) throws Exception {
+    justYaml();
+  }
+  
+  private static void justYaml() {
+    SensorRegistry sensorRegistry = new InMemorySensorRegistry();
+    SensorDescriptionImporter descriptionImporter = new YamlSensorDescriptionImporter();
+
+    descriptionImporter.importDescriptions(sensorRegistry,
+      TestDriver.class.getResourceAsStream("testdescription.yaml"));
+
+  }
+  
+  private static void runEverything() throws Exception {
     final StandaloneSmartSpacesEnvironment spaceEnvironment =
         StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment();
     spaceEnvironment.setTimeProvider(new LocalTimeProvider());
@@ -114,6 +131,7 @@ public class TestDriver {
     // SensorProcessingActivity activity = new
     // SensorProcessingActivity(spaceEnvironment);
     // activity.run();
+   
   }
 
   private static String getIpAddress() {

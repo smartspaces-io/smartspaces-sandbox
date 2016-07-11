@@ -54,6 +54,29 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
   public static final String ENTITY_DESCRIPTION_FIELD_DESCRIPTION = "description";
 
   /**
+   * The section header for the measurement types section of the file.
+   */
+  public static final String SECTION_HEADER_MEASUREMENT_TYPES = "measurementTypes";
+
+  /**
+   * The measurement type section field for the default unit for the
+   * measurement.
+   */
+  public static final String SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT = "defaultUnit";
+
+  /**
+   * The measurement type section field for the aliases for the measurement.
+   */
+  public static final String SECTION_FIELD_MEASUREMENT_TYPES_ALIASES = "aliases";
+
+  /**
+   * The section header for the measurement units in the measurement type
+   * entries.
+   */
+  public static final String SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS =
+      "measurementUnits";
+
+  /**
    * The section header for the people section of the file.
    */
   public static final String SECTION_HEADER_PEOPLE = "people";
@@ -120,6 +143,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
 
     DynamicObject data = new StandardDynamicObjectNavigator(configuration);
 
+    getMeasurementTypes(sensorRegistry, data);
     getSensors(sensorRegistry, data);
     getPeople(sensorRegistry, data);
     getMarkers(sensorRegistry, data);
@@ -130,6 +154,45 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     getEntityConfigurations(sensorRegistry, data);
 
     return this;
+  }
+
+  /**
+   * Get all the measurement type data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getMeasurementTypes(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_MEASUREMENT_TYPES);
+
+    for (ArrayDynamicObjectEntry measurementTypeEntry : data.getArrayEntries()) {
+      DynamicObject measurementTypeData = measurementTypeEntry.down();
+
+      MeasurementTypeDescription measurementType = new SimpleMeasurementTypeDescription(
+          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), null);
+      sensorRegistry.registerMeasurementType(measurementType);
+
+      measurementTypeData.down(SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS);
+      for (ArrayDynamicObjectEntry measurementUnitEntry : data.getArrayEntries()) {
+        DynamicObject measurementUnitData = measurementUnitEntry.down();
+
+        MeasurementUnitDescription measurementUnit = new SimpleMeasurementUnitDescription(
+            measurementType,measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+            measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+            measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION));
+        
+        measurementType.addMeasurementUnit(measurementUnit);
+        System.out.println(measurementUnit);
+      }
+      System.out.println(measurementType);
+
+      measurementTypeData.up();
+    }
+    data.up();
   }
 
   /**
@@ -144,12 +207,12 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     data.down(SECTION_HEADER_PEOPLE);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
-      DynamicObject personData = entry.down();
+      DynamicObject itemData = entry.down();
 
       sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription(
-          personData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
-          personData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          personData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
     }
     data.up();
   }
@@ -166,12 +229,12 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     data.down(SECTION_HEADER_SENSORS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
-      DynamicObject sensorData = entry.down();
+      DynamicObject itemData = entry.down();
 
-      sensorRegistry.registerSensor(new SimpleSensorEntityDescription(
-          sensorData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
-          sensorData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          sensorData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
+      sensorRegistry.registerSensor(
+          new SimpleSensorEntityDescription(itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
     }
     data.up();
   }
@@ -188,13 +251,13 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     data.down(SECTION_HEADER_MARKERS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
-      DynamicObject markerData = entry.down();
+      DynamicObject itemData = entry.down();
 
-      sensorRegistry.registerMarker(new SimpleMarkerEntityDescription(
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ID)));
+      sensorRegistry.registerMarker(
+          new SimpleMarkerEntityDescription(itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ID)));
     }
     data.up();
   }
@@ -211,12 +274,12 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     data.down(SECTION_HEADER_PHYSICAL_LOCATIONS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
-      DynamicObject markerData = entry.down();
+      DynamicObject itemData = entry.down();
 
       sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
     }
 
     data.up();
@@ -234,11 +297,11 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     data.down(SECTION_HEADER_SENSOR_ASSOCIATIONS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
-      DynamicObject markerData = entry.down();
+      DynamicObject itemData = entry.down();
 
       sensorRegistry.associateSensorWithSensedEntity(
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSOR),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSED));
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSOR),
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSED));
     }
     data.up();
   }
@@ -255,11 +318,11 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     data.down(SECTION_HEADER_MARkER_ASSOCIATIONS);
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
-      DynamicObject markerData = entry.down();
+      DynamicObject itemData = entry.down();
 
       sensorRegistry.associateMarkerWithMarkedEntity(
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKER),
-          markerData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKED));
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKER),
+          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKED));
     }
 
     data.up();
