@@ -54,6 +54,33 @@ trait SensorRegistry {
   def getMeasurementUnit(id: String): Option[MeasurementUnitDescription]
 
   /**
+   * Register a sensor detail with the registry.
+   *
+   * @param sensorDetail
+   *          the sensor detail to add
+   *
+   * @return this registry
+   */
+  def registerSensorDetail(sensorDetail: SensorDetail): SensorRegistry
+
+  /**
+   * Get a sensor detail from the registry.
+   *
+   * @param id
+   *          id of the the sensor detail
+   *
+   * @return the sensor detail
+   */
+  def getSensorDetail(id: String): Option[SensorDetail]
+
+  /**
+   * Get all sensor details from the registry.
+   *
+   * @return all sensor details in the registry
+   */
+  def getAllSensorDetails(): List[SensorDetail]
+
+  /**
    * Register a sensor with the registry.
    *
    * @param sensor

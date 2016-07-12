@@ -20,6 +20,10 @@ package io.smartspaces.sandbox.interaction.entity
  * Details about a sensor channel.
  * 
  * <p>
+ * The ID of the channel is local to the sensor detail it is part of. For example, multiple
+ * sensor detail items could contain a channel called temperature.
+ * 
+ * <p>
  * The type of the channel specifies the sort of measurement the channel supplies.
  * 
  * <p>
@@ -27,7 +31,14 @@ package io.smartspaces.sandbox.interaction.entity
  * 
  * @author Keith M. Hughes
  */
-trait SensorChannelDetails extends Displayable {
+trait SensorChannelDetail extends Displayable {
+  
+  /**
+   * Get the sensor detail this channel is part of.
+   * 
+   * @return the sensor detail
+   */
+  def getSensorDetail(): SensorDetail
    
   /**
    * Get the ID of the channel.
@@ -48,5 +59,5 @@ trait SensorChannelDetails extends Displayable {
    * 
    * @return the unit
    */
-  def getUnit(): String
+  def getMeasurementUnit(): MeasurementUnitDescription
 }

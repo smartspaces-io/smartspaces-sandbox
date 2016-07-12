@@ -36,6 +36,11 @@ class InMemorySensorRegistry extends SensorRegistry {
   private val idToMeasurementUnit: Map[String, MeasurementUnitDescription] = new HashMap
 
   /**
+   * A map of IDs to sensor details.
+   */
+  private val idToSensorDetail: Map[String, SensorDetail] = new HashMap
+
+  /**
    * A map of sensor IDs to their description.
    */
   private val idToSensor: Map[String, SensorEntityDescription] = new HashMap
@@ -96,6 +101,20 @@ class InMemorySensorRegistry extends SensorRegistry {
 
   override def getMeasurementUnit(id: String): Option[MeasurementUnitDescription] = {
     idToMeasurementUnit.get(id)
+  }
+  
+  override def registerSensorDetail(sensorDetail: SensorDetail): SensorRegistry = {
+    idToSensorDetail.put(sensorDetail.getId(), sensorDetail)
+    
+    this
+  }
+
+  override def getSensorDetail(id: String): Option[SensorDetail] = {
+    idToSensorDetail.get(id)
+  }
+
+  override def getAllSensorDetails(): List[SensorDetail] = {
+    idToSensorDetail.values.toList
   }
 
   override def registerSensor(sensor: SensorEntityDescription): SensorRegistry = {

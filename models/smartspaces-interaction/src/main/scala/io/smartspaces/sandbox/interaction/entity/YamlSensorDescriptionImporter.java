@@ -78,6 +78,26 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
       "measurementUnits";
 
   /**
+   * The section header for the sensor details entries.
+   */
+  public static final String SECTION_HEADER_SENSOR_DETAILS = "sensorDetails";
+
+  /**
+   * The sensor details section field for the channels for the sensor detail.
+   */
+  public static final String SECTION_FIELD_SENSOR_DETAILS_CHANNELS = "channels";
+
+  /**
+   * The section field for the measurement type of a sensor channel.
+   */
+  public static final String SECTION_FIELD_SENSOR_DETAILS_CHANNELS_TYPE = "type";
+
+  /**
+   * The section field for the measurement unit of a sensor channel.
+   */
+  public static final String SECTION_FIELD_SENSOR_DETAILS_CHANNELS_UNIT = "unit";
+
+  /**
    * The section header for the people section of the file.
    */
   public static final String SECTION_HEADER_PEOPLE = "people";
@@ -88,7 +108,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
   public static final String SECTION_HEADER_SENSORS = "sensors";
 
   /**
-   * The section header for the physical location section of the file.
+   * The section header for the physical location section of the file.hannels
    */
   public static final String SECTION_HEADER_PHYSICAL_LOCATIONS = "physicalLocations";
 
@@ -145,6 +165,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     DynamicObject data = new StandardDynamicObjectNavigator(configuration);
 
     getMeasurementTypes(sensorRegistry, data);
+    getSensorDetails(sensorRegistry, data);
     getSensors(sensorRegistry, data);
     getPeople(sensorRegistry, data);
     getMarkers(sensorRegistry, data);
@@ -189,7 +210,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
             measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION));
 
         measurementType.addMeasurementUnit(measurementUnit);
-        
+
         measurementUnitData.up();
       }
 
@@ -200,10 +221,76 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
       } else {
         // Need an error message
       }
-      
+
       measurementTypeData.up();
 
       sensorRegistry.registerMeasurementType(measurementType);
+    }
+    data.up();
+  }
+
+  /**
+   * Get all the sensor details data.
+   * 
+   * @param sensorRegistry
+   *          the sensor registry to store the data in
+   * @param data
+   *          the data read from the input stream
+   */
+  public void getSensorDetails(SensorRegistry sensorRegistry, DynamicObject data) {
+    data.down(SECTION_HEADER_SENSOR_DETAILS);
+
+    for (ArrayDynamicObjectEntry sensorDetailEntry : data.getArrayEntries()) {
+      DynamicObject sensorDetailData = sensorDetailEntry.down();
+
+      SensorDetail sensorDetail =
+          new SimpleSensorDetail(sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+              sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+              sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION));
+
+      sensorDetailData.down(SECTION_FIELD_SENSOR_DETAILS_CHANNELS);
+      for (ArrayDynamicObjectEntry channelDetailEntry : data.getArrayEntries()) {
+        DynamicObject channelDetailData = channelDetailEntry.down();
+
+        String measurementTypeId =
+            channelDetailData.getRequiredString(SECTION_FIELD_SENSOR_DETAILS_CHANNELS_TYPE);
+        Option<MeasurementTypeDescription> measurementType =
+            sensorRegistry.getMeasurementType(measurementTypeId);
+        if (measurementType.isEmpty()) {
+          // TODO(keith): Some sort of error message
+          continue;
+        }
+
+        MeasurementUnitDescription measurementUnit = null;
+        String measurementUnitId =
+            channelDetailData.getString(SECTION_FIELD_SENSOR_DETAILS_CHANNELS_UNIT);
+        if (measurementUnitId != null) {
+          Option<MeasurementUnitDescription> measurementUnitOption =
+              sensorRegistry.getMeasurementUnit(measurementUnitId);
+          if (measurementUnitOption.isEmpty()) {
+            // TODO(keith): Some sort of error message
+            
+            continue;
+          } else {
+            measurementUnit = measurementUnitOption.get();
+          }
+        } else {
+          // The default unit is used if none was specified
+          measurementUnit = measurementType.get().getDefaultUnit();
+        }
+
+        SensorChannelDetail channelDetail = new SimpleSensorChannelDetail(sensorDetail,
+            channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+            channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+            channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+            measurementType.get(), measurementUnit);
+
+        sensorDetail.addSensorChannelDetail(channelDetail);
+
+        channelDetailData.up();
+      }
+
+      sensorRegistry.registerSensorDetail(sensorDetail);
     }
     data.up();
   }
