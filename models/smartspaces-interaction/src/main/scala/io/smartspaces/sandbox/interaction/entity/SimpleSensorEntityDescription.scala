@@ -18,9 +18,13 @@ package io.smartspaces.sandbox.interaction.entity;
 
 /**
  * The standard sensor entity description.
- * 
+ *
  * @author Keith M. Hughes
  */
-class SimpleSensorEntityDescription(id: String, displayName: String, description: String) extends SimpleEntityDescription(id, displayName, description)
+class SimpleSensorEntityDescription(id: String, displayName: String, description: String, private val sensorDetail: Option[SensorDetail]) extends SimpleEntityDescription(id, displayName, description)
     with SensorEntityDescription {
+
+  override def getSensorDetail(): Option[SensorDetail] = {
+    sensorDetail
+  }
 }

@@ -26,4 +26,10 @@ package io.smartspaces.sandbox.interaction.entity;
  */
 trait SensorEntityDescription extends EntityDescription {
 
+  /**
+   * Get the sensor detail for the sensor.
+   * 
+   * @return the sensor detail
+   */
+  def getSensorDetail(): Option[SensorDetail]
 }

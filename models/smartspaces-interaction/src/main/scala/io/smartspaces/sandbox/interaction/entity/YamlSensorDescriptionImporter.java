@@ -108,6 +108,11 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
   public static final String SECTION_HEADER_SENSORS = "sensors";
 
   /**
+   * The section field for the measurement unit of a sensor channel.
+   */
+  public static final String SECTION_FIELD_SENSORS_SENSOR_DETAIL = "sensorDetail";
+
+  /**
    * The section header for the physical location section of the file.hannels
    */
   public static final String SECTION_HEADER_PHYSICAL_LOCATIONS = "physicalLocations";
@@ -330,11 +335,21 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject itemData = entry.down();
+      
+      Option<SensorDetail> sensorDetail = Option.apply(null);
+      String sensorDetailId = itemData.getString(SECTION_FIELD_SENSORS_SENSOR_DETAIL);
+      if (sensorDetailId != null) {
+        sensorDetail = sensorRegistry.getSensorDetail(sensorDetailId);
+        if (sensorDetail.isEmpty()) {
+          // TODO(keith): Some sort of error.
+          continue;
+        }
+      }
 
       sensorRegistry.registerSensor(
           new SimpleSensorEntityDescription(itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
               itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)));
+              itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), sensorDetail));
     }
     data.up();
   }

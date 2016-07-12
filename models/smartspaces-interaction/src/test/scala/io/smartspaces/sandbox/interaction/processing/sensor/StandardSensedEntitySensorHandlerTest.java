@@ -83,7 +83,7 @@ public class StandardSensedEntitySensorHandlerTest {
   @Test
   public void testKnownSensor() {
     String sensorId = "foo";
-    SensorEntityDescription sensor = new SimpleSensorEntityDescription(sensorId, "foo", "foo");
+    SensorEntityDescription sensor = new SimpleSensorEntityDescription(sensorId, "foo", "foo", null);
 
     SensedEntityDescription sensedEntity =
         new SimplePhysicalSpaceSensedEntityDescription("foo", "foo", "foo");
