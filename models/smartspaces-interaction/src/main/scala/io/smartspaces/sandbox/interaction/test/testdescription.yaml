@@ -65,6 +65,7 @@ measurementTypes:
   - id: /sensor/measurement/temperature
     name: Temperature
     description: The temperature
+    valueType: double
     defaultUnit: /measurement/units/temperature/celcius
     aliases: 
       - temperature
@@ -78,6 +79,7 @@ measurementTypes:
   - id: /sensor/measurement/humidity
     name: Humidity
     description: The humidity
+    valueType: double
     defaultUnit: /measurement/units/humidity/relative
     aliases: 
       - humidity

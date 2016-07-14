@@ -60,6 +60,11 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
   public static final String SECTION_HEADER_MEASUREMENT_TYPES = "measurementTypes";
 
   /**
+   * The measurement type section field for the value type for the measurement.
+   */
+  public static final String SECTION_FIELD_MEASUREMENT_TYPES_VALUE_TYPE = "valueType";
+
+  /**
    * The measurement type section field for the default unit for the
    * measurement.
    */
@@ -200,7 +205,8 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
       MeasurementTypeDescription measurementType = new SimpleMeasurementTypeDescription(
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), null);
+          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_VALUE_TYPE), null);
 
       String defaultUnitId =
           measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT);
@@ -274,7 +280,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
               sensorRegistry.getMeasurementUnit(measurementUnitId);
           if (measurementUnitOption.isEmpty()) {
             // TODO(keith): Some sort of error message
-            
+
             continue;
           } else {
             measurementUnit = measurementUnitOption.get();
@@ -335,7 +341,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
 
     for (ArrayDynamicObjectEntry entry : data.getArrayEntries()) {
       DynamicObject itemData = entry.down();
-      
+
       Option<SensorDetail> sensorDetail = Option.apply(null);
       String sensorDetailId = itemData.getString(SECTION_FIELD_SENSORS_SENSOR_DETAIL);
       if (sensorDetailId != null) {

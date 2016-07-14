@@ -18,6 +18,9 @@ package io.smartspaces.sandbox.interaction.entity
 
 /**
  * A description of a measurement type, such as temperature or humidity.
+ * 
+ * <p>
+ * The value type is the type of the value, e.g. a double, an integer.
  *
  * @author Keith M. Hughes
  */
@@ -29,6 +32,13 @@ trait MeasurementTypeDescription extends Displayable {
    * @return the ID
    */
   def getId(): String
+
+  /**
+   * Get the value type of the measurement type.
+   *
+   * @return the value type
+   */
+  def getValueType(): String
 
   /**
    * Get the default unit for the measurement type.
