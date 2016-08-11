@@ -87,5 +87,5 @@ public interface ActionReference {
    * 
    * @return the data
    */
-  Map<String, ? extends Object> getData();
+  Map<String, Object> getData();
 }

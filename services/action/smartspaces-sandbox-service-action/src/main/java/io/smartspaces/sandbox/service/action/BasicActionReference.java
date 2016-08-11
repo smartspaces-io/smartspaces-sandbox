@@ -31,10 +31,10 @@ public class BasicActionReference implements ActionReference {
   /**
    * The no data map.
    */
-  public static final Map<String, ? extends Object> NO_DATA;
+  public static final Map<String, Object> NO_DATA;
 
   static {
-    NO_DATA = (Map<String, ? extends Object>) Collections.unmodifiableMap(Collections.EMPTY_MAP);
+    NO_DATA = (Map<String, Object>) Collections.unmodifiableMap(Collections.EMPTY_MAP);
   }
 
   /**
@@ -65,7 +65,7 @@ public class BasicActionReference implements ActionReference {
   /**
    * The data for the reference.
    */
-  private Map<String, ? extends Object> data;
+  private Map<String, Object> data;
 
   /**
    * Construct a new base action.
@@ -77,7 +77,7 @@ public class BasicActionReference implements ActionReference {
    */
   public BasicActionReference(String name, String description, String actionSource,
       VersionRange actionSourceVersionRange, String actionName,
-      Map<String, ? extends Object> data) {
+      Map<String, Object> data) {
     this.name = name;
     this.description = description;
     this.data = (data != null) ? data : NO_DATA;
@@ -126,7 +126,7 @@ public class BasicActionReference implements ActionReference {
   }
 
   @Override
-  public Map<String, ? extends Object> getData() {
+  public Map<String, Object> getData() {
     return data;
   }
 }

@@ -17,7 +17,6 @@
 package io.smartspaces.sandbox.interaction.entity.model;
 
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensedValue;
 
 import scala.collection.mutable._
 
@@ -33,6 +32,11 @@ class SimpleSensedEntityModel(private val entityDescription: SensedEntityDescrip
    * The values being sensed keyed by the value name.
    */
   private val sensedValues: Map[String, SensedValue[Any]] = new HashMap
+
+  /**
+   * The time of the last update.
+   */
+  private var lastUpdate: Long = 0
 
   override def getSensedEntityDescription(): SensedEntityDescription = {
     entityDescription
@@ -55,8 +59,12 @@ class SimpleSensedEntityModel(private val entityDescription: SensedEntityDescrip
     // TODO(keith): Needs some sort of concurrency block
     sensedValues.put(value.getName(), value);
   }
+  
+  override def getLastUpdate(): Long = {
+    lastUpdate
+  }
 
-  override def doTransaction[T <: SensedEntityModel, U](transaction: (T) => U): U = {
-    transaction(this.asInstanceOf)
+  override   def setUpdateTime(updateTime: Long): Unit = {
+    this.lastUpdate = updateTime
   }
 }

@@ -19,9 +19,9 @@ package io.smartspaces.sandbox.interaction.processing.sensor;
 
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensedValue;
+import io.smartspaces.sandbox.interaction.entity.model.SensedValue;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimpleSensedValue;
+import io.smartspaces.sandbox.interaction.entity.model.SimpleSensedValue;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
@@ -73,7 +73,9 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
     // Go through every property in the data set, find its type, and then create
     // appropriate values
     data.getObjectEntries().foreach((entry) => {
-      val sensedValueName = entry.getProperty()
+      val channelName = entry.getProperty()
+      
+      println(sensor.getSensorDetail().get.getSensorChannelDetail(channelName))
 
       entry.down()
 
@@ -81,7 +83,7 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
           data.getRequiredString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE)
       if (StandardSensorData.DOUBLE_VALUED_SENSOR_TYPES.contains(sensedType)) {
         val value =
-            new SimpleSensedValue[Double](sensor, sensedValueName, sensedType,
+            new SimpleSensedValue[Double](sensor, channelName, sensedType,
                 data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp)
                 
         handler.getSensorProcessor().getLog().info(value)

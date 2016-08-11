@@ -27,6 +27,7 @@ import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
 import io.smartspaces.service.event.observable.EventObservableService;
 import io.smartspaces.service.event.observable.ObservableCreator;
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /**
  * A collection of sensed entity models.
@@ -65,6 +66,11 @@ class StandardCompleteSensedEntityModel(private val sensorRegistry: SensorRegist
         new EventObservable[PhysicalLocationOccupancyEvent](log)
       }
     }
+
+  /**
+   * The readwrite lock for the
+   */
+  private val readWriteLock = new ReentrantReadWriteLock
 
   override def getSensorRegistry(): SensorRegistry = {
     sensorRegistry;
@@ -141,5 +147,25 @@ class StandardCompleteSensedEntityModel(private val sensorRegistry: SensorRegist
 
   override def getMarkedSensedEntityModel(markerId: String): Option[PersonSensedEntityModel] = {
     markerIdToPersonModels.get(markerId)
+  }
+
+  override def doReadTransaction(transaction: () => Unit): Unit = {
+    readWriteLock.readLock().lock();
+
+    try {
+      transaction()
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+  }
+
+  override def doWriteTransaction(transaction: () => Unit): Unit = {
+    readWriteLock.writeLock().lock();
+
+    try {
+      transaction()
+    } finally {
+      readWriteLock.writeLock().unlock();
+    }
   }
 }

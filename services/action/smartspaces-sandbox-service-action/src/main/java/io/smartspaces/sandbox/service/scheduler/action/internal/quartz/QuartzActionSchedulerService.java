@@ -17,9 +17,13 @@
 package io.smartspaces.sandbox.service.scheduler.action.internal.quartz;
 
 import io.smartspaces.SmartSpacesException;
+import io.smartspaces.evaluation.ExecutionContext;
+import io.smartspaces.evaluation.StandardExecutionContext;
 import io.smartspaces.sandbox.service.action.ActionService;
 import io.smartspaces.sandbox.service.scheduler.action.ActionSchedulerService;
 import io.smartspaces.service.BaseSupportedService;
+import io.smartspaces.service.Service;
+import io.smartspaces.system.SmartSpacesEnvironment;
 
 import org.apache.commons.logging.Log;
 import org.quartz.CronScheduleBuilder;
@@ -51,8 +55,8 @@ import java.util.Properties;
  *
  * @author Keith M. Hughes
  */
-public class QuartzActionSchedulerService extends BaseSupportedService implements
-    ActionSchedulerService {
+public class QuartzActionSchedulerService extends BaseSupportedService
+    implements ActionSchedulerService {
 
   /**
    * JobMap property for the action name.
@@ -118,18 +122,15 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
     try {
       JobDetail detail = newJobDetail(jobName, groupName, actionSource, actionName, data);
 
-      Trigger trigger =
-          TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(jobName, groupName))
-              .startAt(when).build();
+      Trigger trigger = TriggerBuilder.newTrigger()
+          .withIdentity(TriggerKey.triggerKey(jobName, groupName)).startAt(when).build();
       scheduler.scheduleJob(detail, trigger);
 
-      getSpaceEnvironment().getLog().info(
-          String.format("Scheduled job %s:%s for %s\n", groupName, jobName, new SimpleDateFormat(
-              "MM/dd/yyyy@HH:mm:ss").format(when)));
+      getSpaceEnvironment().getLog().info(String.format("Scheduled job %s:%s for %s\n", groupName,
+          jobName, new SimpleDateFormat("MM/dd/yyyy@HH:mm:ss").format(when)));
     } catch (SchedulerException e) {
-      throw new SmartSpacesException(String.format(
-          "Unable to schedule job %s:%s for action %s:%s", groupName, jobName, actionSource,
-          actionName), e);
+      throw new SmartSpacesException(String.format("Unable to schedule job %s:%s for action %s:%s",
+          groupName, jobName, actionSource, actionName), e);
     }
   }
 
@@ -151,9 +152,8 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
 
       scheduler.scheduleJob(detail, trigger);
     } catch (Exception e) {
-      throw new SmartSpacesException(String.format(
-          "Unable to schedule job %s:%s for action %s:%s", groupName, jobName, actionSource,
-          actionName), e);
+      throw new SmartSpacesException(String.format("Unable to schedule job %s:%s for action %s:%s",
+          groupName, jobName, actionSource, actionName), e);
     }
   }
 
@@ -199,11 +199,10 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
   public class MyJobFactory implements JobFactory {
 
     /**
-     * The parameter types for SmartSpacesSchedulerJob subclass
-     * constructors.
+     * The parameter types for SmartSpacesSchedulerJob subclass constructors.
      */
-    private final Class<?>[] SMARTSPACES_JOB_CONSTRUCTOR_PARAMETER_TYPES = new Class<?>[] {
-        ActionService.class, Log.class };
+    private final Class<?>[] SMARTSPACES_JOB_CONSTRUCTOR_PARAMETER_TYPES =
+        new Class<?>[] { ActionService.class, Log.class };
 
     @Override
     public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
@@ -216,8 +215,7 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
             return constructor.newInstance(actionService, getSpaceEnvironment().getLog());
           } else {
             throw new SchedulerException(String.format(
-                "SmartSpaces job class %s does not have a proper constructor",
-                jobClass.getName()));
+                "SmartSpaces job class %s does not have a proper constructor", jobClass.getName()));
           }
         } else {
           return jobClass.getConstructor().newInstance();
@@ -233,15 +231,15 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
     /**
      * The action service.
      */
-    private ActionService actionService;
+    private SmartSpacesEnvironment spaceEnvironment;
 
     /**
      * Logger for the class
      */
     private Log log;
 
-    public SmartSpacesSchedulerJob(ActionService actionService, Log log) {
-      this.actionService = actionService;
+    public SmartSpacesSchedulerJob(SmartSpacesEnvironment spaceEnvironment, Log log) {
+      this.spaceEnvironment = spaceEnvironment;
       this.log = log;
     }
 
@@ -249,8 +247,8 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
       return log;
     }
 
-    protected ActionService getActionService() {
-      return actionService;
+    protected SmartSpacesEnvironment getSpaceEnvironment() {
+      return spaceEnvironment;
     }
   }
 
@@ -261,16 +259,22 @@ public class QuartzActionSchedulerService extends BaseSupportedService implement
    */
   public static class ActionSchedulerJob extends SmartSpacesSchedulerJob {
 
-    public ActionSchedulerJob(ActionService actionService, Log log) {
-      super(actionService, log);
+    public ActionSchedulerJob(SmartSpacesEnvironment spaceEnvironment, Log log) {
+      super(spaceEnvironment, log);
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         JobDataMap jobDataMap = context.getMergedJobDataMap();
-        getActionService().performAction(jobDataMap.getString(JOB_MAP_PROPERTY_ACTION_SOURCE),
-            jobDataMap.getString(JOB_MAP_PROPERTY_ACTION_NAME), jobDataMap);
+        ExecutionContext executionContext =
+            new StandardExecutionContext(getSpaceEnvironment(), getLog());
+        executionContext.setValues(jobDataMap);
+
+        ActionService actionService = getSpaceEnvironment().getServiceRegistry()
+            .getRequiredService(ActionService.SERVICE_NAME);
+        actionService.performAction(jobDataMap.getString(JOB_MAP_PROPERTY_ACTION_SOURCE),
+            jobDataMap.getString(JOB_MAP_PROPERTY_ACTION_NAME), executionContext);
       } catch (Exception e) {
         getLog().error("Could not run scheduled job", e);
       }

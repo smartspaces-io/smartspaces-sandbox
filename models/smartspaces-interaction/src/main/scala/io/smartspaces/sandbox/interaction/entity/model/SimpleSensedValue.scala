@@ -14,7 +14,10 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity.model
+
+import io.smartspaces.sandbox.interaction.entity.model.SensedValue
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
  * A support class for sensed values.
@@ -26,7 +29,7 @@ package io.smartspaces.sandbox.interaction.entity;
  */
 class SimpleSensedValue[T <: Any](sensor: SensorEntityDescription, valueName: String, valueType: String,
     value: T, timestamp: Long) extends SensedValue[T] {
-
+  
   override def getSensor(): SensorEntityDescription = {
     sensor
   }

@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2016 Keith M. Hughes
- * Copyright (C) 2015 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,20 +14,21 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.service.sequencer;
+package io.smartspaces.sandbox.interaction.entity.model
+
+import io.smartspaces.util.data.dynamic.DynamicObject
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
- * An element of a sequence.
- *
- * @author Keith M. Hughes
+ * An updater for a sensed value.
  */
-public interface SequenceElement {
+trait SensedValueUpdater {
 
   /**
-   * Run this sequence element.
+   * Create a new sensed value for a channel.
    *
-   * @param sequenceExecutionContext
-   *          the sequence environment the sequence will run under
+   * @param sensor
+   * 		the sensor that is providing the value
    */
-      void run(SequenceExecutionContext sequenceExecutionContext);
+  def createSensedValue(sensor: SensorEntityDescription, channelName: String, data: DynamicObject, timestamp: Long): SensedValue[Any]
 }

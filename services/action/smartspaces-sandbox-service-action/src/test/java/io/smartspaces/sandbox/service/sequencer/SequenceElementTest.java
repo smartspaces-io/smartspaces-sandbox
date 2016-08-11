@@ -57,21 +57,21 @@ public class SequenceElementTest {
 
     SequenceElement element1 = new SequenceElement() {
       @Override
-      public void run(SequenceEnvironment sequenceEnvironment) {
+      public void run(SequenceExecutionContext sequenceExecutionContext) {
         actual.add("a");
       }
     };
     SequenceElement element2 = new SequenceElement() {
       @Override
-      public void run(SequenceEnvironment sequenceEnvironment) {
+      public void run(SequenceExecutionContext sequenceExecutionContext) {
         actual.add("b");
       }
     };
 
     GroupSequenceElement sequence = new GroupSequenceElement(element1, element2);
-    SequenceEnvironment sequenceEnvironment =
-        new SequenceEnvironment(sequencer, null, spaceEnvironment);
-    sequence.run(sequenceEnvironment);
+    SequenceExecutionContext sequenceExecutionContext =
+        new SequenceExecutionContext(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceExecutionContext);
 
     Assert.assertEquals(Lists.newArrayList("a", "b"), actual);
   }
@@ -82,15 +82,15 @@ public class SequenceElementTest {
 
     SequenceElement element1 = new SequenceElement() {
       @Override
-      public void run(SequenceEnvironment sequenceEnvironment) {
+      public void run(SequenceExecutionContext sequenceExecutionContext) {
         actual.incrementAndGet();
       }
     };
 
     RepeatingSequenceElement sequence = new RepeatingSequenceElement(10, element1);
-    SequenceEnvironment sequenceEnvironment =
-        new SequenceEnvironment(sequencer, null, spaceEnvironment);
-    sequence.run(sequenceEnvironment);
+    SequenceExecutionContext sequenceExecutionContext =
+        new SequenceExecutionContext(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceExecutionContext);
 
     Assert.assertEquals(10, actual.get());
   }
@@ -100,9 +100,9 @@ public class SequenceElementTest {
     Runnable runnable = Mockito.mock(Runnable.class);
 
     RunnableSequenceElement sequence = new RunnableSequenceElement(runnable);
-    SequenceEnvironment sequenceEnvironment =
-        new SequenceEnvironment(sequencer, null, spaceEnvironment);
-    sequence.run(sequenceEnvironment);
+    SequenceExecutionContext sequenceExecutionContext =
+        new SequenceExecutionContext(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceExecutionContext);
 
     Mockito.verify(runnable).run();
   }
@@ -119,10 +119,10 @@ public class SequenceElementTest {
 
     ActionReference ref = Mockito.mock(ActionReference.class);
     ActionSequenceElement sequence = new ActionSequenceElement(ref);
-    SequenceEnvironment sequenceEnvironment =
-        new SequenceEnvironment(sequencer, null, spaceEnvironment);
-    sequence.run(sequenceEnvironment);
+    SequenceExecutionContext sequenceExecutionContext =
+        new SequenceExecutionContext(sequencer, null, spaceEnvironment);
+    sequence.run(sequenceExecutionContext);
 
-    Mockito.verify(actionService).performActionReference(ref, null);
+    Mockito.verify(actionService).performActionReference(ref, sequenceExecutionContext);
   }
 }

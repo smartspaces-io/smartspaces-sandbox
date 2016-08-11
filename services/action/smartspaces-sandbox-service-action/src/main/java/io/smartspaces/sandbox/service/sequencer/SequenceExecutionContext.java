@@ -16,6 +16,7 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
+import io.smartspaces.evaluation.StandardExecutionContext;
 import io.smartspaces.system.SmartSpacesEnvironment;
 
 /**
@@ -23,12 +24,7 @@ import io.smartspaces.system.SmartSpacesEnvironment;
  * 
  * @author Keith M. Hughes
  */
-public class SequenceEnvironment {
-
-  /**
-   * The space environment to use.
-   */
-  private final SmartSpacesEnvironment spaceEnvironment;
+public class SequenceExecutionContext extends StandardExecutionContext {
 
   /**
    * The sequencer running the sequence
@@ -41,7 +37,7 @@ public class SequenceEnvironment {
   private final Sequence sequence;
 
   /**
-   * Construct a new environment.
+   * Construct a new context.
    * 
    * @param sequencer
    *          the sequencer running the sequence
@@ -50,11 +46,11 @@ public class SequenceEnvironment {
    * @param spaceEnvironment
    *          the space environment for the sequence environment
    */
-  public SequenceEnvironment(Sequencer sequencer, Sequence sequence,
+  public SequenceExecutionContext(Sequencer sequencer, Sequence sequence,
       SmartSpacesEnvironment spaceEnvironment) {
+    super(spaceEnvironment, spaceEnvironment.getLog());
     this.sequencer = sequencer;
     this.sequence = sequence;
-    this.spaceEnvironment = spaceEnvironment;
   }
 
   /**
@@ -73,14 +69,5 @@ public class SequenceEnvironment {
    */
   public Sequence getSequence() {
     return sequence;
-  }
-
-  /**
-   * Get the space environment.
-   * 
-   * @return the space environment
-   */
-  public SmartSpacesEnvironment getSpaceEnvironment() {
-    return spaceEnvironment;
   }
 }

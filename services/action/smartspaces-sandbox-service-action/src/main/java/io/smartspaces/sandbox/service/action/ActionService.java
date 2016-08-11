@@ -16,6 +16,7 @@
 package io.smartspaces.sandbox.service.action;
 
 import io.smartspaces.SmartSpacesException;
+import io.smartspaces.evaluation.ExecutionContext;
 import io.smartspaces.resource.Version;
 import io.smartspaces.resource.VersionRange;
 import io.smartspaces.service.SupportedService;
@@ -70,10 +71,10 @@ public interface ActionService extends SupportedService {
    *          the name of the action source
    * @param actionName
    *          the name of the action
-   * @param data
-   *          the data for the action
+   * @param context
+   *          the context for the action execution
    */
-      void performAction(String sourceName, String actionName, Map<String, ? extends Object> data)
+      void performAction(String sourceName, String actionName, ExecutionContext context)
           throws SmartSpacesException;
 
   /**
@@ -81,11 +82,11 @@ public interface ActionService extends SupportedService {
    * 
    * @param actionReference
    *          the action reference
-   * @param data
-   *          the data for the action invocation
+   * @param context
+   *          the context for the action execution
    */
       void performActionReference(ActionReference actionReference,
-          Map<String, ? extends Object> data);
+          ExecutionContext context);
 
   /**
    * Perform an action.
@@ -97,8 +98,8 @@ public interface ActionService extends SupportedService {
    * @param actionName
    *          the name of the action
    * @param data
-   *          the data for the action
+   *          the context for the action execution
    */
       void performAction(String actionSourceName, VersionRange actionSourceVersionRange,
-          String actionName, Map<String, ? extends Object> data);
+          String actionName, ExecutionContext context);
 }

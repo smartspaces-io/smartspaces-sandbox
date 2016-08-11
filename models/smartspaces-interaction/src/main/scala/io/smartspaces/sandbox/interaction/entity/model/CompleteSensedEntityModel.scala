@@ -101,5 +101,28 @@ trait CompleteSensedEntityModel {
    * 
    * @return the sensor registry
    */
-  def getSensorRegistry(): SensorRegistry
+  def getSensorRegistry(): SensorRegistry 
+  
+  /**
+   * Perform an operations within a read transaction.
+   * 
+   * <p>
+   * Multiple readers can run at the same time.
+   *
+   * @param transaction
+   *          the code to run inside the transaction
+   */
+  def doReadTransaction(transaction: () => Unit): Unit
+  
+  /**
+   * Perform an operations within a read transaction.
+   * 
+   * <p>
+   * Only one writer can run at a time.
+   *
+   * @param transaction
+   *          the code to run inside the transaction
+   */
+  def doWriteTransaction(transaction: () => Unit): Unit
+
 }

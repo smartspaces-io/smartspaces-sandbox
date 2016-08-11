@@ -19,6 +19,7 @@ package io.smartspaces.sandbox.service.action.internal;
 import com.google.common.collect.Maps;
 
 import io.smartspaces.SimpleSmartSpacesException;
+import io.smartspaces.evaluation.ExecutionContext;
 import io.smartspaces.resource.NamedVersionedResourceCollection;
 import io.smartspaces.resource.Version;
 import io.smartspaces.resource.VersionRange;
@@ -64,28 +65,27 @@ public class StandardActionService extends BaseSupportedService implements Actio
   }
 
   @Override
-  public void performAction(String actionSourceName, String actionName,
-      Map<String, ? extends Object> data) {
-    performAction(actionSourceName, null, actionName, data);
+  public void performAction(String actionSourceName, String actionName, ExecutionContext context) {
+    performAction(actionSourceName, null, actionName, context);
   }
 
   @Override
-  public void performActionReference(ActionReference actionReference,
-      Map<String, ? extends Object> data) {
+  public void performActionReference(ActionReference actionReference, ExecutionContext context) {
+    context.setValues(actionReference.getData());
     performAction(actionReference.getActionSource(), actionReference.getActionSourceVersionRange(),
-        actionReference.getActionName(), data);
+        actionReference.getActionName(), context);
   }
 
   @Override
   public void performAction(String actionSourceName, VersionRange actionSourceVersionRange,
-      String actionName, Map<String, ? extends Object> data) {
+      String actionName, ExecutionContext context) {
     ActionSource source = actionSourceVersionRange != null
         ? sources.getResource(actionSourceName, actionSourceVersionRange)
         : sources.getHighestResource(actionSourceName);
     if (source != null) {
       Action action = source.getAction(actionName);
       if (action != null) {
-        action.perform(data);
+        action.perform(context);
       } else {
         throw new SimpleSmartSpacesException(String.format("Action %s:%s for version %s not found",
             actionSourceName, actionName, actionSourceVersionRange));

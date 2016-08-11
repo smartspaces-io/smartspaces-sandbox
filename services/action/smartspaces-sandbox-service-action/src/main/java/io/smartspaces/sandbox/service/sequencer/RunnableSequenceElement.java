@@ -40,7 +40,7 @@ public class RunnableSequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(SequenceEnvironment sequenceEnvironment) {
+  public void run(SequenceExecutionContext sequenceExecutionContext) {
     if (runnable != null) {
       runnable.run();
     }

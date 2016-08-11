@@ -17,9 +17,9 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
-import io.smartspaces.util.resource.ManagedResource;
-
 import java.util.Collection;
+
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**
  * A sequence of actions to take place.

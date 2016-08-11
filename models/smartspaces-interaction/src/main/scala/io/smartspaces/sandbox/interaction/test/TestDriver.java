@@ -43,7 +43,8 @@ import io.smartspaces.time.LocalTimeProvider;
 public class TestDriver {
 
   public static void main(String[] args) throws Exception {
-    justYaml();
+    // justYaml();
+    runEverything();
   }
   
   private static void justYaml() {

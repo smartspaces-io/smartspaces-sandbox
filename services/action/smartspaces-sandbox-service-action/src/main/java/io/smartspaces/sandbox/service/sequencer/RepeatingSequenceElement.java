@@ -50,13 +50,13 @@ public class RepeatingSequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(SequenceEnvironment sequenceEnvironment) {
+  public void run(SequenceExecutionContext sequenceExecutionContext) {
     for (int i = 0; i < repeatCount; i++) {
       if (Thread.interrupted()) {
         break;
       }
 
-      element.run(sequenceEnvironment);
+      element.run(sequenceExecutionContext);
     }
   }
 }

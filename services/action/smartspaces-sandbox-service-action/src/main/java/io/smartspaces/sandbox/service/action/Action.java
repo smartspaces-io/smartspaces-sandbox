@@ -16,7 +16,7 @@
 
 package io.smartspaces.sandbox.service.action;
 
-import java.util.Map;
+import io.smartspaces.evaluation.ExecutionContext;
 
 /**
  * @author Keith M. Hughes
@@ -26,8 +26,8 @@ public interface Action {
   /**
    * Perform the action.
    * 
-   * @param data
-   *          data for the action
+   * @param context
+   *          context for the action
    */
-  void perform(Map<String, ? extends Object> data);
+  void perform(ExecutionContext context);
 }

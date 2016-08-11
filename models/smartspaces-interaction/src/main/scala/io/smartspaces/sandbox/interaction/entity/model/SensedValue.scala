@@ -14,7 +14,9 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity.model
+
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
  * The value of a sensor.

@@ -16,10 +16,13 @@
 
 package io.smartspaces.service.action.internal;
 
+import io.smartspaces.evaluation.StandardExecutionContext;
 import io.smartspaces.sandbox.service.action.Action;
 import io.smartspaces.sandbox.service.action.ActionSource;
 import io.smartspaces.sandbox.service.action.BasicActionReference;
 import io.smartspaces.sandbox.service.action.internal.StandardActionService;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -51,10 +54,10 @@ public class StandardActionServiceTest {
     String sourceName = "foo";
     actionService.registerActionSource(sourceName, source);
 
-    Map<String, Object> data = new HashMap<>();
-    actionService.performAction(sourceName, actionName, data);
+    StandardExecutionContext context = new StandardExecutionContext(null, null);
+    actionService.performAction(sourceName, actionName, context);
 
-    Mockito.verify(action, Mockito.times(1)).perform(data);
+    Mockito.verify(action, Mockito.times(1)).perform(context);
 
   }
 
@@ -70,12 +73,16 @@ public class StandardActionServiceTest {
     actionService.registerActionSource(sourceName, source);
 
     Map<String, Object> data = new HashMap<>();
+    data.put("foo1",  "bar1");
+    StandardExecutionContext context = new StandardExecutionContext(null, null);
 
     BasicActionReference actionReference =
         new BasicActionReference("ref1", "test1", sourceName, null, actionName, data);
-    actionService.performActionReference(actionReference, data);
+    actionService.performActionReference(actionReference, context);
 
-    Mockito.verify(action, Mockito.times(1)).perform(data);
-
+    Mockito.verify(action, Mockito.times(1)).perform(context);
+    
+    String value = context.getValue("foo1");
+    Assert.assertEquals("bar1", value);
   }
 }

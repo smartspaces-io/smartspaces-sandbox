@@ -43,7 +43,7 @@ public class DelaySequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(SequenceEnvironment sequenceEnvironment) {
+  public void run(SequenceExecutionContext sequenceEnvironment) {
     try {
       Thread.sleep(delay.getUnit().toMillis(delay.getDelay()));
     } catch (InterruptedException e) {

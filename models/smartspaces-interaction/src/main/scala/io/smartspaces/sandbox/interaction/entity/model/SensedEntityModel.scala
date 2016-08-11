@@ -17,63 +17,68 @@
 package io.smartspaces.sandbox.interaction.entity.model;
 
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensedValue;
+import io.smartspaces.sandbox.interaction.entity.model.SensedValue;
 
 import java.util.Collection;
 
 /**
  * A model of the sensor state of an entity.
- * 
+ *
  * @author Keith M. Hughes
  */
 trait SensedEntityModel {
-  
+
   /**
    * Get the sensed entity model collection this model is in.
-   * 
+   *
    * @return the sensed entity model collection
    */
-   def getAllModels(): CompleteSensedEntityModel
+  def getAllModels(): CompleteSensedEntityModel
 
   /**
    * Get the entity description for the entity being modeled.
-   * 
+   *
    * @return the entity description
    */
-   def getSensedEntityDescription(): SensedEntityDescription
+  def getSensedEntityDescription(): SensedEntityDescription
 
   /**
    * Get the value of a sensed property.
-   * 
+   *
    * @param valueName
    *          the name of the value
-   * 
+   *
    * @return the sensed value with the specified name
    */
   def getSensedValue(valueName: String): Option[SensedValue[Any]]
 
   /**
    * Get all sensed values for this entity.
-   * 
+   *
    * @return all sensed values
    */
   def getAllSensedValues(): List[SensedValue[Any]]
 
   /**
    * Update a sensed value.
-   * 
+   *
    * @param value
    *          the value being updated
    */
   def updateSensedValue[T <: Any](value: SensedValue[T]): Unit
 
   /**
-   * Perform a set of operations within a transaction.
-   * 
-   * @param transaction
-   *          the code to run inside the transaction
-   * 
-   * @return the value returned
+   * Get the last update for the model.
+   *
+   * @return the last time
    */
-  def doTransaction[T <: SensedEntityModel, U](transaction: (T) => U): U
+  def getLastUpdate(): Long
+
+  /**
+   * Set the update time for the model.
+   *
+   * @param updateTime
+   * 		the time of the last update
+   */
+  def setUpdateTime(updateTime: Long): Unit
 }

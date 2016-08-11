@@ -17,8 +17,9 @@
 
 package io.smartspaces.sandbox.service.sequencer;
 
-import io.smartspaces.util.resource.ManagedResource;
 import org.apache.commons.logging.Log;
+
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**
  * A sequencer that creates sequences of actions that take place sequentially.

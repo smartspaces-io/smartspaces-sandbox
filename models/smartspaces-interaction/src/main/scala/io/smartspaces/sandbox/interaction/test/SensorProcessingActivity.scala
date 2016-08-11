@@ -114,7 +114,7 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
       override def handleSensorData(handler: SensedEntitySensorHandler, timestamp: Long,
         sensor: SensorEntityDescription, sensedEntity: SensedEntityDescription,
         data: DynamicObject): Unit = {
-        log.formatInfo("Got data at %d from sensor %s for entity %s: %s", timestamp.toString, sensor,
+        log.formatInfo("Got data at %s from sensor %s for entity %s: %s", timestamp.toString, sensor,
           sensedEntity, data.asMap())
 
       }

@@ -20,7 +20,7 @@ package io.smartspaces.sandbox.service.sequencer.basic;
 import io.smartspaces.SimpleSmartSpacesException;
 import io.smartspaces.sandbox.service.sequencer.Sequence;
 import io.smartspaces.sandbox.service.sequencer.SequenceElement;
-import io.smartspaces.sandbox.service.sequencer.SequenceEnvironment;
+import io.smartspaces.sandbox.service.sequencer.SequenceExecutionContext;
 import io.smartspaces.util.concurrency.ManagedCommand;
 
 import java.util.ArrayList;
@@ -114,8 +114,8 @@ public class ManagedCommandSequence implements Sequence {
    *          the sequencer to run under
    */
       void runSequence(ManagedCommandSequencer sequencer) {
-    SequenceEnvironment sequenceEnvironment =
-        new SequenceEnvironment(sequencer, this, sequencer.getSpaceEnvironment());
+    SequenceExecutionContext sequenceExecutionContext =
+        new SequenceExecutionContext(sequencer, this, sequencer.getSpaceEnvironment());
 
     try {
       for (SequenceElement currentElement : sequencerElements) {
@@ -123,7 +123,7 @@ public class ManagedCommandSequence implements Sequence {
           break;
         }
 
-        currentElement.run(sequenceEnvironment);
+        currentElement.run(sequenceExecutionContext);
       }
 
       state.set(SequenceState.COMPLETED);

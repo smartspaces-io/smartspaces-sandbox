@@ -42,10 +42,10 @@ public class ActionSequenceElement implements SequenceElement {
   }
 
   @Override
-  public void run(SequenceEnvironment sequenceEnvironment) {
-    ActionService actionService = sequenceEnvironment.getSpaceEnvironment().getServiceRegistry()
+  public void run(SequenceExecutionContext sequenceExecutionContext) {
+    ActionService actionService = sequenceExecutionContext.getSpaceEnvironment().getServiceRegistry()
         .getRequiredService(ActionService.SERVICE_NAME);
     
-    actionService.performActionReference(actionReference, null);
+    actionService.performActionReference(actionReference, sequenceExecutionContext);
   }
 }
