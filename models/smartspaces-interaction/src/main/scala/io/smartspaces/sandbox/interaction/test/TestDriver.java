@@ -38,7 +38,7 @@ import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpoin
 import io.smartspaces.service.event.observable.StandardEventObservableService;
 import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
-import io.smartspaces.time.LocalTimeProvider;
+import io.smartspaces.time.provider.LocalTimeProvider;
 
 public class TestDriver {
 
