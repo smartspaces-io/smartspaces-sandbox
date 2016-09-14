@@ -54,6 +54,7 @@ import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.util.SmartSpacesUtilities;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
+import io.smartspaces.sandbox.interaction.processing.sensor.SimpleMarkerSensorValueProcessor
 
 /**
  * An activity to merge sensors across the entire space.
@@ -127,6 +128,7 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
     val modelProcessor =
       new StandardSensedEntityModelProcessor(sensedEntityModelCollection, log)
     modelProcessor.addSensorValueProcessor(new StandardBleProximitySensorValueProcessor())
+    modelProcessor.addSensorValueProcessor(new SimpleMarkerSensorValueProcessor())
 
     sensorHandler.addSensedEntitySensorListener(modelProcessor)
 

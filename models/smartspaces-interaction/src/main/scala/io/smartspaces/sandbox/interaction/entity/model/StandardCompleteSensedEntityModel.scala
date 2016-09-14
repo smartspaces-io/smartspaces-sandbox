@@ -34,7 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
  *
  * @author Keith M. Hughes
  */
-class StandardCompleteSensedEntityModel(private val sensorRegistry: SensorRegistry,
+class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     private val eventObservableService: EventObservableService, private val log: ExtendedLog) extends CompleteSensedEntityModel {
 
   /**
@@ -71,10 +71,6 @@ class StandardCompleteSensedEntityModel(private val sensorRegistry: SensorRegist
    * The readwrite lock for the
    */
   private val readWriteLock = new ReentrantReadWriteLock
-
-  override def getSensorRegistry(): SensorRegistry = {
-    sensorRegistry;
-  }
 
   override def prepare(): Unit = {
     createModelsFromDescriptions();

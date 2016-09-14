@@ -52,7 +52,7 @@ trait PhysicalSpaceSensedEntityModel extends SensedEntityModel {
   /**
    * Get the current occupants of the space.
    *
-   * @return
+   * @return the collection of current occupants
    */
   def getOccupants(): Set[PersonSensedEntityModel]
 }

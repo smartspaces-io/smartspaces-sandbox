@@ -77,7 +77,7 @@ class StandardFilePersistenceSensorHandler(private val outputFile: File) extends
   /**
    * The sensor processor being run under.
    */
-  private var sensorProcessor: SensorProcessor = null
+  var sensorProcessor: SensorProcessor = null
 
   /**
    * The data to save.
@@ -107,14 +107,6 @@ class StandardFilePersistenceSensorHandler(private val outputFile: File) extends
     val l: java.lang.Long = timestamp
     sample.put(StandardFilePersistenceSensorHandler.FIELD_NAME_SAMPLE_TIMESTAMP, l)
     sample.put(StandardFilePersistenceSensorHandler.FIELD_NAME_SAMPLE_SAMPLE, data.asMap())
-  }
-
-  override def setSensorProcessor(sensorProcessor: SensorProcessor): Unit = {
-    this.sensorProcessor = sensorProcessor
-  }
-
-  override def getSensorProcessor(): SensorProcessor = {
-    sensorProcessor
   }
 
   /**

@@ -8,15 +8,35 @@ markers:
     name: BLE Beacon
     description: An Estimote BLE Beacon
     markerId: ble:fc0d12fe7e5c
+  - id: /marker/nfc/04E17DDAC94880
+    name: NFC Ring 1 ID 1
+    description: A NFC ring
+    markerId: nfc:04E17DDAC94880
+  - id: /marker/nfc/049A62DAC94880
+    name: NFC Ring 1 ID 2
+    description: A NFC ring
+    markerId: nfc:049A62DAC94880
 
 markerAssociations:
   - marker: /marker/ble/fc0d12fe7e5c
+    marked: /person/keith.hughes
+  - marker: /marker/nfc/04E17DDAC94880
+    marked: /person/keith.hughes
+  - marker: /marker/nfc/049A62DAC94880
     marked: /person/keith.hughes
 
 sensors:
   - id: /home/livingroom/proximity
     name: Proximity Sensor 1
     description: Raspberry Pi BLE proximity sensor
+  - id: /sensornode/ESP_8C8E1B
+    name: NFC Reader Sensor 1
+    description: ESP8266-based NFC Reader
+    sensorDetail: /sensor/smartspaces/test/nfc/esp8266  
+  - id: /sensornode/ESP_8C8E1C
+    name: NFC Reader Sensor 2
+    description: ESP8266-based NFC Reader
+    sensorDetail: /sensor/smartspaces/test/nfc/esp8266  
   - id: /sensornode/nodemcu9107700
     name: Sensor 9107700
     description: ESP8266-based temperature/humidity sensor
@@ -60,6 +80,14 @@ sensorDetails:
         description: The humidity
         type: /sensor/measurement/humidity
         unit: /measurement/units/humidity/relative
+  - id: /sensor/smartspaces/test/nfc/esp8266
+    name: ESP8266 NFC Reader
+    description: The wireless NFC reader ESP8266 boards.  
+    channels:
+      - id: marker
+        name: Marker
+        description: A marker ID
+        type: /sensor/marker
 
 measurementTypes:
   - id: /sensor/measurement/temperature
@@ -87,6 +115,10 @@ measurementTypes:
       - id: /measurement/units/humidity/relative
         name: Relative Humidity
         description: The relative humidity
+  - id: /sensor/marker
+    name: Marker
+    description: Markers mark objects
+    valueType: id
   
 physicalLocations:
   - id: /home/livingroom
@@ -114,6 +146,10 @@ physicalLocations:
 sensorAssociations:
   - sensor: /home/livingroom/proximity
     sensed: /home/livingroom
+  - sensor: /sensornode/ESP_8C8E1B
+    sensed: /home/livingroom
+  - sensor: /sensornode/ESP_8C8E1C
+    sensed: /home/kitchen
   - sensor: /sensornode/nodemcu9107700
     sensed: /home/livingroom
   - sensor: /sensornode/nodemcu9107716

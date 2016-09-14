@@ -43,6 +43,11 @@ public class StandardSensorData {
   public static final String SENSOR_TYPE_PROXIMITY_BLE = "proximity.ble";
 
   /**
+   * The type of a simple marker sensor value.
+   */
+  public static final String SENSOR_TYPE_MARKER_SIMPLE = "/sensor/marker";
+
+  /**
    * The sensor values that are double-valued.
    */
   public static final Set<String> DOUBLE_VALUED_SENSOR_TYPES =

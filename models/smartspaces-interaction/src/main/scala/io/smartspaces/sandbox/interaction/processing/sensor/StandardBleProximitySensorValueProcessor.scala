@@ -27,7 +27,7 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.PhysicalSpaceSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.updater.PersonPhysicalSpaceModelUpdater;
+import io.smartspaces.sandbox.interaction.entity.model.updater.SimplePersonPhysicalSpaceModelUpdater;
 import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
@@ -49,7 +49,7 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
   /**
    * The map from the triggers to the models to be updated by that trigger.
    */
-  private val userTriggerToUpdaters: Map[SimpleHysteresisThresholdValueTrigger, PersonPhysicalSpaceModelUpdater] =
+  private val userTriggerToUpdaters: Map[SimpleHysteresisThresholdValueTrigger, SimplePersonPhysicalSpaceModelUpdater] =
     new HashMap
 
   /**
@@ -80,7 +80,7 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
     userTrigger.update(rssi)
 
     val markedEntity = processorContext.completeSensedEntityModel.
-      getSensorRegistry().getMarkableEntityByMarkerId(markerId)
+      sensorRegistry.getMarkableEntityByMarkerId(markerId)
     processorContext.log.formatInfo("Detected ID %s,  RSSI= %f, %s\n", markerId, rssi,
       markedEntity);
   }
@@ -108,10 +108,10 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
       val newUserTrigger = new SimpleHysteresisThresholdValueTrigger()
 
       val markerEntity = processorContext.completeSensedEntityModel.
-        getSensorRegistry().getMarkerEntityByMarkerId(markerId)
+        sensorRegistry.getMarkerEntityByMarkerId(markerId)
 
       val configData: scala.collection.immutable.Map[String, Object] = processorContext.completeSensedEntityModel.
-        getSensorRegistry().getConfigurationData(markerEntity.get.getId())
+        sensorRegistry.getConfigurationData(markerEntity.get.getId())
       bleProximitySupport.configureTrigger(newUserTrigger, configData, sensor, processorContext);
 
       newUserTrigger.addListener(triggerListener)
@@ -119,7 +119,7 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
 
       val person =
         processorContext.completeSensedEntityModel.getMarkedSensedEntityModel(markerId).asInstanceOf[PersonSensedEntityModel]
-      val modelUpdater = new PersonPhysicalSpaceModelUpdater(
+      val modelUpdater = new SimplePersonPhysicalSpaceModelUpdater(
         sensedEntityModel.asInstanceOf[PhysicalSpaceSensedEntityModel], person)
       userTriggerToUpdaters.put(newUserTrigger, modelUpdater)
 

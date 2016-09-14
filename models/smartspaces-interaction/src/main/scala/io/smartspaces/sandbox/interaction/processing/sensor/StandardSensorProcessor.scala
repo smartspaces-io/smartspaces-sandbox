@@ -27,7 +27,7 @@ import io.smartspaces.util.data.dynamic.DynamicObject
  *
  * @author Keith M. Hughes
  */
-class StandardSensorProcessor(private val log: ExtendedLog) extends SensorProcessor {
+class StandardSensorProcessor(val log: ExtendedLog) extends SensorProcessor {
 
   /**
    * The managed resources controlled by the processor.
@@ -56,7 +56,7 @@ class StandardSensorProcessor(private val log: ExtendedLog) extends SensorProces
   }
 
   override def addSensorHandler(sensorHandler: SensorHandler): SensorProcessor = {
-    sensorHandler.setSensorProcessor(this)
+    sensorHandler.sensorProcessor = this
     sensorHandlers += sensorHandler
 
     managedResources.addResource(sensorHandler)
@@ -72,9 +72,5 @@ class StandardSensorProcessor(private val log: ExtendedLog) extends SensorProces
         case e: Throwable => log.error("Could not process sensor data event", e)
       }
     })
-  }
-
-  override def getLog(): ExtendedLog = {
-    log
   }
 }

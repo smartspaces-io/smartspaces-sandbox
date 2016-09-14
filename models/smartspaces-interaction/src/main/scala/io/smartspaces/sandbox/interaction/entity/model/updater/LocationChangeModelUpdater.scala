@@ -14,17 +14,16 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity.model;
+package io.smartspaces.sandbox.interaction.entity.model.updater
+
+import io.smartspaces.sandbox.interaction.entity.model.PhysicalSpaceSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
 
 /**
- * A sensed entity model that can be located in a physical space.
+ * A model updater for a change from one location to another.
  * 
- * @author Keith M. hughes
+ * @author Keith M. Hughes
  */
-trait PhysicalSpaceLocatableSensedEntityModel extends SensedEntityModel {
-
-  /**
-   * The physical location of the entity.
-   */
-  var physicalSpaceLocation: PhysicalSpaceSensedEntityModel
+trait LocationChangeModelUpdater {
+  def updateLocation(newLocation: PhysicalSpaceSensedEntityModel, person: PersonSensedEntityModel): Unit
 }

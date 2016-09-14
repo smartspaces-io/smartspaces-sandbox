@@ -16,7 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.SensedValue;
@@ -33,33 +32,33 @@ import scala.collection.JavaConversions._;
 
 /**
  * A sensor processor that will update sensed entity models.
- * 
+ *
  * @author Keith M. Hughes
  */
 class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: CompleteSensedEntityModel,
-      private val log: ExtendedLog)
+  private val log: ExtendedLog)
     extends SensedEntityModelProcessor with SensedEntitySensorListener {
 
   /**
    * The map of sensor types to sensor processors.
    */
-  private val  sensorValuesProcessors: Map[String, SensorValueProcessor] = new HashMap
+  private val sensorValuesProcessors: Map[String, SensorValueProcessor] = new HashMap
 
   /**
    * The context for sensor value processors.
    */
   private val processorContext = new SensorValueProcessorContext(completeSensedEntityModel, log)
 
-  override def  addSensorValueProcessor(processor: SensorValueProcessor ): SensedEntityModelProcessor = {
+  override def addSensorValueProcessor(processor: SensorValueProcessor): SensedEntityModelProcessor = {
     sensorValuesProcessors.put(processor.getSensorValueType(), processor)
 
     this
   }
 
-  override def handleSensorData(handler: SensedEntitySensorHandler , timestamp: Long,
-       sensor: SensorEntityDescription, sensedEntity: SensedEntityDescription , data: DynamicObject ): Unit = {
+  override def handleSensorData(handler: SensedEntitySensorHandler, timestamp: Long,
+    sensor: SensorEntityDescription, sensedEntity: SensedEntityDescription, data: DynamicObject): Unit = {
     val sensedEntityModel =
-        completeSensedEntityModel.getSensedEntityModel(sensedEntity.getId())
+      completeSensedEntityModel.getSensedEntityModel(sensedEntity.getId())
     if (sensedEntityModel.isEmpty) {
       log.formatWarn("Have no sensed entity model for entity %s", sensedEntity)
       return
@@ -74,26 +73,31 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
     // appropriate values
     data.getObjectEntries().foreach((entry) => {
       val channelName = entry.getProperty()
-      
-      println(sensor.getSensorDetail().get.getSensorChannelDetail(channelName))
+
+      val sensorDetail = sensor.getSensorDetail()
+      if (sensorDetail.isDefined) {
+        println(channelName)
+        println(sensorDetail.get.getAllSensorChannelDetails)
+        println(sensorDetail.get.getSensorChannelDetail(channelName))
+      }
 
       entry.down()
 
       val sensedType =
-          data.getRequiredString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE)
+        data.getRequiredString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE)
       if (StandardSensorData.DOUBLE_VALUED_SENSOR_TYPES.contains(sensedType)) {
         val value =
-            new SimpleSensedValue[Double](sensor, channelName, sensedType,
-                data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp)
-                
-        handler.getSensorProcessor().getLog().info(value)
+          new SimpleSensedValue[Double](sensor, channelName, sensedType,
+            data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp)
+
+        handler.sensorProcessor.log.info(value)
 
         sensedEntityModel.get.updateSensedValue(value)
       } else {
         val sensorValueProcessor = sensorValuesProcessors.get(sensedType);
         if (sensorValueProcessor.isDefined) {
           sensorValueProcessor.get.processData(timestamp, sensor, sensedEntityModel.get, processorContext,
-              data);
+            data);
         } else {
           log.formatWarn("Got unknown sensor type %s", sensedType);
         }

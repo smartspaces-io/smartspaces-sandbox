@@ -97,11 +97,9 @@ trait CompleteSensedEntityModel {
    def getMarkedSensedEntityModel(markerId: String ): Option[PersonSensedEntityModel]
 
   /**
-   * Get the sensor registry for the collection.
-   * 
-   * @return the sensor registry
+   * The sensor registry for the collection.
    */
-  def getSensorRegistry(): SensorRegistry 
+  val sensorRegistry: SensorRegistry 
   
   /**
    * Perform an operations within a read transaction.

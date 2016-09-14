@@ -24,7 +24,7 @@ import io.smartspaces.sandbox.interaction.entity.model.PhysicalSpaceSensedEntity
  * 
  * @author Keith M. Hughes
  */
-class PersonPhysicalSpaceModelUpdater(val physicalSpace: PhysicalSpaceSensedEntityModel, val person: PersonSensedEntityModel) {
+class SimplePersonPhysicalSpaceModelUpdater(val physicalSpace: PhysicalSpaceSensedEntityModel, val person: PersonSensedEntityModel) {
 
   /**
    * Have the person enter the space.

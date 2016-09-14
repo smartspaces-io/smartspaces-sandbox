@@ -56,7 +56,7 @@ public class StandardSensedEntitySensorHandlerTest {
     MockitoAnnotations.initMocks(this);
     
     handler = new StandardSensedEntitySensorHandler(unknownSensedEntityHandler, log);
-    handler.setSensorProcessor(sensorProcessor);
+    handler.sensorProcessor_$eq(sensorProcessor);
     handler.addSensedEntitySensorListener(sensedEntitySensorListener);
   }
 

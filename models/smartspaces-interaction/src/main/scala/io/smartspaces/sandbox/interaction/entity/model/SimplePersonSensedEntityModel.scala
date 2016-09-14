@@ -30,13 +30,5 @@ class SimplePersonSensedEntityModel(entityDescription: PersonSensedEntityDescrip
   /**
    * The location of the person in physical space.
    */
-  private var physicalSpaceLocation: PhysicalSpaceSensedEntityModel = null
-
-  override def setPhysicalSpaceLocation(location: PhysicalSpaceSensedEntityModel): Unit = {
-    physicalSpaceLocation = location
-  }
-
-  override def getPhysicalSpaceLocation(): PhysicalSpaceSensedEntityModel = {
-    physicalSpaceLocation
-  }
+  var physicalSpaceLocation: PhysicalSpaceSensedEntityModel = null
 }

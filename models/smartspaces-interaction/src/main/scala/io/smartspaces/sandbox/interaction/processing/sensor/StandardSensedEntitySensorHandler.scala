@@ -31,7 +31,7 @@ import scala.collection.mutable._
  * @author Keith M. Hughes
  */
 class StandardSensedEntitySensorHandler(private val unknownSensedEntityHandler: UnknownSensedEntityHandler,
-    private val log: ExtendedLog) extends SensedEntitySensorHandler {
+    val log: ExtendedLog) extends SensedEntitySensorHandler {
 
   /**
    * The mapping from sensor to sensed entity.
@@ -51,7 +51,7 @@ class StandardSensedEntitySensorHandler(private val unknownSensedEntityHandler: 
   /**
    * The sensor processor the sensor input is running under.
    */
-  private var sensorProcessor: SensorProcessor = null
+  var sensorProcessor: SensorProcessor = null
 
   /**
    * The listeners for physical based sensor events.
@@ -65,14 +65,6 @@ class StandardSensedEntitySensorHandler(private val unknownSensedEntityHandler: 
 
   override def shutdown(): Unit = {
     // Nothing to do.
-  }
-
-  override def setSensorProcessor(sensorProcessor: SensorProcessor): Unit = {
-    this.sensorProcessor = sensorProcessor;
-  }
-
-  override def getSensorProcessor(): SensorProcessor = {
-    sensorProcessor
   }
 
   override def addSensedEntitySensorListener(listener: SensedEntitySensorListener): SensedEntitySensorHandler = {

@@ -57,9 +57,7 @@ trait SensorProcessor extends ManagedResource {
   def processSensorData(timestamp: Long, sensorDataEvent: DynamicObject): Unit
 
   /**
-   * Get the logger for the processor.
-   *
-   * @return the logger
+   * The logger for the processor.
    */
-  def getLog(): ExtendedLog
+  val log: ExtendedLog
 }

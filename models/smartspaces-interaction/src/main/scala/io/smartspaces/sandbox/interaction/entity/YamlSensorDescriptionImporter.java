@@ -202,37 +202,40 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
     for (ArrayDynamicObjectEntry measurementTypeEntry : data.getArrayEntries()) {
       DynamicObject measurementTypeData = measurementTypeEntry.down();
 
+      String valueType =
+          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_VALUE_TYPE);
       MeasurementTypeDescription measurementType = new SimpleMeasurementTypeDescription(
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
           measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
-          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_VALUE_TYPE), null);
+          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), valueType,
+          null);
 
-      String defaultUnitId =
-          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT);
+      if (!"id".equals(valueType)) {
+        String defaultUnitId =
+            measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT);
 
-      measurementTypeData.down(SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS);
-      for (ArrayDynamicObjectEntry measurementUnitEntry : data.getArrayEntries()) {
-        DynamicObject measurementUnitData = measurementUnitEntry.down();
+        measurementTypeData.down(SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS);
+        for (ArrayDynamicObjectEntry measurementUnitEntry : data.getArrayEntries()) {
+          DynamicObject measurementUnitData = measurementUnitEntry.down();
 
-        MeasurementUnitDescription measurementUnit = new SimpleMeasurementUnitDescription(
-            measurementType, measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
-            measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-            measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION));
+          MeasurementUnitDescription measurementUnit = new SimpleMeasurementUnitDescription(
+              measurementType, measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_ID),
+              measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+              measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION));
 
-        measurementType.addMeasurementUnit(measurementUnit);
+          measurementType.addMeasurementUnit(measurementUnit);
 
-        measurementUnitData.up();
+          measurementUnitData.up();
+        }
+
+        Option<MeasurementUnitDescription> measurementUnit =
+            measurementType.getMeasurementUnit(defaultUnitId);
+        if (measurementUnit.isDefined()) {
+          measurementType.setDefaultUnit(measurementUnit.get());
+        } else {
+          // Need an error message
+        }
       }
-
-      Option<MeasurementUnitDescription> measurementUnit =
-          measurementType.getMeasurementUnit(defaultUnitId);
-      if (measurementUnit.isDefined()) {
-        measurementType.setDefaultUnit(measurementUnit.get());
-      } else {
-        // Need an error message
-      }
-
       measurementTypeData.up();
 
       sensorRegistry.registerMeasurementType(measurementType);

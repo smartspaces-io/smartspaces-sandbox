@@ -36,17 +36,7 @@ trait SensorHandler extends ManagedResource {
   def handleSensorData(timestamp: Long,  data: DynamicObject): Unit
 
   /**
-   * Set the sensor processor the handler is running under.
-   * 
-   * @param sensorProcessor
-   *          the sensor processor
+   * The sensor processor the handler is running under.
    */
-  def setSensorProcessor(sensorProcessor: SensorProcessor ): Unit
-
-  /**
-   * Get the sensor processor the handler is running under.
-   * 
-   * @return the sensor processor
-   */
-  def getSensorProcessor(): SensorProcessor
+  var sensorProcessor: SensorProcessor
 }
