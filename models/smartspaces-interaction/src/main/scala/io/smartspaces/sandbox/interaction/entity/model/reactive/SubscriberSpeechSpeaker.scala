@@ -40,7 +40,7 @@ class SubscriberSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends 
   }
 
   override def onNext(event: PhysicalLocationOccupancyEvent): Unit = {
-    val entered = event.getEntered()
+    val entered = event.entered
     if (entered != null) {
       entered.foreach((person: PersonSensedEntityModel) => {
         speechSpeaker.addSpeech(
@@ -49,7 +49,7 @@ class SubscriberSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends 
       })
     }
 
-    val exited = event.getExited()
+    val exited = event.exited
     if (exited != null) {
       exited.foreach((person: PersonSensedEntityModel) => {
         speechSpeaker.addSpeech(

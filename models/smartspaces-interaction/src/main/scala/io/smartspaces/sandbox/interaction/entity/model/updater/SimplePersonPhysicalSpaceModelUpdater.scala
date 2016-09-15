@@ -28,15 +28,21 @@ class SimplePersonPhysicalSpaceModelUpdater(val physicalSpace: PhysicalSpaceSens
 
   /**
    * Have the person enter the space.
+   * 
+   * @param timestamp
+   *        the time when the person entered the space
    */
-  def enterSpace(): Unit = {
-    physicalSpace.occupantEntered(person)
+  def enterSpace(timestamp: Long): Unit = {
+    physicalSpace.occupantEntered(person, timestamp)
   }
 
   /**
    * Have the person exit the space.
+   * 
+   * @param timestamp
+   *        the time when the person exited the space
    */
-  def exitSpace(): Unit = {
-    physicalSpace.occupantExited(person);
+  def exitSpace(timestamp: Long): Unit = {
+    physicalSpace.occupantExited(person, timestamp);
   }
 }

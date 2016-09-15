@@ -21,9 +21,19 @@ import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
 
 /**
  * A model updater for a change from one location to another.
- * 
+ *
  * @author Keith M. Hughes
  */
 trait LocationChangeModelUpdater {
-  def updateLocation(newLocation: PhysicalSpaceSensedEntityModel, person: PersonSensedEntityModel): Unit
+  /**
+   * Update the location of the person.
+   *
+   * @param newLocation
+   *             the new location
+   * @param person
+   *             the person
+   * @param timestamp
+   *             the timestamp of when the location change took place
+   */
+  def updateLocation(newLocation: PhysicalSpaceSensedEntityModel, person: PersonSensedEntityModel, timestamp: Long): Unit
 }

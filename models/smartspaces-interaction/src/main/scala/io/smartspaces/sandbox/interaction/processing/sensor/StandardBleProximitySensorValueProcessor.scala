@@ -16,10 +16,10 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import io.smartspaces.event.trigger.SimpleHysteresisThresholdValueTrigger;
-import io.smartspaces.event.trigger.Trigger;
+import io.smartspaces.event.trigger.SimpleHysteresisThresholdValueTriggerWithData;
+import io.smartspaces.event.trigger.TriggerWithData;
 import io.smartspaces.event.trigger.TriggerEventType;
-import io.smartspaces.event.trigger.TriggerListener;
+import io.smartspaces.event.trigger.TriggerWithDataListener;
 import io.smartspaces.event.trigger.TriggerState;
 import io.smartspaces.sandbox.interaction.entity.MarkableEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.MarkerEntityDescription;
@@ -33,6 +33,7 @@ import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
 
 import scala.collection.mutable._
+import io.smartspaces.event.trigger.Trigger
 
 /**
  * The standard processor for BLE proximity data.
@@ -44,19 +45,19 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
   /**
    * The map from the BLE IDs to the trigger for that ID.
    */
-  private val userTriggers: Map[String, SimpleHysteresisThresholdValueTrigger] = new HashMap
+  private val userTriggers: Map[String, SimpleHysteresisThresholdValueTriggerWithData[Long]] = new HashMap
 
   /**
    * The map from the triggers to the models to be updated by that trigger.
    */
-  private val userTriggerToUpdaters: Map[SimpleHysteresisThresholdValueTrigger, SimplePersonPhysicalSpaceModelUpdater] =
+  private val userTriggerToUpdaters: Map[SimpleHysteresisThresholdValueTriggerWithData[Long], SimplePersonPhysicalSpaceModelUpdater] =
     new HashMap
 
   /**
    * The listener for trigger events being shared across all triggers.
    */
-  private val triggerListener = new TriggerListener() {
-    override def onTrigger(trigger: Trigger, state: TriggerState, eventType: TriggerEventType): Unit = {
+  private val triggerListener = new TriggerWithDataListener[Long]() {
+    override def onTrigger(trigger: TriggerWithData[Long], state: TriggerState, eventType: TriggerEventType): Unit = {
       handleTrigger(trigger, state, eventType);
     }
   };
@@ -77,7 +78,7 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
     val rssi = data.getDouble("rssi")
 
     val userTrigger = getTrigger(markerId, sensor, sensedEntityModel, processorContext)
-    userTrigger.update(rssi)
+    userTrigger.update(rssi, timestamp)
 
     val markedEntity = processorContext.completeSensedEntityModel.
       sensorRegistry.getMarkableEntityByMarkerId(markerId)
@@ -102,10 +103,10 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
    */
   private def getTrigger(markerId: String,
     sensor: SensorEntityDescription, sensedEntityModel: SensedEntityModel,
-    processorContext: SensorValueProcessorContext): SimpleHysteresisThresholdValueTrigger = {
+    processorContext: SensorValueProcessorContext): SimpleHysteresisThresholdValueTriggerWithData[Long] = {
     val userTrigger = userTriggers.get(markerId)
-    if (userTrigger == null) {
-      val newUserTrigger = new SimpleHysteresisThresholdValueTrigger()
+    if (userTrigger.isEmpty) {
+      val newUserTrigger = new SimpleHysteresisThresholdValueTriggerWithData[Long](0)
 
       val markerEntity = processorContext.completeSensedEntityModel.
         sensorRegistry.getMarkerEntityByMarkerId(markerId)
@@ -139,13 +140,13 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
    * @param triggerType
    *          the type of the state change
    */
-  private def handleTrigger(trigger: Trigger, state: TriggerState, eventType: TriggerEventType): Unit = {
-    val t = trigger.asInstanceOf[SimpleHysteresisThresholdValueTrigger]
+  private def handleTrigger(trigger: TriggerWithData[Long], state: TriggerState, eventType: TriggerEventType): Unit = {
+    val t = trigger.asInstanceOf[SimpleHysteresisThresholdValueTriggerWithData[Long]]
     val modelUpdater = userTriggerToUpdaters.get(t).get
     if (eventType == TriggerEventType.RISING) {
-      modelUpdater.enterSpace();
+      modelUpdater.enterSpace(t.getData);
     } else {
-      modelUpdater.exitSpace();
+      modelUpdater.exitSpace(t.getData);
     }
   }
 }

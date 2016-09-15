@@ -36,7 +36,7 @@ class SimplePhysicalSpaceSensedEntityModel(
    */
   private val occupants: Set[PersonSensedEntityModel] = new HashSet
 
-  override def occupantEntered(person: PersonSensedEntityModel): PhysicalSpaceSensedEntityModel = {
+  override def occupantEntered(person: PersonSensedEntityModel, timestamp: Long): PhysicalSpaceSensedEntityModel = {
 
     val hasBeenAdded = occupants.add(person)
 
@@ -45,13 +45,13 @@ class SimplePhysicalSpaceSensedEntityModel(
 
       val entered = scala.collection.immutable.HashSet(person)
 
-      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, entered, null))
+      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, entered, null, timestamp))
     }
 
     this
   }
 
-  override def occupantExited(person: PersonSensedEntityModel): PhysicalSpaceSensedEntityModel = {
+  override def occupantExited(person: PersonSensedEntityModel, timestamp: Long): PhysicalSpaceSensedEntityModel = {
     val wasHere = occupants.remove(person)
 
     if (wasHere) {
@@ -59,7 +59,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
       val exited = scala.collection.immutable.HashSet(person)
 
-      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, null, exited))
+      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, null, exited, timestamp))
     }
 
     this

@@ -36,7 +36,7 @@ object PhysicalLocationOccupancyEvent {
  * @author Keith M. Hughes
  */
 class PhysicalLocationOccupancyEvent(val physicalSpace: PhysicalSpaceSensedEntityModel,
-    val entered: Set[PersonSensedEntityModel], val exited: Set[PersonSensedEntityModel]) {
+    val entered: Set[PersonSensedEntityModel], val exited: Set[PersonSensedEntityModel], val timestamp: Long) {
 
   /**
    * Get the physical space.
@@ -45,23 +45,5 @@ class PhysicalLocationOccupancyEvent(val physicalSpace: PhysicalSpaceSensedEntit
    */
   def getPhysicalSpace(): PhysicalSpaceSensedEntityModel = {
     physicalSpace
-  }
-
-  /**
-   * Get the people who have entered in this event.
-   *
-   * @return the people who have entered in this event.
-   */
-  def getEntered(): Set[PersonSensedEntityModel] = {
-    entered
-  }
-
-  /**
-   * Get the people who have exited in this event.
-   *
-   * @return the people who have exited in this event.
-   */
-  def getExited(): Set[PersonSensedEntityModel] = {
-    exited
   }
 }

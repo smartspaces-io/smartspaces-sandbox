@@ -53,28 +53,6 @@ class SimpleMarkerSensorValueProcessor extends SensorValueProcessor {
     data: DynamicObject) {
     val markerId = data.getRequiredString("value")
 
-    getTrigger(markerId, sensor, sensedEntityModel, processorContext)
-  }
-
-  /**
-   * Get the trigger for a given marker ID.
-   *
-   * <p>
-   * Creates the trigger if it didn't exist.
-   *
-   * @param markerId
-   *          the marker ID for the trigger
-   * @param sensedEntityModel
-   *          the sensed entity model that is associated with the sensor
-   * @param processorContext
-   *          the context for processor handling
-   *
-   * @return the trigger for the marker
-   */
-  private def getTrigger(markerId: String,
-    sensor: SensorEntityDescription, sensedEntityModel: SensedEntityModel,
-    processorContext: SensorValueProcessorContext): Unit = {
-
     val markerEntity = processorContext.completeSensedEntityModel.
       sensorRegistry.getMarkerEntityByMarkerId(markerId)
     val person =
@@ -84,6 +62,6 @@ class SimpleMarkerSensorValueProcessor extends SensorValueProcessor {
     processorContext.log.formatInfo("Detected marker ID %s,  person %s entering %s\n", markerId,
       person, newLocation);
 
-    modelUpdater.updateLocation(newLocation, person)
+    modelUpdater.updateLocation(newLocation, person, timestamp)
   }
 }

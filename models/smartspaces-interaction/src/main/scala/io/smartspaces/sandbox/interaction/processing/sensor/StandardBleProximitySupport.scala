@@ -20,6 +20,7 @@ import io.smartspaces.event.trigger.SimpleHysteresisThresholdValueTrigger;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
+import io.smartspaces.event.trigger.SimpleHysteresisThresholdValueTriggerWithData
 
 /**
  * Support for BLE proximity markers.
@@ -62,7 +63,7 @@ class StandardBleProximitySupport {
    * @param processorContext
    *          the processor context
    */
-  def configureTrigger(userTrigger: SimpleHysteresisThresholdValueTrigger ,
+  def configureTrigger(userTrigger: SimpleHysteresisThresholdValueTriggerWithData[Long] ,
       configData: Map[String, Object] ,  sensor: SensorEntityDescription,
        processorContext: SensorValueProcessorContext): Unit = {
     val config: DynamicObject = new StandardDynamicObjectNavigator(configData)

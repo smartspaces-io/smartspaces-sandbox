@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SensorDetail;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
@@ -112,6 +113,7 @@ public class StandardSensedEntityModelProcessorTest {
 
     long timestamp = 10000;
     SensorEntityDescription sensor = Mockito.mock(SensorEntityDescription.class);
+    Mockito.when(sensor.getSensorDetail()).thenReturn(Option.apply(null));
     SensedEntityDescription sensedEntity = Mockito.mock(SensedEntityDescription.class);
 
     String sensedEntityId = "sensed.entity.1";

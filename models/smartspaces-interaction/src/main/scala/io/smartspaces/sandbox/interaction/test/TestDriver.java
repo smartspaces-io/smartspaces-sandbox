@@ -43,36 +43,26 @@ import io.smartspaces.time.provider.LocalTimeProvider;
 public class TestDriver {
 
   public static void main(String[] args) throws Exception {
-    //justYaml();
-    runEverything();
+    // justYaml();
+    //runEverythingWithmDns();
+    runEverythingLocal();
   }
-  
+
   private static void justYaml() {
     SensorRegistry sensorRegistry = new InMemorySensorRegistry();
     SensorDescriptionImporter descriptionImporter = new YamlSensorDescriptionImporter();
 
     descriptionImporter.importDescriptions(sensorRegistry,
-      TestDriver.class.getResourceAsStream("testdescription.yaml"));
+        TestDriver.class.getResourceAsStream("testdescription.yaml"));
 
   }
-  
-  private static void runEverything() throws Exception {
-    final StandaloneSmartSpacesEnvironment spaceEnvironment =
-        StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment();
-    spaceEnvironment.setTimeProvider(new LocalTimeProvider());
 
-    PahoMqttCommunicationEndpointService pahoMqttCommunicationEndpointService =
-        new PahoMqttCommunicationEndpointService();
-    spaceEnvironment.addManagedResource(pahoMqttCommunicationEndpointService);
-    spaceEnvironment.getServiceRegistry().registerService(pahoMqttCommunicationEndpointService);
-    FreeTtsSpeechSynthesisService freeTtsSpeechSynthesisService =
-        new FreeTtsSpeechSynthesisService();
-    spaceEnvironment.addManagedResource(freeTtsSpeechSynthesisService);
-    spaceEnvironment.getServiceRegistry().registerService(freeTtsSpeechSynthesisService);
-
-    StandardEventObservableService observableService = new StandardEventObservableService();
-    spaceEnvironment.addManagedResource(observableService);
-    spaceEnvironment.getServiceRegistry().registerService(observableService);
+  private static void runEverythingLocal() throws Exception {
+    runActivity(createSpaceEnvironment(), "127.0.0.1", 1883);
+    
+  }
+  private static void runEverythingWithmDns() throws Exception {
+    StandaloneSmartSpacesEnvironment spaceEnvironment = createSpaceEnvironment();
 
     String ipAddress = getIpAddress();
     if (ipAddress == null) {
@@ -93,21 +83,7 @@ public class TestDriver {
           String hostname = services[0].getHostAddresses()[0];
           int port = services[0].getPort();
 
-          final SensorProcessingActivity activity =
-              new SensorProcessingActivity(hostname, port, spaceEnvironment);
-          new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-              try {
-                activity.run();
-              } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-              }
-            }
-          }).start();
-          ;
+          runActivity(spaceEnvironment, hostname, port);
 
           try {
             jmdns.close();
@@ -132,7 +108,45 @@ public class TestDriver {
     // SensorProcessingActivity activity = new
     // SensorProcessingActivity(spaceEnvironment);
     // activity.run();
-   
+
+  }
+
+  private static StandaloneSmartSpacesEnvironment createSpaceEnvironment() {
+    final StandaloneSmartSpacesEnvironment spaceEnvironment =
+        StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment();
+    spaceEnvironment.setTimeProvider(new LocalTimeProvider());
+
+    PahoMqttCommunicationEndpointService pahoMqttCommunicationEndpointService =
+        new PahoMqttCommunicationEndpointService();
+    spaceEnvironment.addManagedResource(pahoMqttCommunicationEndpointService);
+    spaceEnvironment.getServiceRegistry().registerService(pahoMqttCommunicationEndpointService);
+    FreeTtsSpeechSynthesisService freeTtsSpeechSynthesisService =
+        new FreeTtsSpeechSynthesisService();
+    spaceEnvironment.addManagedResource(freeTtsSpeechSynthesisService);
+    spaceEnvironment.getServiceRegistry().registerService(freeTtsSpeechSynthesisService);
+
+    StandardEventObservableService observableService = new StandardEventObservableService();
+    spaceEnvironment.addManagedResource(observableService);
+    spaceEnvironment.getServiceRegistry().registerService(observableService);
+    return spaceEnvironment;
+  }
+
+  private static void runActivity(final StandaloneSmartSpacesEnvironment spaceEnvironment,
+      String hostname, int port) {
+    final SensorProcessingActivity activity =
+        new SensorProcessingActivity(hostname, port, spaceEnvironment);
+    new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+        try {
+          activity.run();
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }).start();
   }
 
   private static String getIpAddress() {

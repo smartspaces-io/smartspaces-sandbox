@@ -83,8 +83,8 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
   public void testSinglePersonEnters() {
     PersonSensedEntityModel personModel = Mockito.mock(PersonSensedEntityModel.class);
 
-    model.occupantEntered(personModel);
-    model.occupantEntered(personModel);
+    model.occupantEntered(personModel, 100);
+    model.occupantEntered(personModel, 100);
 
     occupancySubscriber.assertNoErrors();
     ArgumentCaptor<PhysicalLocationOccupancyEvent> argumentCaptor =
@@ -93,7 +93,7 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     Mockito.verify(occupancyObserver, Mockito.times(1)).onNext(argumentCaptor.capture());
 
     Set<PersonSensedEntityModel> peopleEntered = Sets.newHashSet(personModel);
-    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), argumentCaptor.getValue().getEntered());
+    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), argumentCaptor.getValue().entered());
     Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), model.getOccupants());
   }
 
@@ -105,9 +105,9 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
   public void testSinglePersonEntersAndExits() {
     PersonSensedEntityModel personModel = Mockito.mock(PersonSensedEntityModel.class);
 
-    model.occupantEntered(personModel);
-    model.occupantExited(personModel);
-    model.occupantExited(personModel);
+    model.occupantEntered(personModel, 100);
+    model.occupantExited(personModel, 100);
+    model.occupantExited(personModel, 100);
 
     occupancySubscriber.assertNoErrors();
     ArgumentCaptor<PhysicalLocationOccupancyEvent> argumentCaptor =
@@ -120,7 +120,7 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
 
     // The last event will be captured.
     List<PhysicalLocationOccupancyEvent> allValues = argumentCaptor.getAllValues();
-    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), allValues.get(1).getExited());
+    Assert.assertEquals(JavaConversions$.MODULE$.asScalaSet(peopleEntered).toSet(), allValues.get(1).exited());
     Assert.assertTrue(model.getOccupants().isEmpty());
   }
 }
