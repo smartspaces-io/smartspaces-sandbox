@@ -15,11 +15,13 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.service.database.document.orientdb;
+package io.smartspaces.sandbox.service.database.document.orientdb.internal;
 
 import java.util.Collection;
 
 import org.apache.commons.logging.Log;
+
+import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDocumentDatabaseEndpoint;
 
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.ODatabase;
@@ -27,8 +29,11 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
 /**
  * Endpoint for an OrientDB document database.
+ *
+ * @author Oleksandr Kelepko
+ * @author Keith M. Hughes
  */
-public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDatabaseEndpoint {
+public class StandardOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDatabaseEndpoint {
   /**
    * Database connections managed by this endpoint.
    */
@@ -37,7 +42,7 @@ public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDa
   /**
    * Base service.
    */
-  private final BasicOrientDbDocumentDatabaseService service;
+  private final StandardOrientDbDocumentDatabaseService service;
 
   /**
    * Logger.
@@ -73,7 +78,7 @@ public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDa
    * @param log
    *          logger
    */
-  public BasicOrientDbDocumentDatabaseEndpoint(BasicOrientDbDocumentDatabaseService service,
+  public StandardOrientDbDocumentDatabaseEndpoint(StandardOrientDbDocumentDatabaseService service,
       String databaseUrl, String login, String password, Log log) {
     this.service = service;
     this.url = databaseUrl;
@@ -84,7 +89,7 @@ public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDa
 
   @Override
   public synchronized ODatabaseDocumentTx createConnection() {
-    //checkState(connections != null, url);
+    // checkState(connections != null, url);
     log.debug("Creating connection to " + url);
     ODatabaseDocumentTx result = service.createOrOpenDatabase(url, login, password);
     connections.add(result);
@@ -93,7 +98,7 @@ public class BasicOrientDbDocumentDatabaseEndpoint implements OrientDbDocumentDa
 
   @Override
   public synchronized void startup() {
-    //checkState(connections == null, url);
+    // checkState(connections == null, url);
     connections = Lists.newArrayList();
   }
 

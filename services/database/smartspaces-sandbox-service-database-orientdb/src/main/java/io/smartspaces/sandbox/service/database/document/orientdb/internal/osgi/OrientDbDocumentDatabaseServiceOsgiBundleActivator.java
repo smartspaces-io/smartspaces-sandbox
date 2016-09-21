@@ -18,18 +18,19 @@
 package io.smartspaces.sandbox.service.database.document.orientdb.internal.osgi;
 
 import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
-import io.smartspaces.sandbox.service.database.document.orientdb.BasicOrientDbDocumentDatabaseService;
+import io.smartspaces.sandbox.service.database.document.orientdb.internal.StandardOrientDbDocumentDatabaseService;
 
 /**
  * OSGi bundle activator for the OrientDB database service.
  *
+ * @author Sasha Kelepko
  * @author Keith M. Hughes
  */
-public class OrientDbDocumentDatabaseServiceOsgiBundleActivator extends
-    SmartSpacesServiceOsgiBundleActivator {
+public class OrientDbDocumentDatabaseServiceOsgiBundleActivator
+    extends SmartSpacesServiceOsgiBundleActivator {
 
   @Override
   protected void allRequiredServicesAvailable() {
-    registerNewSmartSpacesService(new BasicOrientDbDocumentDatabaseService());
+    registerNewSmartSpacesService(new StandardOrientDbDocumentDatabaseService());
   }
 }

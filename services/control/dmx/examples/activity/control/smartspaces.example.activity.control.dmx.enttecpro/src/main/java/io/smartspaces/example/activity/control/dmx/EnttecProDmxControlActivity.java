@@ -15,7 +15,7 @@
  * the License.
  */
 
-package interactivespaces.example.activity.control.dmx;
+package io.smartspaces.example.activity.control.dmx;
 
 import io.smartspaces.activity.impl.BaseActivity;
 import io.smartspaces.sandbox.service.control.dmx.DmxControlEndpoint;

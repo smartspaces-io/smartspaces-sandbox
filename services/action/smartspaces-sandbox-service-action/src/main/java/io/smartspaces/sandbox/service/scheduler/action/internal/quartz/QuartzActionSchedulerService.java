@@ -22,7 +22,6 @@ import io.smartspaces.evaluation.StandardExecutionContext;
 import io.smartspaces.sandbox.service.action.ActionService;
 import io.smartspaces.sandbox.service.scheduler.action.ActionSchedulerService;
 import io.smartspaces.service.BaseSupportedService;
-import io.smartspaces.service.Service;
 import io.smartspaces.system.SmartSpacesEnvironment;
 
 import org.apache.commons.logging.Log;

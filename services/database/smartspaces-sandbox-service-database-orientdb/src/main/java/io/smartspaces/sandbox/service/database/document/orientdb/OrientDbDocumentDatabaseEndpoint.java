@@ -19,12 +19,16 @@ package io.smartspaces.sandbox.service.database.document.orientdb;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
-import io.smartspaces.util.resource.ManagedResource;
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**
  * Endpoint for an OrientDB document database.
+ *
+ * @author Oleksandr Kelepko
+ * @author Keith M. Hughes
  */
 public interface OrientDbDocumentDatabaseEndpoint extends ManagedResource {
+
   /**
    * Creates a new connection to the database managed by this endpoint.
    *
