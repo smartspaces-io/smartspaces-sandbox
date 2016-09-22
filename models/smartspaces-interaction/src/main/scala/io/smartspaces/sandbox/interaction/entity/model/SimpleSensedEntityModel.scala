@@ -27,6 +27,11 @@ import scala.collection.mutable._
  */
 class SimpleSensedEntityModel(val sensedEntityDescription: SensedEntityDescription,
     val allModels: CompleteSensedEntityModel) extends SensedEntityModel {
+  
+ /**
+   * The sensor model that is sensing this entity.
+   */
+  var sensorEntityModel: Option[SensorEntityModel] = None
 
   /**
    * The values being sensed keyed by the value name.
@@ -38,25 +43,22 @@ class SimpleSensedEntityModel(val sensedEntityDescription: SensedEntityDescripti
    */
   private var lastUpdate: Long = 0
 
-  override def getSensedValue(valueName: String): Option[SensedValue[Any]] = {
+  override def getSensedValue(valueTypeId: String): Option[SensedValue[Any]] = {
     // TODO(keith): Needs some sort of concurrency block
-    sensedValues.get(valueName)
+    sensedValues.get(valueTypeId)
   }
 
   override def getAllSensedValues(): scala.collection.immutable.List[SensedValue[Any]] = {
     sensedValues.values.toList
   }
 
-  override def updateSensedValue[T <: Any](value: SensedValue[T]): Unit = {
+  override def updateSensedValue[T <: Any](value: SensedValue[T], timestamp: Long): Unit = {
     // TODO(keith): Needs some sort of concurrency block
-    sensedValues.put(value.valueName, value);
+    lastUpdate = timestamp
+    sensedValues.put(value.valueType.id, value);
   }
   
   override def getLastUpdate(): Long = {
     lastUpdate
-  }
-
-  override def setUpdateTime(updateTime: Long): Unit = {
-    this.lastUpdate = updateTime
   }
 }

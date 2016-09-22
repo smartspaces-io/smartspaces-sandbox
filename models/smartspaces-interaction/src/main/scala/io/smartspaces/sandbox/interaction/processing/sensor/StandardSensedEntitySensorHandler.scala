@@ -78,10 +78,10 @@ class StandardSensedEntitySensorHandler(private val completeSensedEntityModel: C
 
   override def associateSensorWithEntity(sensor: SensorEntityDescription,
     sensedEntity: SensedEntityDescription): SensedEntitySensorHandler = {
-    
+
     val sensorModel = completeSensedEntityModel.getSensorEntityModel(sensor.id)
     sensors.put(sensor.id, sensorModel.get)
-    
+
     val sensedModel = completeSensedEntityModel.getSensedEntityModel(sensedEntity.id)
     sensedEntities.put(sensedEntity.id, sensedModel.get)
     sensorToSensedEntity.put(sensor.id, sensedEntity.id)
@@ -117,16 +117,20 @@ class StandardSensedEntitySensorHandler(private val completeSensedEntityModel: C
     // unless there was an entity registered.
     val sensedEntity = sensedEntities.get(sensedEntityId.get)
 
-    log.formatDebug("Got data from sensor %s for sensed entity %s: %s", sensor, sensedEntity,
-      data.asMap());
+    if (log.isDebugEnabled()) {
+      log.formatDebug("Got data from sensor %s for sensed entity %s: %s", sensor, sensedEntity,
+        data.asMap());
+    }
 
-    sensedEntitySensorListeners.foreach((listener) => {
-      try {
-        listener.handleSensorData(this, timestamp, sensor.get, sensedEntity.get, data);
-      } catch {
-        case e: Throwable =>
-          log.formatError(e, "Error during listener processing of physical based sensor data");
-      }
-    })
+    completeSensedEntityModel.doWriteTransaction { () =>
+      sensedEntitySensorListeners.foreach((listener) => {
+        try {
+          listener.handleSensorData(this, timestamp, sensor.get, sensedEntity.get, data);
+        } catch {
+          case e: Throwable =>
+            log.formatError(e, "Error during listener processing of physical based sensor data");
+        }
+      })
+    }
   }
 }

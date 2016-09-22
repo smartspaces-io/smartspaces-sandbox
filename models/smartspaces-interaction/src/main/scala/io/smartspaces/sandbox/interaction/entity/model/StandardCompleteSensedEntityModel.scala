@@ -29,6 +29,7 @@ import io.smartspaces.service.event.observable.EventObservableService;
 import io.smartspaces.service.event.observable.ObservableCreator;
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
+import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation
 
 /**
  * A collection of sensed entity models.
@@ -86,15 +87,17 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
    * Create all models from the descriptions in the registry.
    */
   private def createModelsFromDescriptions(): Unit = {
-    sensorRegistry.getAllSensorEntities().foreach(addNewSensorEntity(_))
+    sensorRegistry.getAllSensorEntities.foreach(addNewSensorEntity(_))
 
-    sensorRegistry.getAllSensedEntities().foreach(addNewSensedEntity(_))
+    sensorRegistry.getAllSensedEntities.foreach(addNewSensedEntity(_))
 
     sensorRegistry
-      .getMarkerMarkedEntityAssociations().foreach((association) =>
+      .getMarkerMarkedEntityAssociations.foreach((association) =>
         markerIdToPersonModels.put(association.marker.markerId,
           idToPersonModels.get(association.markable.id).get))
 
+    sensorRegistry
+      .getSensorSensedEntityAssociations.foreach(associateSensorWithSensed(_))
   }
 
   /**
@@ -135,6 +138,17 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     }
 
     idToSensedEntityModels.put(id, model)
+  }
+
+  /**
+   * Associate a sensor model with the sensed item.
+   */
+  private def associateSensorWithSensed(association: SimpleSensorSensedEntityAssociation): Unit = {
+    val sensor = idToSensorEntityModels.get(association.sensor.id)
+    val sensed = idToSensedEntityModels.get(association.sensedEntity.id)
+
+    sensor.get.sensedEntityModel = sensed
+    sensed.get.sensorEntityModel = sensor
   }
 
   override def getSensorEntityModel(id: String): Option[SensorEntityModel] = {

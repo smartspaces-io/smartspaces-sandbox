@@ -137,5 +137,4 @@ trait CompleteSensedEntityModel {
    *          the code to run inside the transaction
    */
   def doWriteTransaction(transaction: () => Unit): Unit
-
 }

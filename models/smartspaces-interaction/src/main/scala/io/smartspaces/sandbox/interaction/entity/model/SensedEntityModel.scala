@@ -34,16 +34,21 @@ trait SensedEntityModel {
    * The entity description for the entity being modeled.
    */
   val sensedEntityDescription: SensedEntityDescription
+  
+  /**
+   * The sensor model that is sensing this entity.
+   */
+  var sensorEntityModel: Option[SensorEntityModel]
 
   /**
-   * Get the value of a sensed property.
+   * Get the value of a sensed property by the value type ID.
    *
-   * @param valueName
-   *          the name of the value
+   * @param valueTypeId
+   *          the ID of the value type
    *
-   * @return the sensed value with the specified name
+   * @return the sensed value with the specified type ID
    */
-  def getSensedValue(valueName: String): Option[SensedValue[Any]]
+  def getSensedValue(valueTypeId: String): Option[SensedValue[Any]]
 
   /**
    * Get all sensed values for this entity.
@@ -57,8 +62,10 @@ trait SensedEntityModel {
    *
    * @param value
    *          the value being updated
+   * @param updateTime
+   * 		the time of this update
    */
-  def updateSensedValue[T <: Any](value: SensedValue[T]): Unit
+  def updateSensedValue[T <: Any](value: SensedValue[T], updateTime: Long): Unit
 
   /**
    * Get the last update for the model.
@@ -66,12 +73,4 @@ trait SensedEntityModel {
    * @return the last time
    */
   def getLastUpdate(): Long
-
-  /**
-   * Set the update time for the model.
-   *
-   * @param updateTime
-   * 		the time of the last update
-   */
-  def setUpdateTime(updateTime: Long): Unit
 }

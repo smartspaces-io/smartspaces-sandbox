@@ -21,10 +21,5 @@ package io.smartspaces.sandbox.interaction.entity;
  *
  * @author Keith M. Hughes
  */
-class SimpleSensorSensedEntityAssociation(val sensor: SensorEntityDescription, val sensedEntity: SensedEntityDescription) {
-
-  override def toString(): String = {
-    "SimpleSensorSensedEntityAssociation [sensor=" + sensor + ", sensedEntity=" +
-      sensedEntity + "]"
-  }
+case class SimpleSensorSensedEntityAssociation(val sensor: SensorEntityDescription, val sensedEntity: SensedEntityDescription) {
 }

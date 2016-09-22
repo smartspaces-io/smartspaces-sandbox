@@ -61,36 +61,32 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
     data.down(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA)
 
     // Go through every property in the data set, find its type, and then create
-    // appropriate values
+    // appropriate values.
     data.getObjectEntries().foreach((entry) => {
       val channelName = entry.getProperty()
 
       val sensorDetail = sensor.sensorEntityDescription.sensorDetail
       if (sensorDetail.isDefined) {
-        println(channelName)
-        println(sensorDetail.get.getAllSensorChannelDetails)
-        println(sensorDetail.get.getSensorChannelDetail(channelName))
-      }
+        entry.down()
 
-      entry.down()
+        val sensedType = sensorDetail.get.getSensorChannelDetail(channelName).get.measurementType
+        if (sensedType.valueType == "double") {
+          val value =
+            new SimpleSensedValue[Double](sensor, sensedType,
+              data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp)
 
-      val sensedType =
-        data.getRequiredString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE)
-      if (StandardSensorData.DOUBLE_VALUED_SENSOR_TYPES.contains(sensedType)) {
-        val value =
-          new SimpleSensedValue[Double](sensor, channelName, sensedType,
-            data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp)
+          handler.sensorProcessor.log.info(value)
 
-        handler.sensorProcessor.log.info(value)
-
-        sensedEntity.updateSensedValue(value)
-      } else {
-        val sensorValueProcessor = sensorValuesProcessors.get(sensedType);
-        if (sensorValueProcessor.isDefined) {
-          sensorValueProcessor.get.processData(timestamp, sensor, sensedEntity, processorContext,
-            data);
+          sensedEntity.updateSensedValue(value, timestamp)
+          sensor.updateSensedValue(value, timestamp)
         } else {
-          log.formatWarn("Got unknown sensor type %s", sensedType);
+          val sensorValueProcessor = sensorValuesProcessors.get(sensedType.valueType);
+          if (sensorValueProcessor.isDefined) {
+            sensorValueProcessor.get.processData(timestamp, sensor, sensedEntity, processorContext,
+              data);
+          } else {
+            log.formatWarn("Got unknown sensed type with no apparent processor %s", sensedType);
+          }
         }
       }
     })

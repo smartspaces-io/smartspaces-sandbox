@@ -17,6 +17,7 @@
 package io.smartspaces.sandbox.interaction.entity.model
 
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
+import io.smartspaces.sandbox.interaction.entity.MeasurementTypeDescription
 
 /**
  * The value of a sensor.
@@ -34,14 +35,9 @@ trait SensedValue[+T <: Any] {
   val sensor: SensorEntityModel
 
   /**
-   * The name of the sensed value.
-   */
-  val valueName: String
-
-  /**
    * The type of the sensed value.
    */
-  val valueType: String
+  val valueType: MeasurementTypeDescription
 
   /**
    * The timestamp of when the value was last updated, in milliseconds since the epoch.

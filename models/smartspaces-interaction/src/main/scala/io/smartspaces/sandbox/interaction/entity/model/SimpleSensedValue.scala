@@ -17,6 +17,7 @@
 package io.smartspaces.sandbox.interaction.entity.model
 
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
+import io.smartspaces.sandbox.interaction.entity.MeasurementTypeDescription
 
 /**
  * A support class for sensed values.
@@ -26,11 +27,11 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
  *
  * @author Keith M. HUghes
  */
-class SimpleSensedValue[T <: Any](val sensor: SensorEntityModel, val valueName: String, val valueType: String,
+class SimpleSensedValue[T <: Any](val sensor: SensorEntityModel, val valueType: MeasurementTypeDescription,
     val value: T, val timestamp: Long) extends SensedValue[T] {
-  
+
   override def toString() = {
-    "SimpleSensedValue [sensor=" + sensor + ", valueName=" + valueName + ", valueType=" +
+    "SimpleSensedValue [sensor=" + sensor + ", valueType=" +
       valueType + ", value=" + value + ", timestamp=" + timestamp + "]"
   }
 }

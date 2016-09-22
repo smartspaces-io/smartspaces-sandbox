@@ -18,23 +18,46 @@ package io.smartspaces.sandbox.interaction.entity.model
 
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
+import scala.collection.mutable._
+
 /**
  * The model of a sensor.
  * 
  * @author Keith M. Hughes
  */
 class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescription, val allModels: CompleteSensedEntityModel) extends SensorEntityModel {
+ 
+  /**
+   * The values being sensed keyed by the value name.
+   */
+  private val sensedValues: Map[String, SensedValue[Any]] = new HashMap
   
+  /**
+   * The model that is being sensed by this sensor.
+   */
+  var sensedEntityModel: Option[SensedEntityModel] = None
+ 
   /**
    * The time of the last update.
    */
   private var lastUpdate: Long = 0
+
+  override def getSensedValue(valueTypeId: String): Option[SensedValue[Any]] = {
+    // TODO(keith): Needs some sort of concurrency block
+    sensedValues.get(valueTypeId)
+  }
+
+  override def getAllSensedValues(): scala.collection.immutable.List[SensedValue[Any]] = {
+    sensedValues.values.toList
+  }
+
+  override def updateSensedValue[T <: Any](value: SensedValue[T], timestamp: Long): Unit = {
+    // TODO(keith): Needs some sort of concurrency block
+    lastUpdate = timestamp
+    sensedValues.put(value.valueType.id, value);
+  }
   
   override def getLastUpdate(): Long = {
     lastUpdate
-  }
-
-  override def setUpdateTime(updateTime: Long): Unit = {
-    this.lastUpdate = updateTime
   }
 }

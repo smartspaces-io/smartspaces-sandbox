@@ -16,10 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.entity.sensor;
 
-import java.util.Set;
-
-import com.google.common.collect.ImmutableSet;
-
 /**
  * A collection of constants helpful for sensors.
  * 
@@ -46,10 +42,4 @@ public class StandardSensorData {
    * The type of a simple marker sensor value.
    */
   public static final String SENSOR_TYPE_MARKER_SIMPLE = "/sensor/marker";
-
-  /**
-   * The sensor values that are double-valued.
-   */
-  public static final Set<String> DOUBLE_VALUED_SENSOR_TYPES =
-      ImmutableSet.of(SENSOR_TYPE_TEMPERATURE, SENSOR_TYPE_HUMIDITY);
 }
