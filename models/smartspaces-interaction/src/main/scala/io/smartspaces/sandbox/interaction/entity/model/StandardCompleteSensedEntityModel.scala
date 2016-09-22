@@ -28,6 +28,7 @@ import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
 import io.smartspaces.service.event.observable.EventObservableService;
 import io.smartspaces.service.event.observable.ObservableCreator;
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
  * A collection of sensed entity models.
@@ -38,9 +39,14 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     private val eventObservableService: EventObservableService, private val log: ExtendedLog) extends CompleteSensedEntityModel {
 
   /**
-   * Map of entity IDs to their models.
+   * Map of entity IDs to their sensor entity models.
    */
-  private val idToModels: Map[String, SensedEntityModel] = new HashMap
+  private val idToSensorEntityModels: Map[String, SensorEntityModel] = new HashMap
+
+  /**
+   * Map of entity IDs to their sensed entity models.
+   */
+  private val idToSensedEntityModels: Map[String, SensedEntityModel] = new HashMap
 
   /**
    * Map of physical entity IDs to their models.
@@ -80,13 +86,27 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
    * Create all models from the descriptions in the registry.
    */
   private def createModelsFromDescriptions(): Unit = {
+    sensorRegistry.getAllSensorEntities().foreach(addNewSensorEntity(_))
+
     sensorRegistry.getAllSensedEntities().foreach(addNewSensedEntity(_))
 
     sensorRegistry
       .getMarkerMarkedEntityAssociations().foreach((association) =>
-        markerIdToPersonModels.put(association.getMarkerEntityDescription().getMarkerId(),
-          idToPersonModels.get(association.getMarkableEntityDescription().getId()).get))
+        markerIdToPersonModels.put(association.marker.markerId,
+          idToPersonModels.get(association.markable.id).get))
 
+  }
+
+  /**
+   * Add in a new sensor entity into the collection.
+   *
+   * @param entityDescription
+   *          the new description
+   */
+  private def addNewSensorEntity(entityDescription: SensorEntityDescription): Unit = {
+    val id = entityDescription.id
+
+    idToSensorEntityModels.put(id, new SimpleSensorEntityModel(entityDescription, this))
   }
 
   /**
@@ -96,7 +116,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
    *          the new description
    */
   private def addNewSensedEntity(entityDescription: SensedEntityDescription): Unit = {
-    val id = entityDescription.getId()
+    val id = entityDescription.id
 
     var model: SensedEntityModel = null;
     if (entityDescription.isInstanceOf[PhysicalSpaceSensedEntityDescription]) {
@@ -114,15 +134,23 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
       model = new SimpleSensedEntityModel(entityDescription, this);
     }
 
-    idToModels.put(id, model)
+    idToSensedEntityModels.put(id, model)
+  }
+
+  override def getSensorEntityModel(id: String): Option[SensorEntityModel] = {
+    idToSensorEntityModels.get(id)
+  }
+
+  override def getAllSensorEntityModels(): scala.collection.immutable.List[SensorEntityModel] = {
+    idToSensorEntityModels.values.toList
   }
 
   override def getSensedEntityModel(id: String): Option[SensedEntityModel] = {
-    idToModels.get(id)
+    idToSensedEntityModels.get(id)
   }
 
   override def getAllSensedEntityModels(): scala.collection.immutable.List[SensedEntityModel] = {
-    idToModels.values.toList
+    idToSensedEntityModels.values.toList
   }
 
   override def getPhysicalSpaceSensedEntityModel(id: String): Option[PhysicalSpaceSensedEntityModel] = {

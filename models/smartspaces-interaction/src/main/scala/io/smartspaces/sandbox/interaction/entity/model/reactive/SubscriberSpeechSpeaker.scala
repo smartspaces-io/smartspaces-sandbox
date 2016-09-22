@@ -44,8 +44,8 @@ class SubscriberSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends 
     if (entered != null) {
       entered.foreach((person: PersonSensedEntityModel) => {
         speechSpeaker.addSpeech(
-          String.format("%s has entered %s", person.getSensedEntityDescription.getDisplayName,
-            event.getPhysicalSpace.getSensedEntityDescription.getDisplayName))
+          String.format("%s has entered %s", person.sensedEntityDescription.displayName,
+            event.physicalSpace.sensedEntityDescription.displayName))
       })
     }
 
@@ -53,8 +53,8 @@ class SubscriberSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends 
     if (exited != null) {
       exited.foreach((person: PersonSensedEntityModel) => {
         speechSpeaker.addSpeech(
-          String.format("%s has exited %s", person.getSensedEntityDescription.getDisplayName,
-            event.getPhysicalSpace.getSensedEntityDescription.getDisplayName))
+          String.format("%s has exited %s", person.sensedEntityDescription.displayName,
+            event.physicalSpace.sensedEntityDescription.displayName))
       })
     }
   }

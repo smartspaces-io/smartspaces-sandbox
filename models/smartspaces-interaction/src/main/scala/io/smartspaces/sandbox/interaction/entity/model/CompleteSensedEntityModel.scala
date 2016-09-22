@@ -34,19 +34,34 @@ trait CompleteSensedEntityModel {
   def prepare(): Unit
 
   /**
-   * Get the model for a given entity ID.
+   * Get the sensor entity model for a given entity ID.
    * 
    * @param id
    *          the ID of the entity
-   * @param <T>
-   *          the complete type of the model
+   * 
+   * @return the model
+   */
+  def getSensorEntityModel(id: String): Option[SensorEntityModel]
+
+  /**
+   * Get all sensor entity models in the collection.
+   * 
+   * @return the models
+   */
+  def getAllSensorEntityModels(): List[SensorEntityModel]
+
+  /**
+   * Get the sensed entity model for a given entity ID.
+   * 
+   * @param id
+   *          the ID of the entity
    * 
    * @return the model
    */
   def getSensedEntityModel(id: String): Option[SensedEntityModel]
 
   /**
-   * Get all models in the collection.
+   * Get all sensed entity models in the collection.
    * 
    * @return the models
    */

@@ -16,19 +16,17 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.model.SensedValue;
-import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.model.SimpleSensedValue;
-import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData;
-import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry;
+import scala.collection.JavaConversions.iterableAsScalaIterable
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.Map
 
-import scala.collection.mutable._
-import scala.collection.JavaConversions._;
+import io.smartspaces.logging.ExtendedLog
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SimpleSensedValue
+import io.smartspaces.sandbox.interaction.entity.sensor.StandardSensorData
+import io.smartspaces.util.data.dynamic.DynamicObject
 
 /**
  * A sensor processor that will update sensed entity models.
@@ -47,23 +45,16 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
   /**
    * The context for sensor value processors.
    */
-  private val processorContext = new SensorValueProcessorContext(completeSensedEntityModel, log)
+  val processorContext = new SensorValueProcessorContext(completeSensedEntityModel, log)
 
   override def addSensorValueProcessor(processor: SensorValueProcessor): SensedEntityModelProcessor = {
-    sensorValuesProcessors.put(processor.getSensorValueType(), processor)
+    sensorValuesProcessors.put(processor.sensorValueType, processor)
 
     this
   }
 
   override def handleSensorData(handler: SensedEntitySensorHandler, timestamp: Long,
-    sensor: SensorEntityDescription, sensedEntity: SensedEntityDescription, data: DynamicObject): Unit = {
-    val sensedEntityModel =
-      completeSensedEntityModel.getSensedEntityModel(sensedEntity.getId())
-    if (sensedEntityModel.isEmpty) {
-      log.formatWarn("Have no sensed entity model for entity %s", sensedEntity)
-      return
-    }
-
+    sensor: SensorEntityModel, sensedEntity: SensedEntityModel, data: DynamicObject): Unit = {
     log.formatInfo("Updating model for entity %s", sensedEntity)
 
     // Go into the data fields.
@@ -74,7 +65,7 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
     data.getObjectEntries().foreach((entry) => {
       val channelName = entry.getProperty()
 
-      val sensorDetail = sensor.getSensorDetail()
+      val sensorDetail = sensor.sensorEntityDescription.sensorDetail
       if (sensorDetail.isDefined) {
         println(channelName)
         println(sensorDetail.get.getAllSensorChannelDetails)
@@ -92,11 +83,11 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
 
         handler.sensorProcessor.log.info(value)
 
-        sensedEntityModel.get.updateSensedValue(value)
+        sensedEntity.updateSensedValue(value)
       } else {
         val sensorValueProcessor = sensorValuesProcessors.get(sensedType);
         if (sensorValueProcessor.isDefined) {
-          sensorValueProcessor.get.processData(timestamp, sensor, sensedEntityModel.get, processorContext,
+          sensorValueProcessor.get.processData(timestamp, sensor, sensedEntity, processorContext,
             data);
         } else {
           log.formatWarn("Got unknown sensor type %s", sensedType);

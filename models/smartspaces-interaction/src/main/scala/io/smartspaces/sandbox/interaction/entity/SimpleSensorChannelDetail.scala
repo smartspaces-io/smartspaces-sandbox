@@ -31,29 +31,5 @@ package io.smartspaces.sandbox.interaction.entity
  *
  * @author Keith M. Hughes
  */
-case class SimpleSensorChannelDetail(private val sensorDetail: SensorDetail, private val id: String, private val displayName: String, private val displayDescription: String, private val measurementType: MeasurementTypeDescription, private val measurementUnit: MeasurementUnitDescription) extends SensorChannelDetail {
-  
-  override def getSensorDetail(): SensorDetail = {
-    sensorDetail
-  }
-   
-  override def getId(): String = {
-    id
-  }
-  
-  override def getDisplayName(): String = {
-    displayName
-  }
-  
-  override def getDisplayDescription(): String = {
-    displayDescription
-  }
-  
-  override def getMeasurementType(): MeasurementTypeDescription = {
-    measurementType
-  }
-  
-  override def getMeasurementUnit(): MeasurementUnitDescription = {
-    measurementUnit
-  }
+case class SimpleSensorChannelDetail(val sensorDetail: SensorDetail, val id: String, val displayName: String, val displayDescription: String, val measurementType: MeasurementTypeDescription, val measurementUnit: MeasurementUnitDescription) extends SensorChannelDetail {
 }

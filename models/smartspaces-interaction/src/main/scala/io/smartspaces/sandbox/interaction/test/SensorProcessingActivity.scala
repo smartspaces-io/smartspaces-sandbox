@@ -16,45 +16,39 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
-import java.io.File;
-import java.util.concurrent.CountDownLatch;
+import java.io.File
+import java.util.concurrent.CountDownLatch
 
-import io.smartspaces.event.observable.EventObservable;
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker;
-import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensorDescriptionImporter;
-import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
-import io.smartspaces.sandbox.interaction.entity.SimpleMarkerEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimplePersonSensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation;
-import io.smartspaces.sandbox.interaction.entity.YamlSensorDescriptionImporter;
-import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent;
-import io.smartspaces.sandbox.interaction.entity.model.StandardCompleteSensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.reactive.SubscriberSpeechSpeaker;
-import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator;
-import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler;
-import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener;
-import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardBleProximitySensorValueProcessor;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorInput;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelProcessor;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor;
-import io.smartspaces.sandbox.interaction.processing.sensor.StandardUnknownSensedEntityHandler;
-import io.smartspaces.service.event.observable.EventObservableService;
-import io.smartspaces.service.speech.synthesis.SpeechSynthesisPlayer;
-import io.smartspaces.service.speech.synthesis.SpeechSynthesisService;
-import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
-import io.smartspaces.util.SmartSpacesUtilities;
-import io.smartspaces.util.data.dynamic.DynamicObject;
-import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription;
+import io.smartspaces.event.observable.EventObservable
+import io.smartspaces.logging.ExtendedLog
+import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker
+import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry
+import io.smartspaces.sandbox.interaction.entity.SensorDescriptionImporter
+import io.smartspaces.sandbox.interaction.entity.SensorRegistry
+import io.smartspaces.sandbox.interaction.entity.YamlSensorDescriptionImporter
+import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.StandardCompleteSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.reactive.SubscriberSpeechSpeaker
+import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator
+import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler
+import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener
+import io.smartspaces.sandbox.interaction.processing.sensor.SensorProcessor
 import io.smartspaces.sandbox.interaction.processing.sensor.SimpleMarkerSensorValueProcessor
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardBleProximitySensorValueProcessor
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorHandler
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardFilePersistenceSensorInput
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntityModelProcessor
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensedEntitySensorHandler
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProcessor
+import io.smartspaces.sandbox.interaction.processing.sensor.StandardUnknownSensedEntityHandler
+import io.smartspaces.service.event.observable.EventObservableService
+import io.smartspaces.service.speech.synthesis.SpeechSynthesisService
+import io.smartspaces.system.StandaloneSmartSpacesEnvironment
+import io.smartspaces.util.SmartSpacesUtilities
+import io.smartspaces.util.data.dynamic.DynamicObject
+import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 /**
  * An activity to merge sensors across the entire space.
@@ -78,8 +72,13 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
     val sensorRegistry: SensorRegistry = new InMemorySensorRegistry();
 
     importDescriptions(sensorRegistry);
-
+    
     val log = spaceEnvironment.getExtendedLog()
+    val sensedEntityModelCollection =
+      new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log);
+    sensedEntityModelCollection.prepare()
+
+
     val sensorProcessor: SensorProcessor = new StandardSensorProcessor(log)
 
     val sampleFile = new File("/var/tmp/sensordata.json")
@@ -106,24 +105,20 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
     val unknownSensedEntityHandler = new StandardUnknownSensedEntityHandler();
 
     val sensorHandler =
-      new StandardSensedEntitySensorHandler(unknownSensedEntityHandler, log)
+      new StandardSensedEntitySensorHandler(sensedEntityModelCollection, unknownSensedEntityHandler, log)
     sensorRegistry.getSensorSensedEntityAssociations.foreach((association) =>
       sensorHandler.associateSensorWithEntity(association.sensor, association.sensedEntity))
 
     sensorHandler.addSensedEntitySensorListener(new SensedEntitySensorListener() {
 
       override def handleSensorData(handler: SensedEntitySensorHandler, timestamp: Long,
-        sensor: SensorEntityDescription, sensedEntity: SensedEntityDescription,
+        sensor: SensorEntityModel, sensedEntity: SensedEntityModel,
         data: DynamicObject): Unit = {
         log.formatInfo("Got data at %s from sensor %s for entity %s: %s", timestamp.toString, sensor,
           sensedEntity, data.asMap())
 
       }
     });
-
-    val sensedEntityModelCollection =
-      new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log);
-    sensedEntityModelCollection.prepare()
 
     val modelProcessor =
       new StandardSensedEntityModelProcessor(sensedEntityModelCollection, log)

@@ -101,6 +101,13 @@ trait SensorRegistry {
   def getSensor(id: String): Option[SensorEntityDescription]
 
   /**
+   * Get all the sensor entities in the registry.
+   *
+   * @return a collection of the entities
+   */
+  def getAllSensorEntities(): List[SensorEntityDescription]
+
+  /**
    * Register a marker with the registry.
    *
    * @param marker

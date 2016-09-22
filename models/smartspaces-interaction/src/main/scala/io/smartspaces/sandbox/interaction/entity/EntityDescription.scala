@@ -24,9 +24,7 @@ package io.smartspaces.sandbox.interaction.entity;
 trait EntityDescription extends Displayable {
 
   /**
-   * Get the ID of the entity.
-   * 
-   * @return the ID of the entity
+   * The ID of the entity.
    */
-  def getId(): String
+  val id: String
 }

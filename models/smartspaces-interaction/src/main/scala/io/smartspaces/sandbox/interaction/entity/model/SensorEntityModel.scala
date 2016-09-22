@@ -14,22 +14,39 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity
+package io.smartspaces.sandbox.interaction.entity.model
+
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
- * An item that is displayable to users.
+ * The model of a sensor.
  * 
  * @author Keith M. Hughes
  */
-trait Displayable {
+trait SensorEntityModel {
   
   /**
-   * The display name of the entity.
+   * The sensor entity description for the model.
    */
-  val displayName: String
+  val sensorEntityDescription: SensorEntityDescription
+  
+  /**
+   * Get the sensed entity model collection this model is in.
+   */
+  val allModels: CompleteSensedEntityModel
 
   /**
-   * The description of the entity.
+   * Get the last update for the model.
+   *
+   * @return the last time
    */
-  val displayDescription: String
+  def getLastUpdate(): Long
+
+  /**
+   * Set the update time for the model.
+   *
+   * @param updateTime
+   * 		the time of the last update
+   */
+  def setUpdateTime(updateTime: Long): Unit
 }

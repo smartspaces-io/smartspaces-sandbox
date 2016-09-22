@@ -19,6 +19,7 @@ package io.smartspaces.sandbox.interaction.processing.sensor;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
 import io.smartspaces.util.data.dynamic.DynamicObject;
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
 
 /**
  * A processor for sensor value data messages.
@@ -32,7 +33,7 @@ trait SensorValueProcessor {
    *
    * @return the value type
    */
-  def getSensorValueType(): String
+  val sensorValueType: String
 
   /**
    * Process the incoming data.
@@ -48,7 +49,7 @@ trait SensorValueProcessor {
    * @param data
    *          the data to process, should be inside the data field
    */
-  def processData(timestamp: Long, sensor: SensorEntityDescription,
+  def processData(timestamp: Long, sensor: SensorEntityModel,
     sensedEntityModel: SensedEntityModel, processorContext: SensorValueProcessorContext,
     data: DynamicObject): Unit
 }

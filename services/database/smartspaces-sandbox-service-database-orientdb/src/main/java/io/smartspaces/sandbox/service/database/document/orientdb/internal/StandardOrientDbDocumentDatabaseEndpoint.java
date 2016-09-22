@@ -17,15 +17,14 @@
 
 package io.smartspaces.sandbox.service.database.document.orientdb.internal;
 
-import java.util.Collection;
-
-import org.apache.commons.logging.Log;
-
 import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDocumentDatabaseEndpoint;
 
-import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.ODatabase;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import org.apache.commons.logging.Log;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Endpoint for an OrientDB document database.
@@ -99,7 +98,7 @@ public class StandardOrientDbDocumentDatabaseEndpoint implements OrientDbDocumen
   @Override
   public synchronized void startup() {
     // checkState(connections == null, url);
-    connections = Lists.newArrayList();
+    connections = new ArrayList<>();
   }
 
   @Override

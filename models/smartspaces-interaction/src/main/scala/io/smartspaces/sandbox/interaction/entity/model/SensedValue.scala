@@ -20,46 +20,38 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
  * The value of a sensor.
- * 
+ *
  * @param <T>
  *          the type of the value
- * 
+ *
  * @author Keith M. Hughes
  */
 trait SensedValue[+T <: Any] {
 
   /**
-   * Get the description of the sensor that gave the value.
-   * 
-   * @return the sensor description
+   * The model of the sensor that gave the value.
    */
-   def getSensor(): SensorEntityDescription
+  val sensor: SensorEntityModel
 
   /**
-   * Get the name of the sensed value.
-   * 
-   * @return the name
+   * The name of the sensed value.
    */
-  def getName(): String 
+  val valueName: String
 
   /**
-   * Get the type of the sensed value.
-   * 
-   * @return the type
+   * The type of the sensed value.
    */
-  def getType(): String 
+  val valueType: String
 
   /**
-   * Get the timestamp of when the value was last updated.
-   * 
-   * @return the timestamp in milliseconds since the epoch
+   * The timestamp of when the value was last updated, in milliseconds since the epoch.
    */
-  def getTimestamp(): Long
+  val timestamp: Long
 
   /**
-   * Get the value of the sensor.
-   * 
+   * The value of the sensor.
+   *
    * @return the value of the sensor
    */
-  def getValue(): T
+  val value: T
 }

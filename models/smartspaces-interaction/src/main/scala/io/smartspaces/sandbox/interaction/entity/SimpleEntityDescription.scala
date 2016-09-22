@@ -21,19 +21,7 @@ package io.smartspaces.sandbox.interaction.entity;
  *
  * @author Keith M. Hughes
  */
-class SimpleEntityDescription(private val id: String, private val displayName: String, private val displayDescription: String) extends EntityDescription {
-
-  override def getId(): String = {
-    return id;
-  }
-
-  override def getDisplayName(): String = {
-    return displayName;
-  }
-
-  override def getDisplayDescription(): String = {
-    return displayDescription;
-  }
+class SimpleEntityDescription(val id: String, val displayName: String, val displayDescription: String) extends EntityDescription {
 
   override def toString(): String = {
     "SimpleEntityDescription [id=" + id + ", displayName=" + displayName + ", description=" +

@@ -27,40 +27,24 @@ package io.smartspaces.sandbox.interaction.entity
 trait MeasurementTypeDescription extends Displayable {
 
   /**
-   * Get the ID of the measurement type.
-   *
-   * @return the ID
+   * The ID of the measurement type.
    */
-  def getId(): String
+  val id: String
 
   /**
-   * Get the value type of the measurement type.
-   *
-   * @return the value type
+   * The value type of the measurement type.
    */
-  def getValueType(): String
+  val valueType: String
 
   /**
-   * Get the default unit for the measurement type.
-   *
-   * @return the default unit
+   * The default unit for the measurement type.
    */
-  def getDefaultUnit(): MeasurementUnitDescription
+  var defaultUnit: MeasurementUnitDescription
 
   /**
-   * Set the default unit for the measurement type.
-   *
-   * @param defaultUnit
-   * 					the default unit
+   * The aliases for the measurement type.
    */
-  def setDefaultUnit(defaultUnit: MeasurementUnitDescription): Unit
-
-  /**
-   * Get the aliases for the measurement type.
-   *
-   * @return the aliases
-   */
-  def getAliases(): Set[String]
+  val aliases: Set[String]
 
   /**
    * Add in a new measurement unit to the measurement type.
@@ -90,5 +74,4 @@ trait MeasurementTypeDescription extends Displayable {
    * @return the measurement unit
    */
   def getMeasurementUnit(id: String): Option[MeasurementUnitDescription]
-
 }

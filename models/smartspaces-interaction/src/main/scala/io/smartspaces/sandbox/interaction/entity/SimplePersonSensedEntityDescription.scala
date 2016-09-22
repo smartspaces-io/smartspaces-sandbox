@@ -25,7 +25,7 @@ class SimplePersonSensedEntityDescription(id: String, displayName: String, descr
     with PersonSensedEntityDescription {
 
   override def toString(): String = {
-    "SimplePersonSensedEntityDescription [getId()=" + getId() + ", getDisplayName()=" +
-      getDisplayName() + ", getDescription()=" + getDisplayDescription() + "]";
+    "SimplePersonSensedEntityDescription [id=" + id + ", displayName=" +
+      displayName + ", description=" + displayDescription + "]";
   }
 }

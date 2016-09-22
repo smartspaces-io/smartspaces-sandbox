@@ -14,19 +14,27 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity;
+package io.smartspaces.sandbox.interaction.entity.model
+
+import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 
 /**
- * The standard marker entity description.
- *
+ * The model of a sensor.
+ * 
  * @author Keith M. Hughes
  */
-class SimpleMarkerEntityDescription(id: String, displayName: String, description: String,
-  val markerId: String) extends SimpleEntityDescription(id, displayName, description)
-    with MarkerEntityDescription {
+class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescription, val allModels: CompleteSensedEntityModel) extends SensorEntityModel {
+  
+  /**
+   * The time of the last update.
+   */
+  private var lastUpdate: Long = 0
+  
+  override def getLastUpdate(): Long = {
+    lastUpdate
+  }
 
-  override def toString(): String = {
-    "SimpleMarkerEntityDescription [id=" + id + ", description=" +
-      displayDescription + ", markerId=" + markerId + "]"
+  override def setUpdateTime(updateTime: Long): Unit = {
+    this.lastUpdate = updateTime
   }
 }

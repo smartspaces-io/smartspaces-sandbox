@@ -16,10 +16,7 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.model.SensedValue;
-
-import java.util.Collection;
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription
 
 /**
  * A model of the sensor state of an entity.
@@ -29,18 +26,14 @@ import java.util.Collection;
 trait SensedEntityModel {
 
   /**
-   * Get the sensed entity model collection this model is in.
-   *
-   * @return the sensed entity model collection
+   * The sensed entity model collection this model is in.
    */
-  def getAllModels(): CompleteSensedEntityModel
+  val allModels: CompleteSensedEntityModel
 
   /**
-   * Get the entity description for the entity being modeled.
-   *
-   * @return the entity description
+   * The entity description for the entity being modeled.
    */
-  def getSensedEntityDescription(): SensedEntityDescription
+  val sensedEntityDescription: SensedEntityDescription
 
   /**
    * Get the value of a sensed property.

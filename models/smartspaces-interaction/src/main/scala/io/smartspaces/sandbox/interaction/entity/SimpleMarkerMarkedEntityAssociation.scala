@@ -22,14 +22,5 @@ package io.smartspaces.sandbox.interaction.entity;
  * @author Keith M. Hughes
  */
 class SimpleMarkerMarkedEntityAssociation(val marker: MarkerEntityDescription,
-    val markedEntity: MarkableEntityDescription) extends MarkerMarkedEntityAssociation {
-
-  override def getMarkerEntityDescription(): MarkerEntityDescription = {
-    marker
-  }
-
-  override def getMarkableEntityDescription(): MarkableEntityDescription = {
-    markedEntity
-  }
-
+    val markable: MarkableEntityDescription) extends MarkerMarkedEntityAssociation {
 }

@@ -231,7 +231,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
         Option<MeasurementUnitDescription> measurementUnit =
             measurementType.getMeasurementUnit(defaultUnitId);
         if (measurementUnit.isDefined()) {
-          measurementType.setDefaultUnit(measurementUnit.get());
+          measurementType.defaultUnit_$eq(measurementUnit.get());
         } else {
           // Need an error message
         }
@@ -290,7 +290,7 @@ public class YamlSensorDescriptionImporter implements SensorDescriptionImporter 
           }
         } else {
           // The default unit is used if none was specified
-          measurementUnit = measurementType.get().getDefaultUnit();
+          measurementUnit = measurementType.get().defaultUnit();
         }
 
         SensorChannelDetail channelDetail = new SimpleSensorChannelDetail(sensorDetail,

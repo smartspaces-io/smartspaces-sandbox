@@ -24,16 +24,12 @@ package io.smartspaces.sandbox.interaction.entity
 trait MeasurementUnitDescription extends Displayable {
 
   /**
-   * Get the ID of the measurement unit.
-   *
-   * @return the measurement unit ID
+   * The ID of the measurement unit.
    */
-  def getId(): String
+  val id: String
 
   /**
-   * Get the measurement type of the unit.
-   *
-   * @return the measurement type of the unit
+   * The measurement type of the unit.
    */
-  def getMeasurementType(): MeasurementTypeDescription
+  val measurementType: MeasurementTypeDescription
 }

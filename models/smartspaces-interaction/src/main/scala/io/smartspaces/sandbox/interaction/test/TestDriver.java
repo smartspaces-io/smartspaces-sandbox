@@ -44,8 +44,8 @@ public class TestDriver {
 
   public static void main(String[] args) throws Exception {
     // justYaml();
-    //runEverythingWithmDns();
-    runEverythingLocal();
+    runEverythingWithmDns();
+    //runEverythingLocal();
   }
 
   private static void justYaml() {

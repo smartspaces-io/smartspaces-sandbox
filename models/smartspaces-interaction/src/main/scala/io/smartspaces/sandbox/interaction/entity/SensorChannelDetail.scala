@@ -34,30 +34,22 @@ package io.smartspaces.sandbox.interaction.entity
 trait SensorChannelDetail extends Displayable {
   
   /**
-   * Get the sensor detail this channel is part of.
-   * 
-   * @return the sensor detail
+   * The sensor detail this channel is part of.
    */
-  def getSensorDetail(): SensorDetail
+  val sensorDetail: SensorDetail
    
   /**
-   * Get the ID of the channel.
-   * 
-   * @return the channel ID
+   * The ID of the channel.
    */
-  def getId(): String
+  val id: String
   
   /**
-   * Get the type of the channel measurement.
-   * 
-   * @return the type of the measurement
+   * The type of the channel measurement.
    */
-  def getMeasurementType(): MeasurementTypeDescription
+  val measurementType: MeasurementTypeDescription
   
   /**
-   * Get the unit being used for the channel measurement
-   * 
-   * @return the unit
+   * The unit being used for the channel measurement
    */
-  def getMeasurementUnit(): MeasurementUnitDescription
+  val measurementUnit: MeasurementUnitDescription
 }

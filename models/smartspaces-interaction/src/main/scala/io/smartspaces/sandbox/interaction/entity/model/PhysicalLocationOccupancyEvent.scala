@@ -37,13 +37,4 @@ object PhysicalLocationOccupancyEvent {
  */
 class PhysicalLocationOccupancyEvent(val physicalSpace: PhysicalSpaceSensedEntityModel,
     val entered: Set[PersonSensedEntityModel], val exited: Set[PersonSensedEntityModel], val timestamp: Long) {
-
-  /**
-   * Get the physical space.
-   *
-   * @return the physical space.
-   */
-  def getPhysicalSpace(): PhysicalSpaceSensedEntityModel = {
-    physicalSpace
-  }
 }

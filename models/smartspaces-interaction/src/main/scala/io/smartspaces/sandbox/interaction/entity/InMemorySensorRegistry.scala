@@ -87,10 +87,10 @@ class InMemorySensorRegistry extends SensorRegistry {
   private val configurations: Map[String, Map[String, AnyRef]] = new HashMap
 
   override def registerMeasurementType(measurementType: MeasurementTypeDescription): SensorRegistry = {
-    idToMeasurementType.put(measurementType.getId(), measurementType)
+    idToMeasurementType.put(measurementType.id, measurementType)
 
     measurementType.getAllMeasurementUnits().foreach((unit) =>
-      idToMeasurementUnit.put(unit.getId(), unit))
+      idToMeasurementUnit.put(unit.id, unit))
 
     this
   }
@@ -104,7 +104,7 @@ class InMemorySensorRegistry extends SensorRegistry {
   }
   
   override def registerSensorDetail(sensorDetail: SensorDetail): SensorRegistry = {
-    idToSensorDetail.put(sensorDetail.getId(), sensorDetail)
+    idToSensorDetail.put(sensorDetail.id, sensorDetail)
     
     this
   }
@@ -118,7 +118,7 @@ class InMemorySensorRegistry extends SensorRegistry {
   }
 
   override def registerSensor(sensor: SensorEntityDescription): SensorRegistry = {
-    idToSensor.put(sensor.getId(), sensor)
+    idToSensor.put(sensor.id, sensor)
 
     this
   }
@@ -126,10 +126,14 @@ class InMemorySensorRegistry extends SensorRegistry {
   override def getSensor(id: String): Option[SensorEntityDescription] = {
     idToSensor.get(id)
   }
-
+  
+  override def getAllSensorEntities(): List[SensorEntityDescription] = {
+      idToSensor.values.toList
+  }
+  
   override def registerMarker(marker: MarkerEntityDescription): SensorRegistry = {
-    idToMarker.put(marker.getId(), marker)
-    markerIdToMarker.put(marker.getMarkerId(), marker)
+    idToMarker.put(marker.id, marker)
+    markerIdToMarker.put(marker.markerId, marker)
 
     this
   }
@@ -143,10 +147,10 @@ class InMemorySensorRegistry extends SensorRegistry {
   }
 
   override def registerSensedEntity(sensedEntity: SensedEntityDescription): SensorRegistry = {
-    idToSensed.put(sensedEntity.getId(), sensedEntity)
+    idToSensed.put(sensedEntity.id, sensedEntity)
 
     if (sensedEntity.isInstanceOf[MarkableEntityDescription]) {
-      idToMarkable.put(sensedEntity.getId(), sensedEntity.asInstanceOf[MarkableEntityDescription])
+      idToMarkable.put(sensedEntity.id, sensedEntity.asInstanceOf[MarkableEntityDescription])
     }
 
     this
@@ -188,7 +192,7 @@ class InMemorySensorRegistry extends SensorRegistry {
     markerMarkedEntityAssociations +=
       new SimpleMarkerMarkedEntityAssociation(marker, markableEntity)
 
-    markerIdToMarkable.put(marker.getMarkerId(), markableEntity)
+    markerIdToMarkable.put(marker.markerId, markableEntity)
 
     this
   }

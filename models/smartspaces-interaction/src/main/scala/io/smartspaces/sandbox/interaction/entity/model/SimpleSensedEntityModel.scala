@@ -25,8 +25,8 @@ import scala.collection.mutable._
  *
  * @author Keith M. Hughes
  */
-class SimpleSensedEntityModel(private val entityDescription: SensedEntityDescription,
-    private val models: CompleteSensedEntityModel) extends SensedEntityModel {
+class SimpleSensedEntityModel(val sensedEntityDescription: SensedEntityDescription,
+    val allModels: CompleteSensedEntityModel) extends SensedEntityModel {
 
   /**
    * The values being sensed keyed by the value name.
@@ -37,14 +37,6 @@ class SimpleSensedEntityModel(private val entityDescription: SensedEntityDescrip
    * The time of the last update.
    */
   private var lastUpdate: Long = 0
-
-  override def getSensedEntityDescription(): SensedEntityDescription = {
-    entityDescription
-  }
-
-  override def getAllModels(): CompleteSensedEntityModel = {
-    models
-  }
 
   override def getSensedValue(valueName: String): Option[SensedValue[Any]] = {
     // TODO(keith): Needs some sort of concurrency block
@@ -57,14 +49,14 @@ class SimpleSensedEntityModel(private val entityDescription: SensedEntityDescrip
 
   override def updateSensedValue[T <: Any](value: SensedValue[T]): Unit = {
     // TODO(keith): Needs some sort of concurrency block
-    sensedValues.put(value.getName(), value);
+    sensedValues.put(value.valueName, value);
   }
   
   override def getLastUpdate(): Long = {
     lastUpdate
   }
 
-  override   def setUpdateTime(updateTime: Long): Unit = {
+  override def setUpdateTime(updateTime: Long): Unit = {
     this.lastUpdate = updateTime
   }
 }

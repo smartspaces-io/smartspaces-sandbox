@@ -23,7 +23,7 @@ import scala.collection.mutable.ArrayBuffer
  *
  * @author Keith M. Hughes
  */
-case class SimpleMeasurementTypeDescription(private val id: String, private val displayName: String, private val displayDescription: String, private val valueType: String, private val aliases: Set[String]) extends MeasurementTypeDescription {
+case class SimpleMeasurementTypeDescription(val id: String, val displayName: String, val displayDescription: String, val valueType: String, val aliases: Set[String]) extends MeasurementTypeDescription {
 
   /**
    * The measurement units for this type.
@@ -33,36 +33,8 @@ case class SimpleMeasurementTypeDescription(private val id: String, private val 
   /**
    * The default unit for the measurement type.
    */
-  private var defaultUnit: MeasurementUnitDescription = null
- 
-  override def getId(): String = {
-    id
-  }
-
-  override def getDisplayName(): String = {
-    displayName
-  }
-
-  override def getDisplayDescription(): String = {
-    displayDescription
-  }
-  
-  override def getValueType(): String = {
-    valueType
-  }
-
-  override def getDefaultUnit(): MeasurementUnitDescription = {
-    defaultUnit
-  }
-  
-  override def setDefaultUnit(defaultUnit: MeasurementUnitDescription): Unit = {
-    this.defaultUnit = defaultUnit
-  }
-
-  override def getAliases(): Set[String] = {
-    aliases
-  }
-  
+  var defaultUnit: MeasurementUnitDescription = null
+   
   override def addMeasurementUnit(measurementUnit: MeasurementUnitDescription): Unit = {
     measurementUnits += measurementUnit
   }
@@ -72,6 +44,6 @@ case class SimpleMeasurementTypeDescription(private val id: String, private val 
   }
   
   override def getMeasurementUnit(id: String): Option[MeasurementUnitDescription] = {
-    measurementUnits.find(_.getId == id)
+    measurementUnits.find(_.id == id)
   }
 }

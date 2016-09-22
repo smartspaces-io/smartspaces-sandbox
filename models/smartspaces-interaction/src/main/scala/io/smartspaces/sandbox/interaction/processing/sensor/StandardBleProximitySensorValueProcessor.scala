@@ -34,6 +34,7 @@ import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
 
 import scala.collection.mutable._
 import io.smartspaces.event.trigger.Trigger
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
 
 /**
  * The standard processor for BLE proximity data.
@@ -67,11 +68,9 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
    */
   private var bleProximitySupport: StandardBleProximitySupport = new StandardBleProximitySupport()
 
-  override def getSensorValueType(): String = {
-    StandardSensorData.SENSOR_TYPE_PROXIMITY_BLE
-  }
+  val sensorValueType = StandardSensorData.SENSOR_TYPE_PROXIMITY_BLE
 
-  override def processData(timestamp: Long, sensor: SensorEntityDescription,
+  override def processData(timestamp: Long, sensor: SensorEntityModel,
     sensedEntityModel: SensedEntityModel, processorContext: SensorValueProcessorContext,
     data: DynamicObject) {
     val markerId = "ble" + ":" + data.getRequiredString("id")
@@ -102,7 +101,7 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
    * @return the trigger for the marker
    */
   private def getTrigger(markerId: String,
-    sensor: SensorEntityDescription, sensedEntityModel: SensedEntityModel,
+    sensor: SensorEntityModel, sensedEntityModel: SensedEntityModel,
     processorContext: SensorValueProcessorContext): SimpleHysteresisThresholdValueTriggerWithData[Long] = {
     val userTrigger = userTriggers.get(markerId)
     if (userTrigger.isEmpty) {
@@ -112,7 +111,7 @@ class StandardBleProximitySensorValueProcessor extends SensorValueProcessor {
         sensorRegistry.getMarkerEntityByMarkerId(markerId)
 
       val configData: scala.collection.immutable.Map[String, Object] = processorContext.completeSensedEntityModel.
-        sensorRegistry.getConfigurationData(markerEntity.get.getId())
+        sensorRegistry.getConfigurationData(markerEntity.get.id)
       bleProximitySupport.configureTrigger(newUserTrigger, configData, sensor, processorContext);
 
       newUserTrigger.addListener(triggerListener)

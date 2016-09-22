@@ -27,8 +27,14 @@ import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SimpleSensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SimpleSensorEntityModel;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
+import scala.Option;
 
 /**
  * Tests for the {@link StandardSensedEntitySensorHandler}.
@@ -38,6 +44,9 @@ import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
 public class StandardSensedEntitySensorHandlerTest {
 
   private StandardSensedEntitySensorHandler handler;
+
+  @Mock
+  private CompleteSensedEntityModel allModels;
 
   @Mock
   private SensorProcessor sensorProcessor;
@@ -55,7 +64,7 @@ public class StandardSensedEntitySensorHandlerTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
     
-    handler = new StandardSensedEntitySensorHandler(unknownSensedEntityHandler, log);
+    handler = new StandardSensedEntitySensorHandler(allModels, unknownSensedEntityHandler, log);
     handler.sensorProcessor_$eq(sensorProcessor);
     handler.addSensedEntitySensorListener(sensedEntitySensorListener);
   }
@@ -84,10 +93,14 @@ public class StandardSensedEntitySensorHandlerTest {
   public void testKnownSensor() {
     String sensorId = "foo";
     SensorEntityDescription sensor = new SimpleSensorEntityDescription(sensorId, "foo", "foo", null);
-
+    SensorEntityModel sensorModel = new SimpleSensorEntityModel(sensor, allModels);
+    
     SensedEntityDescription sensedEntity =
         new SimplePhysicalSpaceSensedEntityDescription("foo", "foo", "foo");
+    SensedEntityModel sensedEntityModel = new SimpleSensedEntityModel(sensedEntity, allModels);
     
+    Mockito.when(allModels.getSensorEntityModel(sensor.id())).thenReturn(Option.apply(sensorModel));
+    Mockito.when(allModels.getSensedEntityModel(sensedEntity.id())).thenReturn(Option.apply(sensedEntityModel));
     handler.associateSensorWithEntity(sensor, sensedEntity);
     
     long timestamp = 1000;
@@ -100,7 +113,7 @@ public class StandardSensedEntitySensorHandlerTest {
 
     Mockito.verify(unknownSensedEntityHandler, Mockito.times(0)).handleUnknownSensor(sensorId);
     Mockito.verify(sensedEntitySensorListener, Mockito.times(1)).handleSensorData(handler,
-        timestamp, sensor, sensedEntity, data);
+        timestamp, sensorModel, sensedEntityModel, data);
   }
 
 }

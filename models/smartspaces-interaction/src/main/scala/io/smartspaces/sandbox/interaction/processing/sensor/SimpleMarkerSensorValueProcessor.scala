@@ -29,6 +29,7 @@ import io.smartspaces.event.trigger.TriggerEventType
 
 import scala.collection.mutable._
 import io.smartspaces.sandbox.interaction.entity.model.updater.SimpleLocationChangeModelUpdater
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
 
 /**
  * The standard processor for sensors that give a simple marker ID.
@@ -44,11 +45,9 @@ class SimpleMarkerSensorValueProcessor extends SensorValueProcessor {
   
   private val modelUpdater = new SimpleLocationChangeModelUpdater
 
-  override def getSensorValueType(): String = {
-    StandardSensorData.SENSOR_TYPE_MARKER_SIMPLE
-  }
+  val sensorValueType = StandardSensorData.SENSOR_TYPE_MARKER_SIMPLE
 
-  override def processData(timestamp: Long, sensor: SensorEntityDescription,
+  override def processData(timestamp: Long, sensor: SensorEntityModel,
     sensedEntityModel: SensedEntityModel, processorContext: SensorValueProcessorContext,
     data: DynamicObject) {
     val markerId = data.getRequiredString("value")

@@ -21,23 +21,5 @@ package io.smartspaces.sandbox.interaction.entity
  *
  * @author Keith M. Hughes
  */
-case class SimpleMeasurementUnitDescription(private val measurementType: MeasurementTypeDescription, private val id: String, private val displayName: String, private val displayDescription: String) extends MeasurementUnitDescription {
-
-  override def getId(): String = {
-    id
-  }
-
-  override def getDisplayName(): String = {
-    displayName
-  }
-
-  override def getDisplayDescription(): String = {
-    displayDescription
-  }
-
-  override def getMeasurementType(): MeasurementTypeDescription = {
-    measurementType
-  }
-
-  
+case class SimpleMeasurementUnitDescription(val measurementType: MeasurementTypeDescription, val id: String, val displayName: String, val displayDescription: String) extends MeasurementUnitDescription {
 }

@@ -19,6 +19,8 @@ package io.smartspaces.sandbox.interaction.processing.sensor;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
 
 /**
  * A listener for sensor events for sensed entities.
@@ -42,5 +44,5 @@ trait SensedEntitySensorListener {
    *          the sensor data
    */
   def handleSensorData(handler: SensedEntitySensorHandler, timestamp: Long,
-    sensor: SensorEntityDescription, sensedEntity: SensedEntityDescription, data: DynamicObject): Unit
+    sensor: SensorEntityModel, sensedEntity: SensedEntityModel, data: DynamicObject): Unit
 }

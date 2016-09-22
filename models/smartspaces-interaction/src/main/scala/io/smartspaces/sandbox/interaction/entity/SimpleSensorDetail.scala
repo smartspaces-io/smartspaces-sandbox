@@ -23,24 +23,12 @@ import scala.collection.mutable.ArrayBuffer
  * 
  * @author Keith M. Hughes
  */
-case class SimpleSensorDetail(private val id: String, private val displayName: String, private val displayDescription: String) extends SensorDetail {
+case class SimpleSensorDetail(val id: String, val displayName: String, val displayDescription: String) extends SensorDetail {
   
   /**
    * The measurement units for this type.
    */
   private val channelDetails: ArrayBuffer[SensorChannelDetail] = new ArrayBuffer
-
-  override def getId(): String = {
-    id
-  }
-  
-  override def getDisplayName(): String = {
-    displayName
-  }
-  
-  override def getDisplayDescription(): String = {
-    displayDescription
-  }
   
   override def addSensorChannelDetail(sensorChannelDetail: SensorChannelDetail): Unit = {
     channelDetails += sensorChannelDetail
@@ -51,6 +39,6 @@ case class SimpleSensorDetail(private val id: String, private val displayName: S
   }
 
   override def getSensorChannelDetail(id: String): Option[SensorChannelDetail] = {
-    channelDetails.find(_.getId() == id)
+    channelDetails.find(_.id == id)
   }
 }

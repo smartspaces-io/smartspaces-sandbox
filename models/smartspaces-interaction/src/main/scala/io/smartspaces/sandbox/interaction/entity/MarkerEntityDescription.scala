@@ -25,9 +25,7 @@ package io.smartspaces.sandbox.interaction.entity;
 trait MarkerEntityDescription extends EntityDescription {
 
   /**
-   * Get the ID the marker will use for identification.
-   * 
-   * @return the marker ID
+   * The ID the marker will use for identification.
    */
-  def getMarkerId(): String 
+  val markerId: String 
 }

@@ -24,16 +24,12 @@ package io.smartspaces.sandbox.interaction.entity;
 trait MarkerMarkedEntityAssociation {
 
   /**
-   * Get the marker.
-   * 
-   * @return the marker
+   * The marker.
    */
-  def getMarkerEntityDescription(): MarkerEntityDescription
+  val marker: MarkerEntityDescription
 
   /**
-   * Get the sensed entity.
-   * 
-   * @return the sensed entity
+   * The marked entity.
    */
-  def getMarkableEntityDescription(): MarkableEntityDescription
+  val markable: MarkableEntityDescription
 }

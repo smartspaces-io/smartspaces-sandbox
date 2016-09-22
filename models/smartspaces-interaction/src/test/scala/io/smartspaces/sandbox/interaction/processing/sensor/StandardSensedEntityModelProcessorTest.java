@@ -16,10 +16,8 @@
 
 package io.smartspaces.sandbox.interaction.processing.sensor;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -28,8 +26,14 @@ import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.SensorDetail;
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SimplePhysicalSpaceSensedEntityDescription;
+import io.smartspaces.sandbox.interaction.entity.SimpleSensorDetail;
+import io.smartspaces.sandbox.interaction.entity.SimpleSensorEntityDescription;
 import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel;
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SimpleSensedEntityModel;
+import io.smartspaces.sandbox.interaction.entity.model.SimpleSensorEntityModel;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
 import scala.Option;
@@ -41,115 +45,89 @@ import scala.Option;
  */
 public class StandardSensedEntityModelProcessorTest {
 
-  private StandardSensedEntityModelProcessor processor;
+	private StandardSensedEntityModelProcessor processor;
 
-  @Mock
-  private CompleteSensedEntityModel completeSensedEntityModel;
+	@Mock
+	private CompleteSensedEntityModel completeSensedEntityModel;
 
-  @Mock
-  private ExtendedLog log;
+	@Mock
+	private ExtendedLog log;
 
-  @Mock
-  private SensedEntitySensorHandler handler;
+	@Mock
+	private SensedEntitySensorHandler handler;
 
-  @Before
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 
-    processor = new StandardSensedEntityModelProcessor(completeSensedEntityModel, log);
-  }
+		processor = new StandardSensedEntityModelProcessor(completeSensedEntityModel, log);
+	}
 
-  /**
-   * Test using the sensor value processor when can't find the sensed entity
-   * model.
-   */
-  @Test
-  public void testModelNoValueUpdate() {
-    SensorValueProcessor sensorValueProcessor = Mockito.mock(SensorValueProcessor.class);
-    String sensorValueType = "sensor.type";
-    Mockito.when(sensorValueProcessor.getSensorValueType()).thenReturn(sensorValueType);
+	/**
+	 * Test using the sensor value processor when can't find the sensed entity
+	 * model.
+	 */
+	@Test
+	public void testModelNoValueUpdate() {
+		SensorValueProcessor sensorValueProcessor = Mockito.mock(SensorValueProcessor.class);
+		String sensorValueType = "sensor.type";
+		Mockito.when(sensorValueProcessor.sensorValueType()).thenReturn(sensorValueType);
 
-    processor.addSensorValueProcessor(sensorValueProcessor);
+		processor.addSensorValueProcessor(sensorValueProcessor);
 
-    StandardDynamicObjectBuilder builder = new StandardDynamicObjectBuilder();
+		StandardDynamicObjectBuilder builder = new StandardDynamicObjectBuilder();
 
-    builder.newObject(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA);
+		builder.newObject(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA);
 
-    DynamicObject data = builder.toDynamicObject();
+		DynamicObject data = builder.toDynamicObject();
 
-    long timestamp = 10000;
-    SensorEntityDescription sensor = Mockito.mock(SensorEntityDescription.class);
-    SensedEntityDescription sensedEntity = Mockito.mock(SensedEntityDescription.class);
-    String sensedEntityId = "sensed.entity.1";
-    Mockito.when(sensedEntity.getId()).thenReturn(sensedEntityId);
-    
-    Option<SensedEntityModel> none = Option.apply(null);
-    Mockito.when(completeSensedEntityModel.getSensedEntityModel(sensedEntityId))
-        .thenReturn(none);
+		long timestamp = 10000;
+		SensorEntityDescription sensor = new SimpleSensorEntityDescription("foo", "foo", "foo", null);
+		SensorEntityModel sensorModel = new SimpleSensorEntityModel(sensor, completeSensedEntityModel);
 
-    processor.handleSensorData(handler, timestamp, sensor, sensedEntity, data);
+		SensedEntityDescription sensedEntity = new SimplePhysicalSpaceSensedEntityDescription("foo", "foo", "foo");
+		SensedEntityModel sensedEntityModel = new SimpleSensedEntityModel(sensedEntity, completeSensedEntityModel);
 
-    Mockito.verify(sensorValueProcessor, Mockito.never()).processData(Mockito.anyLong(),
-        Mockito.any(SensorEntityDescription.class), Mockito.any(SensedEntityModel.class),
-        Mockito.any(SensorValueProcessorContext.class), Mockito.any(DynamicObject.class));
-  }
+		processor.handleSensorData(handler, timestamp, sensorModel, sensedEntityModel, data);
 
-  /**
-   * Test using the sensor value processor.
-   */
-  @Test
-  public void testModelValueUpdate() {
-    SensorValueProcessor sensorValueProcessor = Mockito.mock(SensorValueProcessor.class);
-    String sensorValueType = "sensor.type";
-    Mockito.when(sensorValueProcessor.getSensorValueType()).thenReturn(sensorValueType);
+		Mockito.verify(sensorValueProcessor, Mockito.never()).processData(Mockito.anyLong(),
+				Mockito.any(SensorEntityModel.class), Mockito.any(SensedEntityModel.class),
+				Mockito.any(SensorValueProcessorContext.class), Mockito.any(DynamicObject.class));
+	}
 
-    processor.addSensorValueProcessor(sensorValueProcessor);
+	/**
+	 * Test using the sensor value processor.
+	 */
+	@Test
+	public void testModelValueUpdate() {
+		SensorValueProcessor sensorValueProcessor = Mockito.mock(SensorValueProcessor.class);
+		String sensorValueType = "sensor.type";
+		Mockito.when(sensorValueProcessor.sensorValueType()).thenReturn(sensorValueType);
 
-    StandardDynamicObjectBuilder builder = new StandardDynamicObjectBuilder();
+		processor.addSensorValueProcessor(sensorValueProcessor);
 
-    builder.newObject(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA);
-    builder.newObject("test");
-    builder.setProperty(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE, sensorValueType);
+		StandardDynamicObjectBuilder builder = new StandardDynamicObjectBuilder();
 
-    long timestamp = 10000;
-    SensorEntityDescription sensor = Mockito.mock(SensorEntityDescription.class);
-    Mockito.when(sensor.getSensorDetail()).thenReturn(Option.apply(null));
-    SensedEntityDescription sensedEntity = Mockito.mock(SensedEntityDescription.class);
+		builder.newObject(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA);
+		builder.newObject("test");
+		builder.setProperty(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE, sensorValueType);
 
-    String sensedEntityId = "sensed.entity.1";
-    Mockito.when(sensedEntity.getId()).thenReturn(sensedEntityId);
+		long timestamp = 10000;
+		SensorDetail sensorDetail = new SimpleSensorDetail("foo", "foo", "foo");
+		SensorEntityDescription sensor = new SimpleSensorEntityDescription("foo", "foo", "foo", Option.apply(sensorDetail));
+		SensorEntityModel sensorModel = new SimpleSensorEntityModel(sensor, completeSensedEntityModel);
 
-    SensedEntityModel sensedEntityModel = Mockito.mock(SensedEntityModel.class);
+		SensedEntityDescription sensedEntity = new SimplePhysicalSpaceSensedEntityDescription("foo", "foo", "foo");
+		SensedEntityModel sensedEntityModel = new SimpleSensedEntityModel(sensedEntity, completeSensedEntityModel);
 
-    Mockito.when(completeSensedEntityModel.getSensedEntityModel(sensedEntityId))
-        .thenReturn(scala.Option.apply(sensedEntityModel));
+		Mockito.when(completeSensedEntityModel.getSensedEntityModel(sensedEntity.id()))
+				.thenReturn(scala.Option.apply(sensedEntityModel));
 
-    DynamicObject data = builder.toDynamicObject();
-    processor.handleSensorData(handler, timestamp, sensor, sensedEntity, data);
+		DynamicObject data = builder.toDynamicObject();
+		processor.handleSensorData(handler, timestamp, sensorModel, sensedEntityModel, data);
 
-    ArgumentCaptor<SensorValueProcessorContext> sensorValueProcessorContextCaptor =
-        ArgumentCaptor.forClass(SensorValueProcessorContext.class);
-    ArgumentCaptor<Long> timestampCaptor = ArgumentCaptor.forClass(Long.class);
-    ArgumentCaptor<DynamicObject> dataCaptor = ArgumentCaptor.forClass(DynamicObject.class);
-    ArgumentCaptor<SensedEntityModel> sensedEntityModelCaptor =
-        ArgumentCaptor.forClass(SensedEntityModel.class);
-    ArgumentCaptor<SensorEntityDescription> sensorCaptor =
-        ArgumentCaptor.forClass(SensorEntityDescription.class);
+		Mockito.verify(sensorValueProcessor, Mockito.times(1)).processData(timestamp, sensorModel, sensedEntityModel,
+				processor.processorContext(), data);
 
-    Mockito.verify(sensorValueProcessor, Mockito.times(1)).processData(timestampCaptor.capture(),
-        sensorCaptor.capture(), sensedEntityModelCaptor.capture(),
-        sensorValueProcessorContextCaptor.capture(), dataCaptor.capture());
-
-    Assert.assertEquals(data, dataCaptor.getValue());
-    Assert.assertEquals(timestamp, timestampCaptor.getValue().longValue());
-    Assert.assertEquals(sensor, sensorCaptor.getValue());
-    Assert.assertEquals(sensedEntityModel, sensedEntityModelCaptor.getValue());
-
-    SensorValueProcessorContext sensorValueProcessorContext =
-        sensorValueProcessorContextCaptor.getValue();
-
-    Assert.assertEquals(log, sensorValueProcessorContext.log());
-    Assert.assertEquals(completeSensedEntityModel,
-        sensorValueProcessorContext.completeSensedEntityModel());
-  }
+	}
 }

@@ -24,11 +24,9 @@ package io.smartspaces.sandbox.interaction.entity
 trait SensorDetail extends Displayable {
   
   /**
-   * Get the ID of the sensor detail.
-   * 
-   * @ the sensor detail ID
+   * The ID of the sensor detail.
    */
-  def getId(): String
+  val id: String
   
   /**
    * Add in a new channel detail to the sensor detail.

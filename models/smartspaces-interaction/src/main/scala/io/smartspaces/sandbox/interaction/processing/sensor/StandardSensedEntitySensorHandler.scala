@@ -24,13 +24,16 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription;
 import io.smartspaces.util.data.dynamic.DynamicObject;
 
 import scala.collection.mutable._
+import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel
 
 /**
  * The standard implementation of a sensed entity sensor handler.
  *
  * @author Keith M. Hughes
  */
-class StandardSensedEntitySensorHandler(private val unknownSensedEntityHandler: UnknownSensedEntityHandler,
+class StandardSensedEntitySensorHandler(private val completeSensedEntityModel: CompleteSensedEntityModel, private val unknownSensedEntityHandler: UnknownSensedEntityHandler,
     val log: ExtendedLog) extends SensedEntitySensorHandler {
 
   /**
@@ -41,12 +44,12 @@ class StandardSensedEntitySensorHandler(private val unknownSensedEntityHandler: 
   /**
    * The sensors being handled, keyed by their ID.
    */
-  private val sensors: Map[String, SensorEntityDescription] = new HashMap
+  private val sensors: Map[String, SensorEntityModel] = new HashMap
 
   /**
    * The entities being sensed, keyed by their ID.
    */
-  private val sensedEntities: Map[String, SensedEntityDescription] = new HashMap
+  private val sensedEntities: Map[String, SensedEntityModel] = new HashMap
 
   /**
    * The sensor processor the sensor input is running under.
@@ -75,9 +78,13 @@ class StandardSensedEntitySensorHandler(private val unknownSensedEntityHandler: 
 
   override def associateSensorWithEntity(sensor: SensorEntityDescription,
     sensedEntity: SensedEntityDescription): SensedEntitySensorHandler = {
-    sensors.put(sensor.getId(), sensor)
-    sensedEntities.put(sensedEntity.getId(), sensedEntity)
-    sensorToSensedEntity.put(sensor.getId(), sensedEntity.getId())
+    
+    val sensorModel = completeSensedEntityModel.getSensorEntityModel(sensor.id)
+    sensors.put(sensor.id, sensorModel.get)
+    
+    val sensedModel = completeSensedEntityModel.getSensedEntityModel(sensedEntity.id)
+    sensedEntities.put(sensedEntity.id, sensedModel.get)
+    sensorToSensedEntity.put(sensor.id, sensedEntity.id)
 
     this
   }

@@ -23,7 +23,7 @@ import io.smartspaces.sandbox.service.database.document.orientdb.internal.Standa
 /**
  * OSGi bundle activator for the OrientDB database service.
  *
- * @author Sasha Kelepko
+ * @author Oleksandr Kelepko
  * @author Keith M. Hughes
  */
 public class OrientDbDocumentDatabaseServiceOsgiBundleActivator
