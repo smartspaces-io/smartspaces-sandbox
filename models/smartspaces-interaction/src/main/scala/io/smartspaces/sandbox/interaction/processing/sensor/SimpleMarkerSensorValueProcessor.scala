@@ -45,7 +45,7 @@ class SimpleMarkerSensorValueProcessor extends SensorValueProcessor {
   
   private val modelUpdater = new SimpleLocationChangeModelUpdater
 
-  val sensorValueType = StandardSensorData.SENSOR_TYPE_MARKER_SIMPLE
+  override val sensorValueType = StandardSensorData.SENSOR_TYPE_MARKER_SIMPLE
 
   override def processData(timestamp: Long, sensor: SensorEntityModel,
     sensedEntityModel: SensedEntityModel, processorContext: SensorValueProcessorContext,

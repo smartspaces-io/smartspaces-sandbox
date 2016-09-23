@@ -98,11 +98,15 @@ class InMemorySensorRegistry extends SensorRegistry {
   override def getMeasurementType(id: String): Option[MeasurementTypeDescription] = {
     idToMeasurementType.get(id)
   }
+  
+  override def getAllMeasurementTypes(): List[MeasurementTypeDescription] = {
+    idToMeasurementType.values.toList
+  }
 
   override def getMeasurementUnit(id: String): Option[MeasurementUnitDescription] = {
     idToMeasurementUnit.get(id)
   }
-  
+
   override def registerSensorDetail(sensorDetail: SensorDetail): SensorRegistry = {
     idToSensorDetail.put(sensorDetail.id, sensorDetail)
     

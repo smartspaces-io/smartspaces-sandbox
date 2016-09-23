@@ -48,7 +48,12 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
   val processorContext = new SensorValueProcessorContext(completeSensedEntityModel, log)
 
   override def addSensorValueProcessor(processor: SensorValueProcessor): SensedEntityModelProcessor = {
-    sensorValuesProcessors.put(processor.sensorValueType, processor)
+    log.formatInfo("Adding sensor processor for %s", processor.sensorValueType)
+
+    val previous = sensorValuesProcessors.put(processor.sensorValueType, processor)
+    if (previous.isDefined) {
+      log.formatWarn("A sensor processor for %s has just been replaced", processor.sensorValueType)
+    }
 
     this
   }
@@ -67,26 +72,14 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
 
       val sensorDetail = sensor.sensorEntityDescription.sensorDetail
       if (sensorDetail.isDefined) {
-        entry.down()
-
         val sensedType = sensorDetail.get.getSensorChannelDetail(channelName).get.measurementType
-        if (sensedType.valueType == "double") {
-          val value =
-            new SimpleSensedValue[Double](sensor, sensedType,
-              data.getDouble(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_VALUE), timestamp)
-
-          handler.sensorProcessor.log.info(value)
-
-          sensedEntity.updateSensedValue(value, timestamp)
-          sensor.updateSensedValue(value, timestamp)
+        val sensorValueProcessor = sensorValuesProcessors.get(sensedType.id);
+        if (sensorValueProcessor.isDefined) {
+          entry.down()
+          sensorValueProcessor.get.processData(timestamp, sensor, sensedEntity, processorContext,
+            data);
         } else {
-          val sensorValueProcessor = sensorValuesProcessors.get(sensedType.valueType);
-          if (sensorValueProcessor.isDefined) {
-            sensorValueProcessor.get.processData(timestamp, sensor, sensedEntity, processorContext,
-              data);
-          } else {
-            log.formatWarn("Got unknown sensed type with no apparent processor %s", sensedType);
-          }
+          log.formatWarn("Got unknown sensed type with no apparent processor %s", sensedType);
         }
       }
     })

@@ -49,6 +49,7 @@ import io.smartspaces.system.StandaloneSmartSpacesEnvironment
 import io.smartspaces.util.SmartSpacesUtilities
 import io.smartspaces.util.data.dynamic.DynamicObject
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
+import io.smartspaces.sandbox.interaction.processing.sensor.ContinuousValueSensorValueProcessor
 
 /**
  * An activity to merge sensors across the entire space.
@@ -72,12 +73,11 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
     val sensorRegistry: SensorRegistry = new InMemorySensorRegistry();
 
     importDescriptions(sensorRegistry);
-    
+
     val log = spaceEnvironment.getExtendedLog()
     val sensedEntityModelCollection =
       new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log);
     sensedEntityModelCollection.prepare()
-
 
     val sensorProcessor: SensorProcessor = new StandardSensorProcessor(log)
 
@@ -124,6 +124,9 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
       new StandardSensedEntityModelProcessor(sensedEntityModelCollection, log)
     modelProcessor.addSensorValueProcessor(new StandardBleProximitySensorValueProcessor())
     modelProcessor.addSensorValueProcessor(new SimpleMarkerSensorValueProcessor())
+    sensorRegistry.getAllMeasurementTypes().filter(_.valueType == "double").foreach {
+      measurementType => modelProcessor.addSensorValueProcessor(new ContinuousValueSensorValueProcessor(measurementType))
+    }
 
     sensorHandler.addSensedEntitySensorListener(modelProcessor)
 

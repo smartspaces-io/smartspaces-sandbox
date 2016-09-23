@@ -44,6 +44,13 @@ trait SensorRegistry {
   def getMeasurementType(id: String): Option[MeasurementTypeDescription]
 
   /**
+   * Get all measurement types from the registry.
+   *
+   * @return all measurement types in the registry
+   */
+  def getAllMeasurementTypes(): List[MeasurementTypeDescription]
+
+  /**
    * Get a measurement unit from the registry.
    *
    * @param id
