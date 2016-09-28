@@ -50,6 +50,9 @@ import io.smartspaces.util.SmartSpacesUtilities
 import io.smartspaces.util.data.dynamic.DynamicObject
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 import io.smartspaces.sandbox.interaction.processing.sensor.ContinuousValueSensorValueProcessor
+import java.util.concurrent.TimeUnit
+import io.smartspaces.sandbox.interaction.entity.model.query.StandardSensedEntityModelQueryProcessor
+import io.smartspaces.service.web.server.WebServerService
 
 /**
  * An activity to merge sensors across the entire space.
@@ -69,15 +72,24 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
 
     val eventObservableService = spaceEnvironment.getServiceRegistry().
       getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
+    
+    val webServerService = spaceEnvironment.getServiceRegistry().
+      getRequiredService(WebServerService.SERVICE_NAME).asInstanceOf[WebServerService]
 
     val sensorRegistry: SensorRegistry = new InMemorySensorRegistry();
 
     importDescriptions(sensorRegistry);
 
     val log = spaceEnvironment.getExtendedLog()
+    
+    val webServer = webServerService.newWebServer("interaction", 8083, log)
+    spaceEnvironment.addManagedResource(webServer)
+
     val sensedEntityModelCollection =
       new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log);
     sensedEntityModelCollection.prepare()
+    
+    val queryProcessor = new StandardSensedEntityModelQueryProcessor(sensedEntityModelCollection)
 
     val sensorProcessor: SensorProcessor = new StandardSensorProcessor(log)
 
@@ -135,6 +147,13 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
     spaceEnvironment.addManagedResource(sensorProcessor)
 
     setUpObservables(eventObservableService, log)
+    
+    spaceEnvironment.getExecutorService.scheduleAtFixedRate(new Runnable {override def run { 
+      queryProcessor.getAllValuesForMeasurementType("/sensor/measurement/temperature").foreach { x =>  
+        val temp: Double =  x.value.asInstanceOf[Double] * 9 / 5 + 32
+        log.formatInfo("The temperature in %s is %s", x.sensor.sensedEntityModel.get.sensedEntityDescription.displayName, temp.toString())
+      }
+    }}, 10000l, 10000l, TimeUnit.MILLISECONDS)
 
     if (liveData) {
       if (sampleRecord) {

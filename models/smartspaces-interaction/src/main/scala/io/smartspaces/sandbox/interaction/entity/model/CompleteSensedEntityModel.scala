@@ -125,8 +125,19 @@ trait CompleteSensedEntityModel {
    * @param transaction
    *          the code to run inside the transaction
    */
-  def doReadTransaction(transaction: () => Unit): Unit
-  
+  def doVoidReadTransaction(transaction: () => Unit): Unit
+    
+  /**
+   * Perform an operations within a write transaction.
+   * 
+   * <p>
+   * Only one writer can run at a time.
+   *
+   * @param transaction
+   *          the code to run inside the transaction
+   */
+  def doVoidWriteTransaction(transaction: () => Unit): Unit
+
   /**
    * Perform an operations within a read transaction.
    * 
@@ -135,6 +146,21 @@ trait CompleteSensedEntityModel {
    *
    * @param transaction
    *          the code to run inside the transaction
+   *          
+   * @returns the result of the transaction
    */
-  def doWriteTransaction(transaction: () => Unit): Unit
+  def doReadTransaction[T](transaction: () => T): T
+  
+  /**
+   * Perform an operations within a write transaction.
+   * 
+   * <p>
+   * Only one writer can run at a time.
+   *
+   * @param transaction
+   *          the code to run inside the transaction
+   *          
+   * @returns the result of the transaction
+   */
+  def doWriteTransaction[T](transaction: () => T): T
 }

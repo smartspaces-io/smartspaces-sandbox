@@ -42,6 +42,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
     if (hasBeenAdded) {
       person.physicalSpaceLocation = this
+      person.physicalSpaceLocationTimestamp = timestamp
 
       val entered = scala.collection.immutable.HashSet(person)
 
@@ -56,6 +57,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
     if (wasHere) {
       person.physicalSpaceLocation = null
+      person.physicalSpaceLocationTimestamp = timestamp
 
       val exited = scala.collection.immutable.HashSet(person)
 

@@ -187,7 +187,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     markerIdToPersonModels.get(markerId)
   }
 
-  override def doReadTransaction(transaction: () => Unit): Unit = {
+  override def doVoidReadTransaction(transaction: () => Unit): Unit = {
     readWriteLock.readLock().lock();
 
     try {
@@ -197,7 +197,27 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     }
   }
 
-  override def doWriteTransaction(transaction: () => Unit): Unit = {
+  override def doVoidWriteTransaction(transaction: () => Unit): Unit = {
+    readWriteLock.writeLock().lock();
+
+    try {
+      transaction()
+    } finally {
+      readWriteLock.writeLock().unlock();
+    }
+  }
+
+  override def doReadTransaction[T](transaction: () => T): T = {
+    readWriteLock.readLock().lock();
+
+    try {
+      transaction()
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+  }
+
+  override def doWriteTransaction[T](transaction: () => T): T = {
     readWriteLock.writeLock().lock();
 
     try {

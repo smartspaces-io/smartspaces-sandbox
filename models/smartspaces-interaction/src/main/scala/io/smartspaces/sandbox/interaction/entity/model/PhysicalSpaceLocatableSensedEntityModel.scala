@@ -27,4 +27,9 @@ trait PhysicalSpaceLocatableSensedEntityModel extends SensedEntityModel {
    * The physical location of the entity.
    */
   var physicalSpaceLocation: PhysicalSpaceSensedEntityModel
+  
+  /**
+   * Timestamp of the last time the entity changed its location.
+   */
+  var physicalSpaceLocationTimestamp: Long
 }

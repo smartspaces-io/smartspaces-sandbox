@@ -27,8 +27,7 @@ class SimplePersonSensedEntityModel(entityDescription: PersonSensedEntityDescrip
   models: CompleteSensedEntityModel) extends SimpleSensedEntityModel(entityDescription, models)
     with PersonSensedEntityModel {
 
-  /**
-   * The location of the person in physical space.
-   */
-  var physicalSpaceLocation: PhysicalSpaceSensedEntityModel = null
+  override var physicalSpaceLocation: PhysicalSpaceSensedEntityModel = null
+  
+  override var physicalSpaceLocationTimestamp: Long = 0l
 }

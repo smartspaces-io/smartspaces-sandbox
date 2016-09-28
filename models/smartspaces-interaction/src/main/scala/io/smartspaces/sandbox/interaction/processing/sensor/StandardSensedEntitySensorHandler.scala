@@ -122,7 +122,7 @@ class StandardSensedEntitySensorHandler(private val completeSensedEntityModel: C
         data.asMap());
     }
 
-    completeSensedEntityModel.doWriteTransaction { () =>
+    completeSensedEntityModel.doVoidWriteTransaction { () =>
       sensedEntitySensorListeners.foreach((listener) => {
         try {
           listener.handleSensorData(this, timestamp, sensor.get, sensedEntity.get, data);

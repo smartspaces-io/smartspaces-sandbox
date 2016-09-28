@@ -37,6 +37,7 @@ import io.smartspaces.sandbox.interaction.entity.YamlSensorDescriptionImporter;
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService;
 import io.smartspaces.service.event.observable.StandardEventObservableService;
 import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService;
+import io.smartspaces.service.web.server.internal.netty.NettyWebServerService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.time.provider.LocalTimeProvider;
 
@@ -45,7 +46,7 @@ public class TestDriver {
   public static void main(String[] args) throws Exception {
     // justYaml();
     runEverythingWithmDns();
-    //runEverythingLocal();
+    // runEverythingLocal();
   }
 
   private static void justYaml() {
@@ -59,8 +60,9 @@ public class TestDriver {
 
   private static void runEverythingLocal() throws Exception {
     runActivity(createSpaceEnvironment(), "127.0.0.1", 1883);
-    
+
   }
+
   private static void runEverythingWithmDns() throws Exception {
     StandaloneSmartSpacesEnvironment spaceEnvironment = createSpaceEnvironment();
 
@@ -128,6 +130,12 @@ public class TestDriver {
     StandardEventObservableService observableService = new StandardEventObservableService();
     spaceEnvironment.addManagedResource(observableService);
     spaceEnvironment.getServiceRegistry().registerService(observableService);
+
+    NettyWebServerService webServerService = new NettyWebServerService();
+    webServerService.setSpaceEnvironment(spaceEnvironment);
+    spaceEnvironment.addManagedResource(webServerService);
+    spaceEnvironment.getServiceRegistry().registerService(webServerService);
+
     return spaceEnvironment;
   }
 

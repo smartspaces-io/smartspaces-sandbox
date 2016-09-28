@@ -25,6 +25,7 @@ import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
  * @author Keith M. Hughes
  */
 class SimpleLocationChangeModelUpdater extends LocationChangeModelUpdater {
+  
   override def updateLocation(newLocation: PhysicalSpaceSensedEntityModel, person: PersonSensedEntityModel, timestamp: Long): Unit = {
         val oldLocation = person.physicalSpaceLocation
     if (oldLocation != null) {
