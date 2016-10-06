@@ -16,10 +16,9 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
-import java.io.File
-import java.util.concurrent.CountDownLatch
-
-import io.smartspaces.event.observable.EventObservable
+import io.smartspaces.activity.behavior.web.StandardActivityWebServer
+import io.smartspaces.activity.impl.BaseActivity
+import io.smartspaces.event.observable.EventPublisherSubject
 import io.smartspaces.logging.ExtendedLog
 import io.smartspaces.sandbox.interaction.behavior.speech.SequentialSpeechSpeaker
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry
@@ -30,7 +29,9 @@ import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancy
 import io.smartspaces.sandbox.interaction.entity.model.SensedEntityModel
 import io.smartspaces.sandbox.interaction.entity.model.SensorEntityModel
 import io.smartspaces.sandbox.interaction.entity.model.StandardCompleteSensedEntityModel
-import io.smartspaces.sandbox.interaction.entity.model.reactive.SubscriberSpeechSpeaker
+import io.smartspaces.sandbox.interaction.entity.model.query.StandardSensedEntityModelQueryProcessor
+import io.smartspaces.sandbox.interaction.entity.model.reactive.ObserverSpeechSpeaker
+import io.smartspaces.sandbox.interaction.processing.sensor.ContinuousValueSensorValueProcessor
 import io.smartspaces.sandbox.interaction.processing.sensor.MqttSensorInputAggregator
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorHandler
 import io.smartspaces.sandbox.interaction.processing.sensor.SensedEntitySensorListener
@@ -45,59 +46,59 @@ import io.smartspaces.sandbox.interaction.processing.sensor.StandardSensorProces
 import io.smartspaces.sandbox.interaction.processing.sensor.StandardUnknownSensedEntityHandler
 import io.smartspaces.service.event.observable.EventObservableService
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisService
-import io.smartspaces.system.StandaloneSmartSpacesEnvironment
+import io.smartspaces.service.web.server.WebServerService
 import io.smartspaces.util.SmartSpacesUtilities
 import io.smartspaces.util.data.dynamic.DynamicObject
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
-import io.smartspaces.sandbox.interaction.processing.sensor.ContinuousValueSensorValueProcessor
+
+import java.io.File
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import io.smartspaces.sandbox.interaction.entity.model.query.StandardSensedEntityModelQueryProcessor
-import io.smartspaces.service.web.server.WebServerService
+import io.smartspaces.sandbox.interaction.entity.model.reactive.ObserverWebSocketNotifier
+import io.smartspaces.event.observable.EventPublisherSubject
 
 /**
  * An activity to merge sensors across the entire space.
  *
  * @author Keith M. Hughes
  */
-class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
-    spaceEnvironment: StandaloneSmartSpacesEnvironment) {
+class SensorProcessingActivity() extends BaseActivity with StandardActivityWebServer {
 
-  def run(): Unit = {
+  override def onActivityStartup(): Unit = {
+
+    val spaceEnvironment = getSpaceEnvironment
 
     val speechSynthesisService = spaceEnvironment.getServiceRegistry().
       getRequiredService(SpeechSynthesisService.SERVICE_NAME).asInstanceOf[SpeechSynthesisService]
     val speechPlayer = speechSynthesisService.newPlayer(spaceEnvironment.getLog())
-    spaceEnvironment.addManagedResource(speechPlayer)
+    addManagedResource(speechPlayer)
     speechPlayer.speak("Hello world", false)
 
     val eventObservableService = spaceEnvironment.getServiceRegistry().
       getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
-    
-    val webServerService = spaceEnvironment.getServiceRegistry().
-      getRequiredService(WebServerService.SERVICE_NAME).asInstanceOf[WebServerService]
 
     val sensorRegistry: SensorRegistry = new InMemorySensorRegistry();
 
     importDescriptions(sensorRegistry);
 
-    val log = spaceEnvironment.getExtendedLog()
-    
-    val webServer = webServerService.newWebServer("interaction", 8083, log)
-    spaceEnvironment.addManagedResource(webServer)
+    val log = getSpaceEnvironment.getExtendedLog
 
     val sensedEntityModelCollection =
       new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log);
     sensedEntityModelCollection.prepare()
-    
+
     val queryProcessor = new StandardSensedEntityModelQueryProcessor(sensedEntityModelCollection)
 
     val sensorProcessor: SensorProcessor = new StandardSensorProcessor(log)
 
     val sampleFile = new File("/var/tmp/sensordata.json")
     val liveData = true
-    val sampleRecord = true
+    val sampleRecord = false
 
     var persistedSensorInput: StandardFilePersistenceSensorInput = null;
+    
+    val mqttHost = getConfiguration.getRequiredPropertyString("smartspaces.comm.mqtt.broker.host")
+    val mqttPort = getConfiguration.getRequiredPropertyInteger("smartspaces.comm.mqtt.broker.port")
     if (liveData) {
       val mqttUrl = "tcp://" + mqttHost + ":" + mqttPort
       log.formatInfo("MQTT Broker URL %s", mqttUrl)
@@ -144,50 +145,58 @@ class SensorProcessingActivity(mqttHost: String, mqttPort: Int,
 
     sensorProcessor.addSensorHandler(sensorHandler)
 
-    spaceEnvironment.addManagedResource(sensorProcessor)
+    addManagedResource(sensorProcessor)
 
     setUpObservables(eventObservableService, log)
-    
-    spaceEnvironment.getExecutorService.scheduleAtFixedRate(new Runnable {override def run { 
-      queryProcessor.getAllValuesForMeasurementType("/sensor/measurement/temperature").foreach { x =>  
-        val temp: Double =  x.value.asInstanceOf[Double] * 9 / 5 + 32
-        log.formatInfo("The temperature in %s is %s", x.sensor.sensedEntityModel.get.sensedEntityDescription.displayName, temp.toString())
-      }
-    }}, 10000l, 10000l, TimeUnit.MILLISECONDS)
 
-    if (liveData) {
-      if (sampleRecord) {
-        // Recording
-        SmartSpacesUtilities.delay(1000L * 60 * 2 * 10)
-
-        spaceEnvironment.shutdown()
-      }
-    } else {
-      // Playing back
-      val latch = new CountDownLatch(1);
-      val playableSensorInput = persistedSensorInput;
-      spaceEnvironment.getExecutorService().submit(new Runnable() {
-
-        override def run(): Unit = {
-          playableSensorInput.play()
-          latch.countDown()
+    getManagedTasks.scheduleAtFixedRate(new Runnable {
+      override def run {
+        queryProcessor.getAllValuesForMeasurementType("/sensor/measurement/temperature").foreach { x =>
+          val temp: Double = x.value.asInstanceOf[Double] * 9 / 5 + 32
+          log.formatInfo("The temperature in %s is %s", x.sensor.sensedEntityModel.get.sensedEntityDescription.displayName, temp.toString())
         }
-      })
+      }
+    }, 10000l, 10000l, TimeUnit.MILLISECONDS)
 
-      latch.await()
-
-      spaceEnvironment.shutdown()
-    }
+//    if (liveData) {
+//      if (sampleRecord) {
+//        // Recording
+//        SmartSpacesUtilities.delay(1000L * 60 * 2 * 10)
+//        //spaceEnvironment.shutdown()
+//
+//      }
+//    } else {
+//      // Playing back
+//      val latch = new CountDownLatch(1);
+//      val playableSensorInput = persistedSensorInput;
+//      spaceEnvironment.getExecutorService().submit(new Runnable() {
+//
+//        override def run(): Unit = {
+//          playableSensorInput.play()
+//          latch.countDown()
+//        }
+//      })
+//
+//      latch.await()
+//
+//      //spaceEnvironment.shutdown()
+//    }
+  }
+  
+  override def onNewWebSocketConnection(connectionId: String): Unit =  {
+    getLog.warn("Got web socket connection " + connectionId);
   }
 
   private def setUpObservables(eventObservableService: EventObservableService,
     log: ExtendedLog): Unit = {
-    val eventObservable: EventObservable[PhysicalLocationOccupancyEvent] =
-      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME);
+    val spaceEnvironment = getSpaceEnvironment
+    val eventObservable: EventPublisherSubject[PhysicalLocationOccupancyEvent] =
+      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME)
     if (eventObservable != null) {
       val speechSpeaker = new SequentialSpeechSpeaker(spaceEnvironment, log)
-      spaceEnvironment.addManagedResource(speechSpeaker)
-      eventObservable.subscribe(new SubscriberSpeechSpeaker(speechSpeaker))
+      addManagedResource(speechSpeaker)
+      eventObservable.subscribe(new ObserverSpeechSpeaker(speechSpeaker))
+      eventObservable.subscribe(new ObserverWebSocketNotifier(this))
     }
   }
 

@@ -16,10 +16,11 @@
 
 package io.smartspaces.sandbox.interaction.entity.model;
 
-import io.smartspaces.event.observable.EventObservable;
-import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
+import io.smartspaces.event.observable. EventPublisherSubject
+import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription
 
 import scala.collection.mutable._
+import io.smartspaces.event.observable.EventPublisherSubject
 
 /**
  * A model of a physical space.
@@ -28,7 +29,7 @@ import scala.collection.mutable._
  */
 class SimplePhysicalSpaceSensedEntityModel(
   entityDescription: PhysicalSpaceSensedEntityDescription, models: CompleteSensedEntityModel,
-  private val occupancyObservable: EventObservable[PhysicalLocationOccupancyEvent]) extends SimpleSensedEntityModel(entityDescription, models)
+  private val occupancyObservable: EventPublisherSubject[PhysicalLocationOccupancyEvent]) extends SimpleSensedEntityModel(entityDescription, models)
     with PhysicalSpaceSensedEntityModel {
 
   /**
@@ -46,7 +47,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
       val entered = scala.collection.immutable.HashSet(person)
 
-      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, entered, null, timestamp))
+      occupancyObservable.onNext(new PhysicalLocationOccupancyEvent(this, entered, null, timestamp))
     }
 
     this
@@ -61,7 +62,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
       val exited = scala.collection.immutable.HashSet(person)
 
-      occupancyObservable.emitEvent(new PhysicalLocationOccupancyEvent(this, null, exited, timestamp))
+      occupancyObservable.onNext(new PhysicalLocationOccupancyEvent(this, null, exited, timestamp))
     }
 
     this

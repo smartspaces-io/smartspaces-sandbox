@@ -18,15 +18,15 @@ package io.smartspaces.sandbox.interaction.entity.model;
 
 import scala.collection.mutable._
 
-import io.smartspaces.event.observable.EventObservable;
-import io.smartspaces.logging.ExtendedLog;
-import io.smartspaces.sandbox.interaction.entity.MarkerMarkedEntityAssociation;
-import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription;
-import io.smartspaces.sandbox.interaction.entity.SensorRegistry;
-import io.smartspaces.service.event.observable.EventObservableService;
-import io.smartspaces.service.event.observable.ObservableCreator;
+import io.smartspaces.event.observable.EventPublisherSubject
+import io.smartspaces.logging.ExtendedLog
+import io.smartspaces.sandbox.interaction.entity.MarkerMarkedEntityAssociation
+import io.smartspaces.sandbox.interaction.entity.PersonSensedEntityDescription
+import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription
+import io.smartspaces.sandbox.interaction.entity.SensedEntityDescription
+import io.smartspaces.sandbox.interaction.entity.SensorRegistry
+import io.smartspaces.service.event.observable.EventObservableService
+import io.smartspaces.service.event.observable.ObservableCreator
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 import io.smartspaces.sandbox.interaction.entity.SimpleSensorSensedEntityAssociation
@@ -67,10 +67,10 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
   /**
    * The creator for physical occupancy observables.
    */
-  private val physicalLocationOccupancyEventCreator: ObservableCreator[EventObservable[PhysicalLocationOccupancyEvent]] =
-    new ObservableCreator[EventObservable[PhysicalLocationOccupancyEvent]]() {
-      override def newObservable(): EventObservable[PhysicalLocationOccupancyEvent] = {
-        new EventObservable[PhysicalLocationOccupancyEvent](log)
+  private val physicalLocationOccupancyEventCreator: ObservableCreator[EventPublisherSubject[PhysicalLocationOccupancyEvent]] =
+    new ObservableCreator[EventPublisherSubject[PhysicalLocationOccupancyEvent]]() {
+      override def newObservable(): EventPublisherSubject[PhysicalLocationOccupancyEvent] = {
+        EventPublisherSubject.create(log)
       }
     }
 

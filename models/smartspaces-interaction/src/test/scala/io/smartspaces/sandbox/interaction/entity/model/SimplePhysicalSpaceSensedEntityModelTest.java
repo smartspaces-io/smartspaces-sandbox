@@ -29,12 +29,11 @@ import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.Sets;
 
-import io.smartspaces.event.observable.EventObservable;
+import io.reactivex.Observer;
+import io.reactivex.subscribers.TestSubscriber;
+import io.smartspaces.event.observable.EventPublisherSubject;
 import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.interaction.entity.PhysicalSpaceSensedEntityDescription;
-import rx.Observer;
-import rx.observers.TestSubscriber;
-
 import scala.collection.JavaConversions$;
 
 /**
@@ -46,7 +45,7 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
 
   private SimplePhysicalSpaceSensedEntityModel model;
 
-  private EventObservable<PhysicalLocationOccupancyEvent> occupancyObservable;
+  private EventPublisherSubject<PhysicalLocationOccupancyEvent> occupancyObservable;
 
   @Mock
   private PhysicalSpaceSensedEntityDescription entityDescription;
@@ -57,8 +56,6 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
   @Mock
   private ExtendedLog log;
 
-  private TestSubscriber<PhysicalLocationOccupancyEvent> occupancySubscriber;
-
   @Mock
   private Observer<PhysicalLocationOccupancyEvent> occupancyObserver;
 
@@ -66,10 +63,9 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    occupancyObservable = new EventObservable<PhysicalLocationOccupancyEvent>(log);
+    occupancyObservable = EventPublisherSubject.create(log);
 
-    occupancySubscriber = TestSubscriber.create(occupancyObserver);
-    occupancyObservable.subscribe(occupancySubscriber);
+    occupancyObservable.subscribe(occupancyObserver);
 
     model = new SimplePhysicalSpaceSensedEntityModel(entityDescription, completeSensedEntityModel,
         occupancyObservable);
@@ -86,7 +82,6 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     model.occupantEntered(personModel, 100);
     model.occupantEntered(personModel, 100);
 
-    occupancySubscriber.assertNoErrors();
     ArgumentCaptor<PhysicalLocationOccupancyEvent> argumentCaptor =
         ArgumentCaptor.forClass(PhysicalLocationOccupancyEvent.class);
 
@@ -109,7 +104,6 @@ public class SimplePhysicalSpaceSensedEntityModelTest {
     model.occupantExited(personModel, 100);
     model.occupantExited(personModel, 100);
 
-    occupancySubscriber.assertNoErrors();
     ArgumentCaptor<PhysicalLocationOccupancyEvent> argumentCaptor =
         ArgumentCaptor.forClass(PhysicalLocationOccupancyEvent.class);
 

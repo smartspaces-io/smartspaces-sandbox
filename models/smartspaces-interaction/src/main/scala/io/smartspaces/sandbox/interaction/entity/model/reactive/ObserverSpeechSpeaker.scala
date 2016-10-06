@@ -14,24 +14,24 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity.model.reactive;
+package io.smartspaces.sandbox.interaction.entity.model.reactive
 
-import io.smartspaces.sandbox.interaction.behavior.speech.SpeechSpeaker;
-import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel;
-import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent;
+import io.smartspaces.sandbox.interaction.behavior.speech.SpeechSpeaker
+import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent
 
-import rx.Subscriber;
-
-import java.util.Set;
+import org.reactivestreams.Subscriber
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
 
 /**
- * A reactive subscriber for speech events.
+ * A reactive observer for speech events.
  *
  * @author Keith M. Hughes
  */
-class SubscriberSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends Subscriber[PhysicalLocationOccupancyEvent] {
+class ObserverSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends Observer[PhysicalLocationOccupancyEvent] {
 
-  override def onCompleted(): Unit = {
+  override def onComplete(): Unit = {
     // Nothing to do
   }
 
@@ -57,5 +57,9 @@ class SubscriberSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends 
             event.physicalSpace.sensedEntityDescription.displayName))
       })
     }
+  }
+
+  override def onSubscribe(d: Disposable): Unit = {
+    // Nothing to do
   }
 }
