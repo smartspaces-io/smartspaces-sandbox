@@ -29,6 +29,11 @@ trait SensorDetail extends Displayable {
   val id: String
   
   /**
+   * The external ID of the sensor detail.
+   */
+  val externalId: String
+  
+  /**
    * Add in a new channel detail to the sensor detail.
    *
    * @param sensorChannelDetail

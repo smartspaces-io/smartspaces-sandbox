@@ -18,10 +18,12 @@ package io.smartspaces.sandbox.interaction.entity.model.query
 
 import io.smartspaces.sandbox.interaction.entity.model.SensedValue
 import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.updater.value.converter.ObjectConverter
+import io.smartspaces.sandbox.interaction.entity.model.PhysicalSpaceSensedEntityModel
 
 /**
  * A processor for queries against a sensor model.
- * 
+ *
  * <p>
  * All queries are done in an appropriate transaction.
  *
@@ -34,7 +36,7 @@ trait SensedEntityModelQueryProcessor {
    *
    * @param sensedEntityId
    *           ID of the sensed entity of interest
-   * 
+   *
    * @return the list of sensor values for the given sensed entity
    */
   def getAllValuesForSensedEntity(sensedEntityId: String): Option[List[SensedValue[Any]]]
@@ -44,18 +46,33 @@ trait SensedEntityModelQueryProcessor {
    *
    * @param measurementTypeId
    *           ID of the measurement type of interest
-   * 
+   *
    * @return the list of sensor values for the given measurement type
    */
   def getAllValuesForMeasurementType(measurementTypeId: String): List[SensedValue[Any]]
 
   /**
    * Get all occupants of a given physical location.
-   * 
+   *
    * @param physicalLocationId
    *            ID of the physical location
-   * 
+   *
    * @returns the list of occupants of the physical location, or none if the location doesn't exist.
    */
   def getOccupantsOfPhysicalLocation(physicalLocationId: String): Option[Set[PersonSensedEntityModel]]
+
+  /**
+   * Get all physical location models and convert them.
+   *
+   * <p>
+   * The conversion will take place in a read transaction.
+   *
+   * @param converter
+   * 			the converter to be applied to the location models
+   * @param [T]
+   * 			the return type of the converter
+   *
+   * @return the converted model
+   */
+  def getAllPhysicalLocations[T](converter: ObjectConverter[List[PhysicalSpaceSensedEntityModel], T]): T
 }

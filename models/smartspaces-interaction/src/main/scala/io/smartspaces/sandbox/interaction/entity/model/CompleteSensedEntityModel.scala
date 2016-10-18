@@ -34,10 +34,10 @@ trait CompleteSensedEntityModel {
   def prepare(): Unit
 
   /**
-   * Get the sensor entity model for a given entity ID.
+   * Get the sensor entity model for a given entity external ID.
    * 
    * @param id
-   *          the ID of the entity
+   *          the external ID of the entity
    * 
    * @return the model
    */
@@ -51,10 +51,10 @@ trait CompleteSensedEntityModel {
   def getAllSensorEntityModels(): List[SensorEntityModel]
 
   /**
-   * Get the sensed entity model for a given entity ID.
+   * Get the sensed entity model for a given entity external ID.
    * 
    * @param id
-   *          the ID of the entity
+   *          the external ID of the entity
    * 
    * @return the model
    */
@@ -68,10 +68,10 @@ trait CompleteSensedEntityModel {
   def getAllSensedEntityModels(): List[SensedEntityModel]
 
   /**
-   * Get the model for a given physical space entity ID.
+   * Get the model for a given physical space entity external ID.
    * 
    * @param id
-   *          the ID of the entity
+   *          the external ID of the entity
    * 
    * @return the model
    */
@@ -85,10 +85,10 @@ trait CompleteSensedEntityModel {
    def getAllPhysicalSpaceSensedEntityModels(): List[PhysicalSpaceSensedEntityModel]
 
   /**
-   * Get the model for a given person entity ID.
+   * Get the model for a given person entity external ID.
    * 
    * @param id
-   *          the ID of the entity
+   *          the external ID of the entity
    * 
    * @return the model
    */

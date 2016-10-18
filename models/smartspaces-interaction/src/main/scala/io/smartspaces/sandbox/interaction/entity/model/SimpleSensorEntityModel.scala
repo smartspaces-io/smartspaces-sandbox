@@ -38,6 +38,11 @@ class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescripti
   var sensedEntityModel: Option[SensedEntityModel] = None
  
   /**
+   * Is the sensor online?
+   */
+  var online: Boolean = false
+ 
+  /**
    * The time of the last update.
    */
   private var lastUpdate: Long = 0
@@ -54,7 +59,8 @@ class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescripti
   override def updateSensedValue[T <: Any](value: SensedValue[T], timestamp: Long): Unit = {
     // TODO(keith): Needs some sort of concurrency block
     lastUpdate = timestamp
-    sensedValues.put(value.valueType.id, value);
+    online = true
+    sensedValues.put(value.valueType.externalId, value);
   }
   
   override def getLastUpdate(): Long = {

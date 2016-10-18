@@ -94,7 +94,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     sensorRegistry
       .getMarkerMarkedEntityAssociations.foreach((association) =>
         markerIdToPersonModels.put(association.marker.markerId,
-          idToPersonModels.get(association.markable.id).get))
+          idToPersonModels.get(association.markable.externalId).get))
 
     sensorRegistry
       .getSensorSensedEntityAssociations.foreach(associateSensorWithSensed(_))
@@ -107,9 +107,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
    *          the new description
    */
   private def addNewSensorEntity(entityDescription: SensorEntityDescription): Unit = {
-    val id = entityDescription.id
-
-    idToSensorEntityModels.put(id, new SimpleSensorEntityModel(entityDescription, this))
+    idToSensorEntityModels.put(entityDescription.externalId, new SimpleSensorEntityModel(entityDescription, this))
   }
 
   /**
@@ -119,7 +117,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
    *          the new description
    */
   private def addNewSensedEntity(entityDescription: SensedEntityDescription): Unit = {
-    val id = entityDescription.id
+    val externalId = entityDescription.externalId
 
     var model: SensedEntityModel = null;
     if (entityDescription.isInstanceOf[PhysicalSpaceSensedEntityDescription]) {
@@ -128,55 +126,55 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
           physicalLocationOccupancyEventCreator)
       model = new SimplePhysicalSpaceSensedEntityModel(
         entityDescription.asInstanceOf[PhysicalSpaceSensedEntityDescription], this, observable);
-      idToPhysicalSpaceModels.put(id, model.asInstanceOf[PhysicalSpaceSensedEntityModel]);
+      idToPhysicalSpaceModels.put(externalId, model.asInstanceOf[PhysicalSpaceSensedEntityModel]);
     } else if (entityDescription.isInstanceOf[PersonSensedEntityDescription]) {
       model = new SimplePersonSensedEntityModel(entityDescription.asInstanceOf[PersonSensedEntityDescription],
         this);
-      idToPersonModels.put(id, model.asInstanceOf[PersonSensedEntityModel]);
+      idToPersonModels.put(externalId, model.asInstanceOf[PersonSensedEntityModel]);
     } else {
       model = new SimpleSensedEntityModel(entityDescription, this);
     }
 
-    idToSensedEntityModels.put(id, model)
+    idToSensedEntityModels.put(externalId, model)
   }
 
   /**
    * Associate a sensor model with the sensed item.
    */
   private def associateSensorWithSensed(association: SimpleSensorSensedEntityAssociation): Unit = {
-    val sensor = idToSensorEntityModels.get(association.sensor.id)
-    val sensed = idToSensedEntityModels.get(association.sensedEntity.id)
+    val sensor = idToSensorEntityModels.get(association.sensor.externalId)
+    val sensed = idToSensedEntityModels.get(association.sensedEntity.externalId)
 
     sensor.get.sensedEntityModel = sensed
     sensed.get.sensorEntityModel = sensor
   }
 
-  override def getSensorEntityModel(id: String): Option[SensorEntityModel] = {
-    idToSensorEntityModels.get(id)
+  override def getSensorEntityModel(externalId: String): Option[SensorEntityModel] = {
+    idToSensorEntityModels.get(externalId)
   }
 
   override def getAllSensorEntityModels(): scala.collection.immutable.List[SensorEntityModel] = {
     idToSensorEntityModels.values.toList
   }
 
-  override def getSensedEntityModel(id: String): Option[SensedEntityModel] = {
-    idToSensedEntityModels.get(id)
+  override def getSensedEntityModel(externalId: String): Option[SensedEntityModel] = {
+    idToSensedEntityModels.get(externalId)
   }
 
   override def getAllSensedEntityModels(): scala.collection.immutable.List[SensedEntityModel] = {
     idToSensedEntityModels.values.toList
   }
 
-  override def getPhysicalSpaceSensedEntityModel(id: String): Option[PhysicalSpaceSensedEntityModel] = {
-    idToPhysicalSpaceModels.get(id)
+  override def getPhysicalSpaceSensedEntityModel(externalId: String): Option[PhysicalSpaceSensedEntityModel] = {
+    idToPhysicalSpaceModels.get(externalId)
   }
 
   override def getAllPhysicalSpaceSensedEntityModels(): scala.collection.immutable.List[PhysicalSpaceSensedEntityModel] = {
     idToPhysicalSpaceModels.values.toList
   }
 
-  override def getPersonSensedEntityModel(id: String): Option[PersonSensedEntityModel] = {
-    idToPersonModels.get(id)
+  override def getPersonSensedEntityModel(externalId: String): Option[PersonSensedEntityModel] = {
+    idToPersonModels.get(externalId)
   }
 
   override def getAllPersonSensedEntityModels(): scala.collection.immutable.List[PersonSensedEntityModel] = {

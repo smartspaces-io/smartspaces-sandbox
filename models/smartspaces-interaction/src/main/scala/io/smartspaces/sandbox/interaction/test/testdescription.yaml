@@ -1,18 +1,18 @@
 people:
-  - id: /person/keith.hughes
+  - externalId: /person/keith.hughes
     name: Keith Hughes
     description: Keith Hughes
 
 markers:
-  - id: /marker/ble/fc0d12fe7e5c
+  - externalId: /marker/ble/fc0d12fe7e5c
     name: BLE Beacon
     description: An Estimote BLE Beacon
     markerId: ble:fc0d12fe7e5c
-  - id: /marker/nfc/04E17DDAC94880
+  - externalId: /marker/nfc/04E17DDAC94880
     name: NFC Ring 1 ID 1
     description: A NFC ring
     markerId: nfc:04E17DDAC94880
-  - id: /marker/nfc/049A62DAC94880
+  - externalId: /marker/nfc/049A62DAC94880
     name: NFC Ring 1 ID 2
     description: A NFC ring
     markerId: nfc:049A62DAC94880
@@ -26,71 +26,71 @@ markerAssociations:
     marked: /person/keith.hughes
 
 sensors:
-  - id: /home/livingroom/proximity
+  - externalId: /home/livingroom/proximity
     name: Proximity Sensor 1
     description: Raspberry Pi BLE proximity sensor
-  - id: /sensornode/ESP_8C8E1B
+  - externalId: /sensornode/ESP_8C8E1B
     name: NFC Reader Sensor 1
     description: ESP8266-based NFC Reader
     sensorDetail: /sensor/smartspaces/test/nfc/esp8266  
-  - id: /sensornode/ESP_8C8E1C
+  - externalId: /sensornode/ESP_8C8E1C
     name: NFC Reader Sensor 2
     description: ESP8266-based NFC Reader
     sensorDetail: /sensor/smartspaces/test/nfc/esp8266  
-  - id: /sensornode/nodemcu9107700
+  - externalId: /sensornode/nodemcu9107700
     name: Sensor 9107700
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-  - id: /sensornode/nodemcu9107716
+  - externalId: /sensornode/nodemcu9107716
     name: Sensor 9107716
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-  - id: /sensornode/nodemcu9107709
+  - externalId: /sensornode/nodemcu9107709
     name: Sensor 9107709
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-  - id: /sensornode/nodemcu9054868
+  - externalId: /sensornode/nodemcu9054868
     name: Sensor 9054868
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-  - id: /sensornode/nodemcu9054793
+  - externalId: /sensornode/nodemcu9054793
     name: Sensor 9054793
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-  - id: /sensornode/nodemcu9107713
+  - externalId: /sensornode/nodemcu9107713
     name: Sensor 9107713
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-  - id: /sensornode/nodemcu9054677
+  - externalId: /sensornode/nodemcu9054677
     name: Sensor 9054677
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
 
 sensorDetails:
-  - id: /sensor/smartspaces/test/esp8266/foo
+  - externalId: /sensor/smartspaces/test/esp8266/foo
     name: ESP8266 Foo
     description: The absolute Foo-iest of the ESP8266 boards.  
     channels:
-      - id: temperature
+      - externalId: temperature
         name: Temperature
         description: The temperature
         type: /sensor/measurement/temperature
-      - id: humidity
+      - externalId: humidity
         name: Humidity
         description: The humidity
         type: /sensor/measurement/humidity
         unit: /measurement/units/humidity/relative
-  - id: /sensor/smartspaces/test/nfc/esp8266
+  - externalId: /sensor/smartspaces/test/nfc/esp8266
     name: ESP8266 NFC Reader
     description: The wireless NFC reader ESP8266 boards.  
     channels:
-      - id: marker
+      - externalId: marker
         name: Marker
         description: A marker ID
         type: /sensor/marker
 
 measurementTypes:
-  - id: /sensor/measurement/temperature
+  - externalId: /sensor/measurement/temperature
     name: Temperature
     description: The temperature
     valueType: double
@@ -98,13 +98,13 @@ measurementTypes:
     aliases: 
       - temperature
     measurementUnits: 
-      - id: /measurement/units/temperature/celcius
+      - externalId: /measurement/units/temperature/celcius
         name: Celcius
         description: The temperature in degrees celcius
-      - id: /measurement/units/temperature/fahrenheit
+      - externalId: /measurement/units/temperature/fahrenheit
         name: Fahrenheight
         description: The temperature in degrees fahrenheit
-  - id: /sensor/measurement/humidity
+  - externalId: /sensor/measurement/humidity
     name: Humidity
     description: The humidity
     valueType: double
@@ -112,34 +112,34 @@ measurementTypes:
     aliases: 
       - humidity
     measurementUnits: 
-      - id: /measurement/units/humidity/relative
+      - externalId: /measurement/units/humidity/relative
         name: Relative Humidity
         description: The relative humidity
-  - id: /sensor/marker
+  - externalId: /sensor/marker
     name: Marker
     description: Markers mark objects
     valueType: id
   
 physicalLocations:
-  - id: /home/livingroom
+  - externalId: /home/livingroom
     name: Living Room
     description: The living room on the first floor
-  - id: /home/masterbedroom
+  - externalId: /home/masterbedroom
     name: Master Bedroom
     description: The master bedroom, on the second floor
-  - id: /home/garagestudio
+  - externalId: /home/garagestudio
     name: Garage Studio
     description: The studio in the garage
-  - id: /home/basement
+  - externalId: /home/basement
     name: Basement
     description: The main room in the basement
-  - id: /home/kitchen
+  - externalId: /home/kitchen
     name: Kitchen
     description: The kitchen on the first floor
-  - id: /home/musicroom
+  - externalId: /home/musicroom
     name: Music Room
     description: The music room on the second floor
-  - id: /home/attic
+  - externalId: /home/attic
     name: Attic
     description: The attic
 

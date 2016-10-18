@@ -24,7 +24,12 @@ package io.smartspaces.sandbox.interaction.entity;
 trait EntityDescription extends Displayable {
 
   /**
-   * The ID of the entity.
+   * The persistance ID of the entity.
    */
   val id: String
+
+  /**
+   * The external ID of the entity.
+   */
+  val externalId: String
 }

@@ -65,23 +65,26 @@ class StandardSensedEntityModelProcessor(private val completeSensedEntityModel: 
     // Go into the data fields.
     data.down(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA)
 
-    // Go through every property in the data set, find its type, and then create
-    // appropriate values.
-    data.getObjectEntries().foreach((entry) => {
-      val channelName = entry.getProperty()
+    val sensorDetail = sensor.sensorEntityDescription.sensorDetail
+    if (sensorDetail.isDefined) {
+      // Go through every property in the data set, find its type, and then create
+      // appropriate values.
+      data.getObjectEntries().foreach((entry) => {
+        val channelName = entry.getProperty()
 
-      val sensorDetail = sensor.sensorEntityDescription.sensorDetail
-      if (sensorDetail.isDefined) {
-        val sensedType = sensorDetail.get.getSensorChannelDetail(channelName).get.measurementType
-        val sensorValueProcessor = sensorValuesProcessors.get(sensedType.id);
+        val sensedMeasurementType = sensorDetail.get.getSensorChannelDetail(channelName).get.measurementType
+        val sensorValueProcessor = sensorValuesProcessors.get(sensedMeasurementType.externalId)
         if (sensorValueProcessor.isDefined) {
           entry.down()
           sensorValueProcessor.get.processData(timestamp, sensor, sensedEntity, processorContext,
             data);
         } else {
-          log.formatWarn("Got unknown sensed type with no apparent processor %s", sensedType);
+          log.formatWarn("Got unknown sensed type with no apparent processor %s", sensedMeasurementType)
         }
-      }
-    })
+
+      })
+    } else {
+      log.formatWarn("Got sensor with no sensor detail %s", sensor.sensorEntityDescription)
+    }
   }
 }

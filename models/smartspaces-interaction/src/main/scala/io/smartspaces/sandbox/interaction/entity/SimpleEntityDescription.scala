@@ -21,10 +21,10 @@ package io.smartspaces.sandbox.interaction.entity;
  *
  * @author Keith M. Hughes
  */
-class SimpleEntityDescription(val id: String, val displayName: String, val displayDescription: String) extends EntityDescription {
+class SimpleEntityDescription(val id: String, val externalId: String, val displayName: String, val displayDescription: String) extends EntityDescription {
 
   override def toString(): String = {
-    "SimpleEntityDescription [id=" + id + ", displayName=" + displayName + ", description=" +
+    "SimpleEntityDescription [id=" + id + ", externalId=" + externalId + ", displayName=" + displayName + ", description=" +
       displayDescription + "]"
   }
 }

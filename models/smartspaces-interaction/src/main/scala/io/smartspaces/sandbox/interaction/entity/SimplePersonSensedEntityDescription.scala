@@ -21,7 +21,7 @@ package io.smartspaces.sandbox.interaction.entity;
  *
  * @author Keith M. Hughes
  */
-class SimplePersonSensedEntityDescription(id: String, displayName: String, description: String) extends SimpleEntityDescription(id, displayName, description)
+class SimplePersonSensedEntityDescription(id: String, externalId: String, displayName: String, description: String) extends SimpleEntityDescription(id, externalId, displayName, description)
     with PersonSensedEntityDescription {
 
   override def toString(): String = {

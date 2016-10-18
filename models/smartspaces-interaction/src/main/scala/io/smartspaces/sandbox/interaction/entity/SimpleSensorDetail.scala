@@ -23,7 +23,7 @@ import scala.collection.mutable.ArrayBuffer
  * 
  * @author Keith M. Hughes
  */
-case class SimpleSensorDetail(val id: String, val displayName: String, val displayDescription: String) extends SensorDetail {
+case class SimpleSensorDetail(val id: String, val externalId: String, val displayName: String, val displayDescription: String) extends SensorDetail {
   
   /**
    * The measurement units for this type.

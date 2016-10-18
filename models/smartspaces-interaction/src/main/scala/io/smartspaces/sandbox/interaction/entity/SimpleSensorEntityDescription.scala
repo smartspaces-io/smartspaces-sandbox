@@ -21,6 +21,11 @@ package io.smartspaces.sandbox.interaction.entity;
  *
  * @author Keith M. Hughes
  */
-class SimpleSensorEntityDescription(override val id: String, override val displayName: String, val description: String, val sensorDetail: Option[SensorDetail]) extends SimpleEntityDescription(id, displayName, description)
+class SimpleSensorEntityDescription(override val id: String, override val externalId: String, override val displayName: String, val description: String, val sensorDetail: Option[SensorDetail]) extends SimpleEntityDescription(id, externalId, displayName, description)
     with SensorEntityDescription {
+  
+  /**
+   * The time limit for sensor updates.
+   */
+  override var sensorUpdateTimeLimit: Option[Long] = None
 }

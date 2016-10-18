@@ -21,24 +21,34 @@ import io.smartspaces.sandbox.interaction.entity.SensorEntityDescription
 /**
  * The model of a sensor.
  * 
+ * <p>
+ * The sensor is considered online or offline by whether or not the sensor has sent either a
+ * heartbeat or a sensor message within a specified rime window. The time window for a given
+ * sensor is set in the sensor description.
+ *
  * @author Keith M. Hughes
  */
 trait SensorEntityModel {
-  
+
   /**
    * The sensor entity description for the model.
    */
   val sensorEntityDescription: SensorEntityDescription
-  
+
   /**
    * Get the sensed entity model collection this model is in.
    */
   val allModels: CompleteSensedEntityModel
-  
+
   /**
    * The model that is being sensed by this sensor.
    */
   var sensedEntityModel: Option[SensedEntityModel]
+  
+  /**
+   * Is the sensor online?
+   */
+  var online: Boolean
 
   /**
    * Get the value of a sensed property by its type ID.
@@ -63,7 +73,7 @@ trait SensorEntityModel {
    * @param value
    *          the value being updated
    * @param updateTime
-   * 		the time of this update
+   * 		      the time of this update
    */
   def updateSensedValue[T <: Any](value: SensedValue[T], updateTime: Long): Unit
 

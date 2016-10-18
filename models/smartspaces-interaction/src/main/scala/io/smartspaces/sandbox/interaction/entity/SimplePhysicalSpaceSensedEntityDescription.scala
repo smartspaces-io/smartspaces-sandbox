@@ -21,6 +21,6 @@ package io.smartspaces.sandbox.interaction.entity;
  * 
  * @author Keith M. Hughes
  */
-class SimplePhysicalSpaceSensedEntityDescription(id: String, displayName: String, description:String) extends SimpleEntityDescription(id, displayName, description)
+class SimplePhysicalSpaceSensedEntityDescription(id: String, externalId: String, displayName: String, description:String) extends SimpleEntityDescription(id, externalId, displayName, description)
     with PhysicalSpaceSensedEntityDescription {
 }

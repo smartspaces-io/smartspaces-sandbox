@@ -14,27 +14,39 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity
+package io.smartspaces.sandbox.interaction.entity.model.updater.value.converter
+
+import io.smartspaces.sandbox.interaction.entity.MeasurementUnitDescription
 
 /**
- * The description of a measurement unit.
+ * A converter from one measurement unit to another.
+ * 
+ * @param [F]
+ * 		the type converting from
+ * @param [T]
+ * 		the type converting to
  *
  * @author Keith M. Hughes
  */
-trait MeasurementUnitDescription extends Displayable {
+trait MeasurementValueConverter[F, T] {
 
   /**
-   * The persistence ID of the measurement unit.
+   * The measurement unit being converted from.
    */
-  val id: String
+  val from: MeasurementUnitDescription
 
   /**
-   * The external ID of the measurement unit.
+   * The measurement unit being converted to.
    */
-  val externalId: String
+  val to: MeasurementUnitDescription
 
   /**
-   * The measurement type of the unit.
+   * Convert a value.
+   *
+   * @param value
+   * 		the value to convert from
+   *
+   * @return the value after conversion
    */
-  val measurementType: MeasurementTypeDescription
+  def convert(value: F): T
 }

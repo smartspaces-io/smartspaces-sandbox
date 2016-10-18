@@ -26,34 +26,64 @@ import scala.collection.mutable._
 class InMemorySensorRegistry extends SensorRegistry {
 
   /**
-   * A map of IDs to their measurement types.
+   * A map of persistence IDs to their measurement types.
    */
   private val idToMeasurementType: Map[String, MeasurementTypeDescription] = new HashMap
 
   /**
-   * A map of IDs to measurement units.
+   * A map of external IDs to their measurement types.
+   */
+  private val externalIdToMeasurementType: Map[String, MeasurementTypeDescription] = new HashMap
+
+  /**
+   * A map of persistence IDs to measurement units.
    */
   private val idToMeasurementUnit: Map[String, MeasurementUnitDescription] = new HashMap
 
   /**
-   * A map of IDs to sensor details.
+   * A map of external IDs to measurement units.
+   */
+  private val externalIdToMeasurementUnit: Map[String, MeasurementUnitDescription] = new HashMap
+
+  /**
+   * A map of persistence IDs to sensor details.
    */
   private val idToSensorDetail: Map[String, SensorDetail] = new HashMap
 
   /**
-   * A map of sensor IDs to their description.
+   * A map of external IDs to sensor details.
+   */
+  private val externalIdToSensorDetail: Map[String, SensorDetail] = new HashMap
+
+  /**
+   * A map of persistence sensor IDs to their description.
    */
   private val idToSensor: Map[String, SensorEntityDescription] = new HashMap
 
   /**
-   * A map of marker IDs to their description.
+   * A map of external sensor IDs to their description.
+   */
+  private val externalIdToSensor: Map[String, SensorEntityDescription] = new HashMap
+
+  /**
+   * A map persistence of marker IDs to their description.
    */
   private val idToMarker: Map[String, MarkerEntityDescription] = new HashMap
 
   /**
-   * A map of markable IDs to their description.
+   * A map external of marker IDs to their description.
+   */
+  private val externalIdToMarker: Map[String, MarkerEntityDescription] = new HashMap
+
+  /**
+   * A map of markable persistence IDs to their description.
    */
   private val idToMarkable: Map[String, MarkableEntityDescription] = new HashMap
+
+  /**
+   * A map of markable external IDs to their description.
+   */
+  private val externalIdToMarkable: Map[String, MarkableEntityDescription] = new HashMap
 
   /**
    * A map of marker IDs to their description.
@@ -66,9 +96,14 @@ class InMemorySensorRegistry extends SensorRegistry {
   private val markerIdToMarkable: Map[String, MarkableEntityDescription] = new HashMap
 
   /**
-   * A map of sensed entities IDs to their description
+   * A map of sensed entities  persistence IDs to their description
    */
   private val idToSensed: Map[String, SensedEntityDescription] = new HashMap
+
+  /**
+   * A map of sensed entities  external IDs to their description
+   */
+  private val externalIdToSensed: Map[String, SensedEntityDescription] = new HashMap
 
   /**
    * The associations between sensors and what entity is being sensed by them.
@@ -88,9 +123,12 @@ class InMemorySensorRegistry extends SensorRegistry {
 
   override def registerMeasurementType(measurementType: MeasurementTypeDescription): SensorRegistry = {
     idToMeasurementType.put(measurementType.id, measurementType)
+    externalIdToMeasurementType.put(measurementType.externalId, measurementType)
 
-    measurementType.getAllMeasurementUnits().foreach((unit) =>
-      idToMeasurementUnit.put(unit.id, unit))
+    measurementType.getAllMeasurementUnits().foreach((unit) => {
+      idToMeasurementUnit.put(unit.id, unit)
+      externalIdToMeasurementUnit.put(unit.externalId, unit)
+    })
 
     this
   }
@@ -98,7 +136,11 @@ class InMemorySensorRegistry extends SensorRegistry {
   override def getMeasurementType(id: String): Option[MeasurementTypeDescription] = {
     idToMeasurementType.get(id)
   }
-  
+ 
+  override def getMeasurementTypeByExternalId(externalId: String): Option[MeasurementTypeDescription] = {
+    externalIdToMeasurementType.get(externalId)
+  }
+ 
   override def getAllMeasurementTypes(): List[MeasurementTypeDescription] = {
     idToMeasurementType.values.toList
   }
@@ -107,8 +149,13 @@ class InMemorySensorRegistry extends SensorRegistry {
     idToMeasurementUnit.get(id)
   }
 
+  override def getMeasurementUnitByExternalId(externalId: String): Option[MeasurementUnitDescription] = {
+    externalIdToMeasurementUnit.get(externalId)
+  }
+
   override def registerSensorDetail(sensorDetail: SensorDetail): SensorRegistry = {
     idToSensorDetail.put(sensorDetail.id, sensorDetail)
+    externalIdToSensorDetail.put(sensorDetail.externalId, sensorDetail)
     
     this
   }
@@ -117,18 +164,27 @@ class InMemorySensorRegistry extends SensorRegistry {
     idToSensorDetail.get(id)
   }
 
+  override def getSensorDetailByExternalId(externalId: String): Option[SensorDetail] = {
+    externalIdToSensorDetail.get(externalId)
+  }
+
   override def getAllSensorDetails(): List[SensorDetail] = {
     idToSensorDetail.values.toList
   }
 
   override def registerSensor(sensor: SensorEntityDescription): SensorRegistry = {
     idToSensor.put(sensor.id, sensor)
+    externalIdToSensor.put(sensor.externalId, sensor)
 
     this
   }
 
   override def getSensor(id: String): Option[SensorEntityDescription] = {
     idToSensor.get(id)
+  }
+
+  override def getSensorByExternalId(externalId: String): Option[SensorEntityDescription] = {
+    externalIdToSensor.get(externalId)
   }
   
   override def getAllSensorEntities(): List[SensorEntityDescription] = {
@@ -137,6 +193,7 @@ class InMemorySensorRegistry extends SensorRegistry {
   
   override def registerMarker(marker: MarkerEntityDescription): SensorRegistry = {
     idToMarker.put(marker.id, marker)
+    externalIdToMarker.put(marker.externalId, marker)
     markerIdToMarker.put(marker.markerId, marker)
 
     this
@@ -146,15 +203,26 @@ class InMemorySensorRegistry extends SensorRegistry {
     idToMarker.get(id)
   }
 
+  override def getMarkerByExternalId(externalId: String): Option[MarkerEntityDescription] = {
+    externalIdToMarker.get(externalId)
+  }
+
   override def getMarkableEntity(id: String): Option[MarkableEntityDescription] = {
     idToMarkable.get(id)
   }
 
+  override def getMarkableEntityByExternalId(externalId: String): Option[MarkableEntityDescription] = {
+    externalIdToMarkable.get(externalId)
+  }
+
   override def registerSensedEntity(sensedEntity: SensedEntityDescription): SensorRegistry = {
     idToSensed.put(sensedEntity.id, sensedEntity)
+    externalIdToSensed.put(sensedEntity.externalId, sensedEntity)
 
     if (sensedEntity.isInstanceOf[MarkableEntityDescription]) {
-      idToMarkable.put(sensedEntity.id, sensedEntity.asInstanceOf[MarkableEntityDescription])
+      val markable = sensedEntity.asInstanceOf[MarkableEntityDescription]
+      idToMarkable.put(sensedEntity.id, markable)
+      externalIdToMarkable.put(sensedEntity.externalId, markable)
     }
 
     this
@@ -164,14 +232,18 @@ class InMemorySensorRegistry extends SensorRegistry {
     idToSensed.get(id)
   }
 
+  override def getSensedEntityByExternalId(externalId: String): Option[SensedEntityDescription] = {
+    externalIdToSensed.get(externalId)
+  }
+
   override def getAllSensedEntities(): scala.collection.immutable.List[SensedEntityDescription] = {
     idToSensed.values.toList
   }
 
   override def associateSensorWithSensedEntity(sensorId: String, sensedEntityId: String): SensorRegistry = {
     // TODO(keith) Decide what to do if neither exists
-    val sensor = idToSensor.get(sensorId)
-    val sensedEntity = idToSensed.get(sensedEntityId)
+    val sensor = externalIdToSensor.get(sensorId)
+    val sensedEntity = externalIdToSensed.get(sensedEntityId)
 
     sensorSensedEntityAssociations +=
       new SimpleSensorSensedEntityAssociation(sensor.get, sensedEntity.get)
@@ -185,8 +257,8 @@ class InMemorySensorRegistry extends SensorRegistry {
 
   override def associateMarkerWithMarkedEntity(markerId: String, markedEntityId: String): SensorRegistry = {
     // TODO(keith) Decide what to do if neither exists
-    val marker = idToMarker.get(markerId)
-    val markedEntity = idToMarkable.get(markedEntityId)
+    val marker = externalIdToMarker.get(markerId)
+    val markedEntity = externalIdToMarkable.get(markedEntityId)
 
     associateMarkerWithMarkedEntity(marker.get, markedEntity.get)
   }

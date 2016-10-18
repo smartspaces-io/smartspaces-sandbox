@@ -21,8 +21,8 @@ package io.smartspaces.sandbox.interaction.entity;
  *
  * @author Keith M. Hughes
  */
-class SimpleMarkerEntityDescription(id: String, displayName: String, description: String,
-  val markerId: String) extends SimpleEntityDescription(id, displayName, description)
+class SimpleMarkerEntityDescription(id: String, externalId: String, displayName: String, description: String,
+  val markerId: String) extends SimpleEntityDescription(id, externalId, displayName, description)
     with MarkerEntityDescription {
 
   override def toString(): String = {

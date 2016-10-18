@@ -32,6 +32,11 @@ trait MeasurementTypeDescription extends Displayable {
   val id: String
 
   /**
+   * The external ID of the measurement type.
+   */
+  val externalId: String
+
+  /**
    * The value type of the measurement type.
    */
   val valueType: String

@@ -14,12 +14,22 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity
+package io.smartspaces.sandbox.interaction.entity.model.updater.value.converter
+
+import io.smartspaces.sandbox.interaction.entity.MeasurementUnitDescription
 
 /**
- * The description of a measurement unit.
- *
+ * Converter for celcius to fahrenheit.
+ * 
  * @author Keith M. Hughes
  */
-case class SimpleMeasurementUnitDescription(val measurementType: MeasurementTypeDescription, val id: String, val externalId: String, val displayName: String, val displayDescription: String) extends MeasurementUnitDescription {
+class CelciusToFahrenheitMeasurementValueConverter extends MeasurementValueConverter[Double, Double] {
+
+  override val from: MeasurementUnitDescription = null
+
+  override val to: MeasurementUnitDescription = null
+  
+  override  def convert(value: Double): Double = {
+     value * 9 / 5 + 32
+  }
 }

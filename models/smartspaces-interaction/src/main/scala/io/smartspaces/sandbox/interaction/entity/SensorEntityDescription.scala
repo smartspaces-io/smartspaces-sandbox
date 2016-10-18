@@ -30,4 +30,9 @@ trait SensorEntityDescription extends EntityDescription {
    * The sensor detail for the sensor.
    */
   val sensorDetail: Option[SensorDetail]
+  
+  /**
+   * The time limit on when a sensor update should happen, in milliseconds
+   */
+  var sensorUpdateTimeLimit: Option[Long]
 }

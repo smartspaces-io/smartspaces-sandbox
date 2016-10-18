@@ -79,27 +79,27 @@ class StandardSensedEntitySensorHandler(private val completeSensedEntityModel: C
   override def associateSensorWithEntity(sensor: SensorEntityDescription,
     sensedEntity: SensedEntityDescription): SensedEntitySensorHandler = {
 
-    val sensorModel = completeSensedEntityModel.getSensorEntityModel(sensor.id)
-    sensors.put(sensor.id, sensorModel.get)
+    val sensorModel = completeSensedEntityModel.getSensorEntityModel(sensor.externalId)
+    sensors.put(sensor.externalId, sensorModel.get)
 
-    val sensedModel = completeSensedEntityModel.getSensedEntityModel(sensedEntity.id)
-    sensedEntities.put(sensedEntity.id, sensedModel.get)
-    sensorToSensedEntity.put(sensor.id, sensedEntity.id)
+    val sensedModel = completeSensedEntityModel.getSensedEntityModel(sensedEntity.externalId)
+    sensedEntities.put(sensedEntity.externalId, sensedModel.get)
+    sensorToSensedEntity.put(sensor.externalId, sensedEntity.externalId)
 
     this
   }
 
   override def handleSensorData(timestamp: Long, data: DynamicObject): Unit = {
-    val sensorId = data.getString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_SENSOR);
+    val sensorId = data.getString(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_SENSOR)
 
     if (sensorId == null) {
       log.warn("Got data from unknown sensor, the sensor ID is missing")
       return
     }
 
-    val sensor = sensors.get(sensorId);
+    val sensor = sensors.get(sensorId)
     if (sensor.isEmpty) {
-      log.formatWarn("Got data from unregistered sensor %s, the data is %s", sensorId,
+       log.formatWarn("Got data from unregistered sensor %s, the data is %s", sensorId,
         data.asMap())
       unknownSensedEntityHandler.handleUnknownSensor(sensorId)
 

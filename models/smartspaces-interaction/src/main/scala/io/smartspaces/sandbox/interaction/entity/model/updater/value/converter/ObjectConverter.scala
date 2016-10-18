@@ -14,12 +14,27 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity
+package io.smartspaces.sandbox.interaction.entity.model.updater.value.converter
 
 /**
- * The description of a measurement unit.
- *
+ * Converts from one object type to another object type.
+ * 
+ * @param [F]
+ * 		the type converting from
+ * @param [T]
+ * 		the type converting to
+ * 
  * @author Keith M. Hughes
  */
-case class SimpleMeasurementUnitDescription(val measurementType: MeasurementTypeDescription, val id: String, val externalId: String, val displayName: String, val displayDescription: String) extends MeasurementUnitDescription {
+trait ObjectConverter[F,T] {
+  
+  /**
+   * Convert a value.
+   * 
+   * @param value
+   * 			the value to convert from
+   * 
+   * @returns the value converted to
+   */
+  def convert(value: F) : T
 }

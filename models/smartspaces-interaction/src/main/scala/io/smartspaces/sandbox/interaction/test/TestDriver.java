@@ -16,7 +16,6 @@
 
 package io.smartspaces.sandbox.interaction.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -31,11 +30,8 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import io.smartspaces.activity.BaseActivityRuntime;
 import io.smartspaces.activity.configuration.ActivityConfiguration;
-import io.smartspaces.activity.execution.BaseActivityExecutionContext;
 import io.smartspaces.configuration.Configuration;
-import io.smartspaces.liveactivity.runtime.StandardLiveActivityRuntimeComponentFactory;
 import io.smartspaces.liveactivity.runtime.development.lightweight.LightweightActivityRuntime;
 import io.smartspaces.liveactivity.runtime.development.lightweight.StandardLightweightActivityRuntime;
 import io.smartspaces.sandbox.interaction.entity.InMemorySensorRegistry;
@@ -48,8 +44,6 @@ import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSyn
 import io.smartspaces.service.web.server.internal.netty.NettyWebServerService;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 import io.smartspaces.time.provider.LocalTimeProvider;
-import io.smartspaces.util.io.FileSupport;
-import io.smartspaces.util.io.FileSupportImpl;
 
 public class TestDriver {
 
@@ -74,7 +68,7 @@ public class TestDriver {
   }
 
   private static void runEverythingWithmDns() throws Exception {
-    StandaloneSmartSpacesEnvironment spaceEnvironment = createSpaceEnvironment();
+    final StandaloneSmartSpacesEnvironment spaceEnvironment = createSpaceEnvironment();
 
     String ipAddress = getIpAddress();
     if (ipAddress == null) {
@@ -162,15 +156,18 @@ public class TestDriver {
         try {
           SensorProcessingActivity activity = new SensorProcessingActivity();
 
-          LightweightActivityRuntime runtime = new StandardLightweightActivityRuntime(spaceEnvironment);
+          LightweightActivityRuntime runtime =
+              new StandardLightweightActivityRuntime(spaceEnvironment);
           runtime.startup();
           runtime.injectActivity(activity);
-              
+
           Configuration conf = activity.getConfiguration();
           conf.setProperty("space.activity.webapp.web.server.port", "8083");
 
-          // conf.setProperty("space.activity.webapp.content.location", "webapp");
-          // conf.setProperty("space.activity.webapp.url.initial", "index.html");
+          // conf.setProperty("space.activity.webapp.content.location",
+          // "webapp");
+          // conf.setProperty("space.activity.webapp.url.initial",
+          // "index.html");
           // conf.setProperty("space.activity.webapp.url.query_string", "foo");
           conf.setProperty(ActivityConfiguration.CONFIGURATION_PROPERTY_ACTIVITY_NAME,
               activity.getName());

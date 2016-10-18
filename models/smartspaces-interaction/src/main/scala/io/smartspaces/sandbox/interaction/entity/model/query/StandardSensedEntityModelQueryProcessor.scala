@@ -19,6 +19,8 @@ package io.smartspaces.sandbox.interaction.entity.model.query
 import io.smartspaces.sandbox.interaction.entity.model.CompleteSensedEntityModel
 import io.smartspaces.sandbox.interaction.entity.model.SensedValue
 import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
+import io.smartspaces.sandbox.interaction.entity.model.updater.value.converter.ObjectConverter
+import io.smartspaces.sandbox.interaction.entity.model.PhysicalSpaceSensedEntityModel
 
 /**
  * The standard processor for queries against a sensor model.
@@ -53,6 +55,14 @@ class StandardSensedEntityModelQueryProcessor(private val allModels: CompleteSen
       } else {
         None
       }
+    }
+  }
+
+  override def getAllPhysicalLocations[T](converter: ObjectConverter[List[PhysicalSpaceSensedEntityModel], T]): T = {
+    allModels.doReadTransaction { () =>
+      val models = allModels.getAllPhysicalSpaceSensedEntityModels()
+
+      converter.convert(models)
     }
   }
 }
