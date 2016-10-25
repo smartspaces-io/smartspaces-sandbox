@@ -16,13 +16,13 @@
 
 package io.smartspaces.sandbox.interaction.entity.model.reactive
 
-import io.smartspaces.sandbox.interaction.behavior.speech.SpeechSpeaker
-import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
-import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent
 
 import org.reactivestreams.Subscriber
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import io.smartspaces.sandbox.interaction.behavior.speech.SpeechSpeaker
+import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
+import io.smartspaces.sandbox.sensor.entity.model.PhysicalLocationOccupancyEvent
 
 /**
  * A reactive observer for speech events.

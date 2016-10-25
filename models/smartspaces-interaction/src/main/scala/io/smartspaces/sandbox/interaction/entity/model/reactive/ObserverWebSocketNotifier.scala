@@ -17,8 +17,8 @@
 package io.smartspaces.sandbox.interaction.entity.model.reactive
 
 import io.smartspaces.activity.behavior.web.WebServerActivityBehavior
-import io.smartspaces.sandbox.interaction.entity.model.PersonSensedEntityModel
-import io.smartspaces.sandbox.interaction.entity.model.PhysicalLocationOccupancyEvent
+import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
+import io.smartspaces.sandbox.sensor.entity.model.PhysicalLocationOccupancyEvent
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder
 
 import io.reactivex.Observer
