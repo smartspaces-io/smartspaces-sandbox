@@ -46,6 +46,11 @@ trait SensorEntityModel {
   var sensedEntityModel: Option[SensedEntityModel]
   
   /**
+   * When this model was created.
+   */
+  val modelCreationTime: Long
+  
+  /**
    * Is the sensor online?
    */
   var online: Boolean
@@ -82,5 +87,17 @@ trait SensorEntityModel {
    *
    * @return the last time
    */
-  def getLastUpdate(): Long
+  def getLastUpdate(): Option[Long]
+  
+  /**
+   * Check to see if the sensor is still considered online.
+   * 
+   * <p>
+   * This method will change the {@link #online} status and emit an event
+   * if the sensor has become offline
+   * 
+   * @param currentTime
+   * 				the current time to check against
+   */
+  def checkIfOfflineTransition(currentTime: Long): Unit
 }

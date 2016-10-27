@@ -14,7 +14,7 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.sensor.entity.model;
+package io.smartspaces.sandbox.sensor.entity.model
 
 import io.smartspaces.event.observable.EventPublisherSubject
 import io.smartspaces.logging.ExtendedLog
@@ -31,6 +31,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
+import io.smartspaces.system.SmartSpacesEnvironment
 
 /**
  * A collection of sensed entity models.
@@ -38,7 +39,7 @@ import scala.collection.mutable.Map
  * @author Keith M. Hughes
  */
 class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
-    private val eventObservableService: EventObservableService, private val log: ExtendedLog) extends CompleteSensedEntityModel {
+    private val eventObservableService: EventObservableService, private val log: ExtendedLog, private val spaceEnvironment: SmartSpacesEnvironment) extends CompleteSensedEntityModel {
 
   /**
    * Map of entity IDs to their sensor entity models.
@@ -76,12 +77,40 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     }
 
   /**
+   * The subject for physical location occupancy events
+   */
+  private var physicalLocationOccupancyEventSubject: EventPublisherSubject[PhysicalLocationOccupancyEvent] = null
+
+  /**
+   * The subject for sensor offline events
+   */
+  private var sensorOfflineEventSubject: EventPublisherSubject[SensorOfflineEvent] = null
+
+  /**
+   * The creator for sensor offline observables.
+   */
+  private val sensorOfflineEventCreator: ObservableCreator[EventPublisherSubject[SensorOfflineEvent]] =
+    new ObservableCreator[EventPublisherSubject[SensorOfflineEvent]]() {
+      override def newObservable(): EventPublisherSubject[SensorOfflineEvent] = {
+        EventPublisherSubject.create(log)
+      }
+    }
+
+  /**
    * The readwrite lock for the
    */
   private val readWriteLock = new ReentrantReadWriteLock
 
   override def prepare(): Unit = {
-    createModelsFromDescriptions();
+    physicalLocationOccupancyEventSubject =
+      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME,
+        physicalLocationOccupancyEventCreator)
+
+    sensorOfflineEventSubject =
+      eventObservableService.getObservable(SensorOfflineEvent.EVENT_TYPE,
+        sensorOfflineEventCreator)
+
+    createModelsFromDescriptions()
   }
 
   /**
@@ -101,48 +130,40 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
       .getSensorSensedEntityAssociations.foreach(associateSensorWithSensed(_))
   }
 
-  /**
-   * Add in a new sensor entity into the collection.
-   *
-   * @param entityDescription
-   *          the new description
-   */
-  private def addNewSensorEntity(entityDescription: SensorEntityDescription): Unit = {
-    idToSensorEntityModels.put(entityDescription.externalId, new SimpleSensorEntityModel(entityDescription, this))
+  override def addNewSensorEntity(entityDescription: SensorEntityDescription): Unit = {
+    registerSensorModel(new SimpleSensorEntityModel(entityDescription, this, spaceEnvironment.getTimeProvider.getCurrentTime))
   }
 
   /**
-   * Add in a new sensed entity into the collection.
-   *
-   * @param entityDescription
-   *          the new description
+   * Register a sensor model.
+   * 
+   * <p>
+   * This is exposed for testing.
    */
-  private def addNewSensedEntity(entityDescription: SensedEntityDescription): Unit = {
+  private[model] def registerSensorModel(model: SensorEntityModel): Unit = {
+    idToSensorEntityModels.put(model.sensorEntityDescription.externalId, model)
+  }
+
+  override def addNewSensedEntity(entityDescription: SensedEntityDescription): Unit = {
     val externalId = entityDescription.externalId
 
-    var model: SensedEntityModel = null;
+    var model: SensedEntityModel = null
     if (entityDescription.isInstanceOf[PhysicalSpaceSensedEntityDescription]) {
-      val observable =
-        eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME,
-          physicalLocationOccupancyEventCreator)
       model = new SimplePhysicalSpaceSensedEntityModel(
-        entityDescription.asInstanceOf[PhysicalSpaceSensedEntityDescription], this, observable);
-      idToPhysicalSpaceModels.put(externalId, model.asInstanceOf[PhysicalSpaceSensedEntityModel]);
+        entityDescription.asInstanceOf[PhysicalSpaceSensedEntityDescription], this)
+      idToPhysicalSpaceModels.put(externalId, model.asInstanceOf[PhysicalSpaceSensedEntityModel])
     } else if (entityDescription.isInstanceOf[PersonSensedEntityDescription]) {
       model = new SimplePersonSensedEntityModel(entityDescription.asInstanceOf[PersonSensedEntityDescription],
-        this);
-      idToPersonModels.put(externalId, model.asInstanceOf[PersonSensedEntityModel]);
+        this)
+      idToPersonModels.put(externalId, model.asInstanceOf[PersonSensedEntityModel])
     } else {
-      model = new SimpleSensedEntityModel(entityDescription, this);
+      model = new SimpleSensedEntityModel(entityDescription, this)
     }
 
     idToSensedEntityModels.put(externalId, model)
   }
 
-  /**
-   * Associate a sensor model with the sensed item.
-   */
-  private def associateSensorWithSensed(association: SimpleSensorSensedEntityAssociation): Unit = {
+  override def associateSensorWithSensed(association: SimpleSensorSensedEntityAssociation): Unit = {
     val sensor = idToSensorEntityModels.get(association.sensor.externalId)
     val sensed = idToSensedEntityModels.get(association.sensedEntity.externalId)
 
@@ -186,43 +207,68 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
     markerIdToPersonModels.get(markerId)
   }
 
+  override def broadcastOccupanyEvent(event: PhysicalLocationOccupancyEvent): Unit = {
+    physicalLocationOccupancyEventSubject.onNext(event)
+  }
+
+  override def broadcastSensorOfflineEvent(event: SensorOfflineEvent): Unit = {
+    sensorOfflineEventSubject.onNext(event)
+  }
+
+  override def checkModels(): Unit = {
+    doVoidWriteTransaction { () => 
+      performModelCheck()
+    }
+  }
+
+  /**
+   * Perform all model checks.
+   */
+  private[model] def performModelCheck(): Unit = {
+    val currentTime = spaceEnvironment.getTimeProvider.getCurrentTime
+
+    getAllSensorEntityModels().foreach {
+      _.checkIfOfflineTransition(currentTime)
+    }
+  }
+
   override def doVoidReadTransaction(transaction: () => Unit): Unit = {
-    readWriteLock.readLock().lock();
+    readWriteLock.readLock().lock()
 
     try {
       transaction()
     } finally {
-      readWriteLock.readLock().unlock();
+      readWriteLock.readLock().unlock()
     }
   }
 
   override def doVoidWriteTransaction(transaction: () => Unit): Unit = {
-    readWriteLock.writeLock().lock();
+    readWriteLock.writeLock().lock()
 
     try {
       transaction()
     } finally {
-      readWriteLock.writeLock().unlock();
+      readWriteLock.writeLock().unlock()
     }
   }
 
   override def doReadTransaction[T](transaction: () => T): T = {
-    readWriteLock.readLock().lock();
+    readWriteLock.readLock().lock()
 
     try {
       transaction()
     } finally {
-      readWriteLock.readLock().unlock();
+      readWriteLock.readLock().unlock()
     }
   }
 
   override def doWriteTransaction[T](transaction: () => T): T = {
-    readWriteLock.writeLock().lock();
+    readWriteLock.writeLock().lock()
 
     try {
       transaction()
     } finally {
-      readWriteLock.writeLock().unlock();
+      readWriteLock.writeLock().unlock()
     }
   }
 }

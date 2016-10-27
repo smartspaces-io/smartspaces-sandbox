@@ -87,7 +87,7 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     descriptionImporter.importDescriptions(sensorRegistry)
 
     sensedEntityModelCollection =
-      new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log)
+      new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log, spaceEnvironment)
     sensedEntityModelCollection.prepare()
 
     _queryProcessor = new StandardSensedEntityModelQueryProcessor(sensedEntityModelCollection)

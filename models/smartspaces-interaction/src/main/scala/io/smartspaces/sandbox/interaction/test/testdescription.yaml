@@ -69,7 +69,8 @@ sensors:
 sensorDetails:
   - externalId: /sensor/smartspaces/test/esp8266/foo
     name: ESP8266 Foo
-    description: The absolute Foo-iest of the ESP8266 boards.  
+    description: The absolute Foo-iest of the ESP8266 boards.
+    sensorUpdateTimeLimit: 120000  
     channels:
       - externalId: temperature
         name: Temperature

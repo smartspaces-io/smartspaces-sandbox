@@ -23,30 +23,33 @@ import scala.collection.mutable.Map
 
 /**
  * The model of a sensor.
- * 
+ *
  * @author Keith M. Hughes
  */
-class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescription, val allModels: CompleteSensedEntityModel) extends SensorEntityModel {
- 
+class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescription, val allModels: CompleteSensedEntityModel, val modelCreationTime: Long) extends SensorEntityModel {
+
   /**
    * The values being sensed keyed by the value name.
    */
   private val sensedValues: Map[String, SensedValue[Any]] = new HashMap
-  
+
   /**
    * The model that is being sensed by this sensor.
    */
   var sensedEntityModel: Option[SensedEntityModel] = None
- 
+
   /**
    * Is the sensor online?
+   *
+   * <p>
+   * Assume that it is offlinen until told otherwise.
    */
   var online: Boolean = false
- 
+
   /**
    * The time of the last update.
    */
-  private var lastUpdate: Long = 0
+  private var lastUpdate: Option[Long] = None
 
   override def getSensedValue(valueTypeId: String): Option[SensedValue[Any]] = {
     // TODO(keith): Needs some sort of concurrency block
@@ -59,12 +62,43 @@ class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescripti
 
   override def updateSensedValue[T <: Any](value: SensedValue[T], timestamp: Long): Unit = {
     // TODO(keith): Needs some sort of concurrency block
-    lastUpdate = timestamp
+    lastUpdate = Option(timestamp)
+
+    // The online status is definitely true if an update is coming in.
     online = true
-    sensedValues.put(value.valueType.externalId, value);
+
+    sensedValues.put(value.valueType.externalId, value)
   }
-  
-  override def getLastUpdate(): Long = {
+
+  override def getLastUpdate(): Option[Long] = {
     lastUpdate
+  }
+
+  /**
+   * Set he last update time.
+   *
+   * <p>
+   * This is for testing.
+   */
+  private[model] def setLastUpdateTime(time: Long): Unit = {
+    lastUpdate = Option(time)
+  }
+
+  override def checkIfOfflineTransition(currentTime: Long): Unit = {
+    // Only check if the model thinks it is online and there was an update time,
+    // otherwise we want the initial 
+    if (online && lastUpdate.isDefined) {
+      val sensorUpdateTimeLimit = sensorEntityDescription.sensorUpdateTimeLimit
+      if (sensorUpdateTimeLimit.isDefined) {
+        online = currentTime - lastUpdate.get <= sensorUpdateTimeLimit.get
+      } else {
+        // If this sensor requires a heartbeat, the heartbeat time can be checked.
+      }
+
+      // We knew online was true, so if now offline, then transitioned.
+      if (!online) {
+        allModels.broadcastSensorOfflineEvent(new SensorOfflineEvent(this, currentTime))
+      }
+    }
   }
 }

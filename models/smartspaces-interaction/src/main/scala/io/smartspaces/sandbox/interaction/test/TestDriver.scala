@@ -98,11 +98,6 @@ object TestDriver {
         System.out.println("Service resolved: " + event.getInfo())
       }
     })
-
-    // SensorProcessingActivity activity = new
-    // SensorProcessingActivity(spaceEnvironment)
-    // activity.run()
-
   }
 
   def createSpaceEnvironment(): StandaloneSmartSpacesEnvironment = {

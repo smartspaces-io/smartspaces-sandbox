@@ -40,25 +40,16 @@ class SimplePhysicalSpaceSensedEntityModelTest extends JUnitSuite {
 
   var model: SimplePhysicalSpaceSensedEntityModel = null
 
-  var occupancyObservable: EventPublisherSubject[PhysicalLocationOccupancyEvent] = null
-
   @Mock var entityDescription: PhysicalSpaceSensedEntityDescription = null
 
   @Mock var completeSensedEntityModel: CompleteSensedEntityModel = null
 
   @Mock var log: ExtendedLog = null
 
-  @Mock var occupancyObserver: Observer[PhysicalLocationOccupancyEvent] = null
-
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
 
-    occupancyObservable = EventPublisherSubject.create(log)
-
-    occupancyObservable.subscribe(occupancyObserver)
-
-    model = new SimplePhysicalSpaceSensedEntityModel(entityDescription, completeSensedEntityModel,
-      occupancyObservable)
+    model = new SimplePhysicalSpaceSensedEntityModel(entityDescription, completeSensedEntityModel)
   }
 
   /**
@@ -74,7 +65,7 @@ class SimplePhysicalSpaceSensedEntityModelTest extends JUnitSuite {
     val argumentCaptor =
       ArgumentCaptor.forClass(classOf[PhysicalLocationOccupancyEvent])
 
-    Mockito.verify(occupancyObserver, Mockito.times(1)).onNext(argumentCaptor.capture())
+    Mockito.verify(completeSensedEntityModel, Mockito.times(1)).broadcastOccupanyEvent(argumentCaptor.capture())
 
     val peopleEntered = Set(personModel)
     Assert.assertEquals(peopleEntered, argumentCaptor.getValue().entered)
@@ -82,6 +73,7 @@ class SimplePhysicalSpaceSensedEntityModelTest extends JUnitSuite {
   }
 
   /**
+   * st
    * Test that an event comes out of a single person entering a room and then
    * leaving twice.
    */
@@ -96,7 +88,7 @@ class SimplePhysicalSpaceSensedEntityModelTest extends JUnitSuite {
       ArgumentCaptor.forClass(classOf[PhysicalLocationOccupancyEvent])
 
     // First call will be person entering.
-    Mockito.verify(occupancyObserver, Mockito.times(2)).onNext(argumentCaptor.capture())
+    Mockito.verify(completeSensedEntityModel, Mockito.times(2)).broadcastOccupanyEvent(argumentCaptor.capture())
 
     val peopleEntered = Set(personModel)
 

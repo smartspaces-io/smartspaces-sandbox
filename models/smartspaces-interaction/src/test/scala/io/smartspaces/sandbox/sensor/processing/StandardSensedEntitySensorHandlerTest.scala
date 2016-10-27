@@ -31,6 +31,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.scalatest.junit.JUnitSuite
+import io.smartspaces.system.SmartSpacesEnvironment
 
 /**
  * Tests for the {@link StandardSensedEntitySensorHandler}.
@@ -55,7 +56,7 @@ class StandardSensedEntitySensorHandlerTest extends JUnitSuite {
     MockitoAnnotations.initMocks(this)
 
     handler = new StandardSensedEntitySensorHandler(allModels, unknownSensedEntityHandler, log)
-    handler.sensorProcessor_$eq(sensorProcessor)
+    handler.sensorProcessor = sensorProcessor
     handler.addSensedEntitySensorListener(sensedEntitySensorListener)
   }
 
@@ -81,7 +82,7 @@ class StandardSensedEntitySensorHandlerTest extends JUnitSuite {
   @Test def testKnownSensor(): Unit = {
     val sensorId = "foo"
     val sensor = new SimpleSensorEntityDescription("1", sensorId, "foo", "foo", null)
-    val sensorModel = new SimpleSensorEntityModel(sensor, allModels)
+    val sensorModel = new SimpleSensorEntityModel(sensor, allModels, 0)
 
     val sensedEntity =
       new SimplePhysicalSpaceSensedEntityDescription("2", "foo", "foo", "foo")

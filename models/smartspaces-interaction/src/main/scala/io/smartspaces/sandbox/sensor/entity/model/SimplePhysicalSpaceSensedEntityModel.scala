@@ -28,8 +28,7 @@ import scala.collection.mutable.Set
  * @author Keith M. Hughes
  */
 class SimplePhysicalSpaceSensedEntityModel(
-  entityDescription: PhysicalSpaceSensedEntityDescription, models: CompleteSensedEntityModel,
-  private val occupancyObservable: EventPublisherSubject[PhysicalLocationOccupancyEvent]) extends SimpleSensedEntityModel(entityDescription, models)
+  entityDescription: PhysicalSpaceSensedEntityDescription, models: CompleteSensedEntityModel) extends SimpleSensedEntityModel(entityDescription, models)
     with PhysicalSpaceSensedEntityModel {
 
   /**
@@ -47,7 +46,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
       val entered = scala.collection.immutable.HashSet(person)
 
-      occupancyObservable.onNext(new PhysicalLocationOccupancyEvent(this, entered, null, timestamp))
+      models.broadcastOccupanyEvent(new PhysicalLocationOccupancyEvent(this, entered, null, timestamp))
     }
 
     this
@@ -62,7 +61,7 @@ class SimplePhysicalSpaceSensedEntityModel(
 
       val exited = scala.collection.immutable.HashSet(person)
 
-      occupancyObservable.onNext(new PhysicalLocationOccupancyEvent(this, null, exited, timestamp))
+      models.broadcastOccupanyEvent(new PhysicalLocationOccupancyEvent(this, null, exited, timestamp))
     }
 
     this
