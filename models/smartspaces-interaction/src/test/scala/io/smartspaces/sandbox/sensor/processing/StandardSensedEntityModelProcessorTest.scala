@@ -14,7 +14,7 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.processing.sensor
+package io.smartspaces.sandbox.sensor.processing
 
 import io.smartspaces.logging.ExtendedLog
 import io.smartspaces.sandbox.sensor.entity.SimpleMeasurementTypeDescription
@@ -27,11 +27,6 @@ import io.smartspaces.sandbox.sensor.entity.model.SensedEntityModel
 import io.smartspaces.sandbox.sensor.entity.model.SensorEntityModel
 import io.smartspaces.sandbox.sensor.entity.model.SimpleSensedEntityModel
 import io.smartspaces.sandbox.sensor.entity.model.SimpleSensorEntityModel
-import io.smartspaces.sandbox.sensor.processing.SensedEntitySensorHandler
-import io.smartspaces.sandbox.sensor.processing.SensorMessages
-import io.smartspaces.sandbox.sensor.processing.SensorValueProcessor
-import io.smartspaces.sandbox.sensor.processing.SensorValueProcessorContext
-import io.smartspaces.sandbox.sensor.processing.StandardSensedEntityModelProcessor
 import io.smartspaces.util.data.dynamic.DynamicObject
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder
 
