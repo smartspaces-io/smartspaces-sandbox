@@ -22,7 +22,7 @@ import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import io.smartspaces.sandbox.interaction.behavior.speech.SpeechSpeaker
 import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
-import io.smartspaces.sandbox.sensor.entity.model.PhysicalLocationOccupancyEvent
+import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
 
 /**
  * A reactive observer for speech events.

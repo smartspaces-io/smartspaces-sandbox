@@ -32,7 +32,7 @@ import scala.util.control.Breaks._
 
 /**
  * A YAML-based sensor description importer.
- * 
+ *
  * @author Keith M. Hughes
  */
 class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends SensorDescriptionImporter {
@@ -78,7 +78,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
    * entries.
    */
   val SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS =
-      "measurementUnits"
+    "measurementUnits"
 
   /**
    * The section header for the sensor details entries.
@@ -118,7 +118,17 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   /**
    * The section field for the measurement unit of a sensor channel.
    */
-  val SECTION_FIELD_SENSORS_SENSOR_UPDATE_TiME_LIMIT = "sensorUpdateTimeLimit"
+  val SECTION_FIELD_SENSORS_SENSOR_UPDATE_TIME_LIMIT = "sensorUpdateTimeLimit"
+
+  /**
+   * The section field for whether a sensor is to be considered active or not.
+   */
+  val SECTION_FIELD_SENSORS_ACTIVE = "active"
+
+  /**
+   * The section field default value for whether a sensor is to be considered active or not.
+   */
+  val SECTION_FIELD_DEFAULT_VALUE_SENSORS_ACTIVE = true
 
   /**
    * The section header for the physical location section of the file.hannels
@@ -172,17 +182,17 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * The ID to be given to entities.
-   * 
+   *
    * TODO(keith): This should be created in the registry.
    */
   private var id: Integer = 0
-  
+
   private val MAPPER: YamlMapper = StandardYamlMapper.INSTANCE
 
   override def importDescriptions(sensorRegistry: SensorRegistry): SensorDescriptionImporter = {
-   val  configuration: Map[String, Object] = MAPPER.parseObject(descriptionStream)
+    val configuration: Map[String, Object] = MAPPER.parseObject(descriptionStream)
 
-   val  data : DynamicObject = new StandardDynamicObjectNavigator(configuration)
+    val data: DynamicObject = new StandardDynamicObjectNavigator(configuration)
 
     getMeasurementTypes(sensorRegistry, data)
     getSensorDetails(sensorRegistry, data)
@@ -200,7 +210,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get all the measurement type data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -209,30 +219,30 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getMeasurementTypes(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_MEASUREMENT_TYPES)
 
-    data.getArrayEntries().foreach( (measurementTypeEntry :ArrayDynamicObjectEntry  ) => {
+    data.getArrayEntries().foreach((measurementTypeEntry: ArrayDynamicObjectEntry) => {
       val measurementTypeData: DynamicObject = measurementTypeEntry.down()
 
       val valueType =
-          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_VALUE_TYPE)
-     val measurementType = new SimpleMeasurementTypeDescription(getNextId(),
-          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), valueType,
-          null)
+        measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_VALUE_TYPE)
+      val measurementType = new SimpleMeasurementTypeDescription(getNextId(),
+        measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+        measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+        measurementTypeData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), valueType,
+        null)
 
       if (!"id".equals(valueType)) {
         val defaultUnitId =
-            measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT)
+          measurementTypeData.getRequiredString(SECTION_FIELD_MEASUREMENT_TYPES_DEFAULT_UNIT)
 
         measurementTypeData.down(SECTION_HEADER_MEASUREMENT_TYPES_MEASUREMENT_UNITS)
-        data.getArrayEntries().foreach( (measurementUnitEntry : ArrayDynamicObjectEntry ) => {
+        data.getArrayEntries().foreach((measurementUnitEntry: ArrayDynamicObjectEntry) => {
           val measurementUnitData = measurementUnitEntry.down()
 
           val measurementUnit =
-              new SimpleMeasurementUnitDescription(measurementType, getNextId(),
-                  measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-                  measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-                  measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION))
+            new SimpleMeasurementUnitDescription(measurementType, getNextId(),
+              measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+              measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+              measurementUnitData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION))
 
           measurementType.addMeasurementUnit(measurementUnit)
 
@@ -255,7 +265,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get all the sensor details data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -264,29 +274,35 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getSensorDetails(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_SENSOR_DETAILS)
 
-    data.getArrayEntries().foreach( ( sensorDetailEntry :ArrayDynamicObjectEntry ) => {
+    data.getArrayEntries().foreach((sensorDetailEntry: ArrayDynamicObjectEntry) => {
       val sensorDetailData = sensorDetailEntry.down()
 
+      var sensorUpdateTimeLimit: Option[Long] = None
+      val sensorUpdateTimeLimitValue: java.lang.Long = sensorDetailData.getLong(SECTION_FIELD_SENSORS_SENSOR_UPDATE_TIME_LIMIT)
+      if (sensorUpdateTimeLimitValue != null) {
+        sensorUpdateTimeLimit = Option(sensorUpdateTimeLimitValue)
+      }
       val sensorDetail = new SimpleSensorDetail(getNextId(),
-          sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-          sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION))
+        sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+        sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+        sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+        sensorUpdateTimeLimit)
 
       sensorDetailData.down(SECTION_FIELD_SENSOR_DETAILS_CHANNELS)
-      data.getArrayEntries().foreach( ( channelDetailEntry : ArrayDynamicObjectEntry) => breakable {
+      data.getArrayEntries().foreach((channelDetailEntry: ArrayDynamicObjectEntry) => breakable {
         val channelDetailData = channelDetailEntry.down()
 
         val measurementTypeId =
-            channelDetailData.getRequiredString(SECTION_FIELD_SENSOR_DETAILS_CHANNELS_TYPE)
+          channelDetailData.getRequiredString(SECTION_FIELD_SENSOR_DETAILS_CHANNELS_TYPE)
         val measurementType = sensorRegistry.getMeasurementTypeByExternalId(measurementTypeId)
         if (measurementType.isEmpty) {
           // TODO(keith): Some sort of error message
           break
         }
 
-       var  measurementUnit: MeasurementUnitDescription = null
+        var measurementUnit: MeasurementUnitDescription = null
         val measurementUnitId =
-            channelDetailData.getString(SECTION_FIELD_SENSOR_DETAILS_CHANNELS_UNIT)
+          channelDetailData.getString(SECTION_FIELD_SENSOR_DETAILS_CHANNELS_UNIT)
         if (measurementUnitId != null) {
           var measurementUnitOption = sensorRegistry.getMeasurementUnitByExternalId(measurementUnitId)
           if (measurementUnitOption.isEmpty) {
@@ -301,11 +317,11 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
           measurementUnit = measurementType.get.defaultUnit
         }
 
-       val channelDetail = new SimpleSensorChannelDetail(sensorDetail,
-            channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-            channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-            channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
-            measurementType.get, measurementUnit)
+        val channelDetail = new SimpleSensorChannelDetail(sensorDetail,
+          channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+          channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+          channelDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+          measurementType.get, measurementUnit)
 
         sensorDetail.addSensorChannelDetail(channelDetail)
 
@@ -319,7 +335,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get all the people data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -328,20 +344,20 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getPeople(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_PEOPLE)
 
-    data.getArrayEntries().foreach(( entry : ArrayDynamicObjectEntry)  => {
+    data.getArrayEntries().foreach((entry: ArrayDynamicObjectEntry) => {
       val itemData = entry.down()
 
       sensorRegistry.registerSensedEntity(new SimplePersonSensedEntityDescription(getNextId(),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)))
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)))
     })
     data.up()
   }
 
   /**
    * Get all the sensor data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -350,10 +366,10 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getSensors(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_SENSORS)
 
-    data.getArrayEntries().foreach( ( entry :ArrayDynamicObjectEntry ) => breakable {
+    data.getArrayEntries().foreach((entry: ArrayDynamicObjectEntry) => breakable {
       val itemData = entry.down()
 
-      var sensorDetail:Option[SensorDetail] = None
+      var sensorDetail: Option[SensorDetail] = None
       var sensorDetailId = itemData.getString(SECTION_FIELD_SENSORS_SENSOR_DETAIL)
       if (sensorDetailId != null) {
         sensorDetail = sensorRegistry.getSensorDetailByExternalId(sensorDetailId)
@@ -364,17 +380,25 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
       }
 
       var sensorUpdateTimeLimit: Option[Long] = None
-      val updateTimeLimitString = itemData.getString(SECTION_FIELD_SENSORS_SENSOR_UPDATE_TiME_LIMIT)
-      if (updateTimeLimitString != null) {
-        sensorUpdateTimeLimit = Option(java.lang.Long.valueOf(updateTimeLimitString))
+      val updateTimeLimitValue = itemData.getLong(SECTION_FIELD_SENSORS_SENSOR_UPDATE_TIME_LIMIT)
+      if (updateTimeLimitValue != null) {
+        sensorUpdateTimeLimit = Option(updateTimeLimitValue)
+      } else {
+        if (sensorDetail.isDefined) {
+          sensorUpdateTimeLimit = sensorDetail.get.sensorUpdateTimeLimit
+        } else {
+          sensorUpdateTimeLimit = None
+        }
       }
 
       val entity = new SimpleSensorEntityDescription(getNextId(),
         itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
         itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
         itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), sensorDetail)
-      
+
       entity.sensorUpdateTimeLimit = sensorUpdateTimeLimit
+
+      entity.active = itemData.getBoolean(SECTION_FIELD_SENSORS_ACTIVE, SECTION_FIELD_DEFAULT_VALUE_SENSORS_ACTIVE)
 
       sensorRegistry.registerSensor(entity)
     })
@@ -383,7 +407,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get all the marker data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -392,21 +416,21 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getMarkers(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_MARKERS)
 
-    data.getArrayEntries().foreach( ( entry : ArrayDynamicObjectEntry) => {
-     val itemData = entry.down()
+    data.getArrayEntries().foreach((entry: ArrayDynamicObjectEntry) => {
+      val itemData = entry.down()
 
       sensorRegistry.registerMarker(new SimpleMarkerEntityDescription(getNextId(),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ID)))
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ID)))
     })
     data.up()
   }
 
   /**
    * Get all the physical location data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -415,13 +439,13 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getPhysicalLocations(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_PHYSICAL_LOCATIONS)
 
-    data.getArrayEntries().foreach( ( entry : ArrayDynamicObjectEntry) => {
+    data.getArrayEntries().foreach((entry: ArrayDynamicObjectEntry) => {
       val itemData = entry.down()
 
       sensorRegistry.registerSensedEntity(new SimplePhysicalSpaceSensedEntityDescription(getNextId(),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)))
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION)))
     })
 
     data.up()
@@ -429,7 +453,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get all the sensor/sensed entity association data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -438,19 +462,19 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getSensorSensedEntityAssociations(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_SENSOR_ASSOCIATIONS)
 
-    data.getArrayEntries().foreach( ( entry :ArrayDynamicObjectEntry ) => {
-     val itemData = entry.down()
+    data.getArrayEntries().foreach((entry: ArrayDynamicObjectEntry) => {
+      val itemData = entry.down()
 
       sensorRegistry.associateSensorWithSensedEntity(
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSOR),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSED))
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSOR),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_SENSOR_ASSOCIATION_SENSED))
     })
     data.up()
   }
 
   /**
    * Get all the marker/marked entity association data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -459,12 +483,12 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getMarkerAssociations(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_MARkER_ASSOCIATIONS)
 
-    data.getArrayEntries().foreach( ( entry :ArrayDynamicObjectEntry ) => {
+    data.getArrayEntries().foreach((entry: ArrayDynamicObjectEntry) => {
       val itemData = entry.down()
 
       sensorRegistry.associateMarkerWithMarkedEntity(
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKER),
-          itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKED))
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKER),
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_MARKER_ASSOCIATION_MARKED))
     })
 
     data.up()
@@ -472,7 +496,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get all the entity configuration data.
-   * 
+   *
    * @param sensorRegistry
    *          the sensor registry to store the data in
    * @param data
@@ -481,7 +505,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getEntityConfigurations(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_CONFIGURATIONS)
 
-    data.getObjectEntries().foreach( ( entry :ObjectDynamicObjectEntry ) => {
+    data.getObjectEntries().foreach((entry: ObjectDynamicObjectEntry) => {
       val entityId = entry.getProperty()
 
       val configurationData = entry.getValue().down(entityId)
@@ -495,10 +519,10 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
 
   /**
    * Get the next "database" ID.
-   * 
+   *
    * @return the next ID.
    */
-  private def getNextId():String = {
+  private def getNextId(): String = {
     id = id + 1
     return Integer.toString(id)
   }

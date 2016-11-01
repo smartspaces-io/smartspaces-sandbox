@@ -16,18 +16,19 @@
 
 package io.smartspaces.sandbox.sensor.entity.model
 
-import io.smartspaces.sandbox.sensor.entity.SensorDetail
-import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
-
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import org.scalatest.junit.JUnitSuite
-import io.smartspaces.sandbox.sensor.entity.MeasurementTypeDescription
 import org.mockito.MockitoAnnotations.Mock
+import org.scalatest.junit.JUnitSuite
+
+import io.smartspaces.sandbox.sensor.entity.MeasurementTypeDescription
+import io.smartspaces.sandbox.sensor.entity.SensorDetail
+import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
+import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
 
 /**
  * Tests for the SimpleSensorEntityModel.

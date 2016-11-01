@@ -16,10 +16,13 @@
 
 package io.smartspaces.sandbox.sensor.entity.model
 
-import io.smartspaces.sandbox.sensor.entity.SensorRegistry
-import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
-import io.smartspaces.sandbox.sensor.entity.SimpleSensorSensedEntityAssociation
+import io.smartspaces.logging.ExtendedLog
 import io.smartspaces.sandbox.sensor.entity.SensedEntityDescription
+import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
+import io.smartspaces.sandbox.sensor.entity.SensorRegistry
+import io.smartspaces.sandbox.sensor.entity.SimpleSensorSensedEntityAssociation
+import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
+import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
 
 /**
  * A collection of sensed entity models.
@@ -27,6 +30,8 @@ import io.smartspaces.sandbox.sensor.entity.SensedEntityDescription
  * @author Keith M. Hughes
  */
 trait CompleteSensedEntityModel {
+  
+  val log: ExtendedLog
 
   /**
    * Prepare the collection.

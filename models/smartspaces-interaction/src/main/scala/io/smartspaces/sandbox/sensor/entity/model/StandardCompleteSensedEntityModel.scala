@@ -32,6 +32,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
 import io.smartspaces.system.SmartSpacesEnvironment
+import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
+import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
 
 /**
  * A collection of sensed entity models.
@@ -39,7 +41,7 @@ import io.smartspaces.system.SmartSpacesEnvironment
  * @author Keith M. Hughes
  */
 class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
-    private val eventObservableService: EventObservableService, private val log: ExtendedLog, private val spaceEnvironment: SmartSpacesEnvironment) extends CompleteSensedEntityModel {
+    private val eventObservableService: EventObservableService, override val log: ExtendedLog, private val spaceEnvironment: SmartSpacesEnvironment) extends CompleteSensedEntityModel {
 
   /**
    * Map of entity IDs to their sensor entity models.
@@ -103,7 +105,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
 
   override def prepare(): Unit = {
     physicalLocationOccupancyEventSubject =
-      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_NAME,
+      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_TYPE,
         physicalLocationOccupancyEventCreator)
 
     sensorOfflineEventSubject =
@@ -136,7 +138,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
 
   /**
    * Register a sensor model.
-   * 
+   *
    * <p>
    * This is exposed for testing.
    */
@@ -212,11 +214,12 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
   }
 
   override def broadcastSensorOfflineEvent(event: SensorOfflineEvent): Unit = {
+    log.warn("Broadcasting sensor offline event " + event.sensorModel.sensorEntityDescription)
     sensorOfflineEventSubject.onNext(event)
   }
 
   override def checkModels(): Unit = {
-    doVoidWriteTransaction { () => 
+    doVoidWriteTransaction { () =>
       performModelCheck()
     }
   }
@@ -226,6 +229,8 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
    */
   private[model] def performModelCheck(): Unit = {
     val currentTime = spaceEnvironment.getTimeProvider.getCurrentTime
+
+    log.formatInfo("Performing sensor model check at " + currentTime)
 
     getAllSensorEntityModels().foreach {
       _.checkIfOfflineTransition(currentTime)

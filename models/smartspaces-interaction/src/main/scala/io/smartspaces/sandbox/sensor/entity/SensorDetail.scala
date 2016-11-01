@@ -32,7 +32,12 @@ trait SensorDetail extends Displayable {
    * The external ID of the sensor detail.
    */
   val externalId: String
-  
+    
+  /**
+   * The time limit on when a sensor update should happen, in milliseconds
+   */
+  val sensorUpdateTimeLimit: Option[Long]
+
   /**
    * Add in a new channel detail to the sensor detail.
    *

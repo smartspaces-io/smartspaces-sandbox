@@ -16,10 +16,6 @@
 
 package io.smartspaces.sandbox.sensor.entity.model
 
-import io.smartspaces.event.observable.EventPublisherSubject
-import io.smartspaces.logging.ExtendedLog
-import io.smartspaces.sandbox.sensor.entity.PhysicalSpaceSensedEntityDescription
-
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +25,9 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.scalatest.junit.JUnitSuite
 
-import io.reactivex.Observer
+import io.smartspaces.logging.ExtendedLog
+import io.smartspaces.sandbox.sensor.entity.PhysicalSpaceSensedEntityDescription
+import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
 
 /**
  * Tests for the {@link SimplePhysicalSpaceSensedEntityModel}

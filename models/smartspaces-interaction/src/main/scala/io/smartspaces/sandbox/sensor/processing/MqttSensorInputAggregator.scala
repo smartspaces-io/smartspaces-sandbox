@@ -51,18 +51,16 @@ class MqttSensorInputAggregator(private val mqttBrokerDescription: MqttBrokerDes
     val service: MqttCommunicationEndpointService = spaceEnvironment.getServiceRegistry()
         .getRequiredService(MqttCommunicationEndpointService.SERVICE_NAME)
     mqttEndpoint = service.newMqttCommunicationEndpoint(mqttBrokerDescription, mqttClientId, log)
-    mqttEndpoint.startup()
 
-    SmartSpacesUtilities.delay(2000)
-
-    mqttEndpoint.addSubscriberListener(new MqttSubscriberListener() {
+    mqttEndpoint.subscribe(mqttSensorTopicName, new MqttSubscriberListener() {
       override def handleMessage( endpoint: MqttCommunicationEndpoint,  topicName: String,
            payload: Array[Byte]): Unit = {
         handleSensorMessage(topicName, payload)
       }
-    })
-    mqttEndpoint.subscribe(mqttSensorTopicName)
-  }
+    }, 0, true)
+    
+    mqttEndpoint.startup()
+   }
 
   override def shutdown(): Unit = {
     if (mqttEndpoint != null) {

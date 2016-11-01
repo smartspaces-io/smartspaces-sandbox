@@ -16,11 +16,11 @@
 
 package io.smartspaces.sandbox.sensor.entity.model
 
-import io.smartspaces.event.observable.EventPublisherSubject
-import io.smartspaces.sandbox.sensor.entity.PhysicalSpaceSensedEntityDescription
-
 import scala.collection.mutable.HashSet
 import scala.collection.mutable.Set
+
+import io.smartspaces.sandbox.sensor.entity.PhysicalSpaceSensedEntityDescription
+import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
 
 /**
  * A model of a physical space.

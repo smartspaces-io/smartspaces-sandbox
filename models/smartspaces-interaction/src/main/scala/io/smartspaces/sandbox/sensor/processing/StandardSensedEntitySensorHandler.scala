@@ -101,10 +101,14 @@ class StandardSensedEntitySensorHandler(private val completeSensedEntityModel: C
 
     val sensor = sensors.get(sensorId)
     if (sensor.isEmpty) {
-       log.formatWarn("Got data from unregistered sensor %s, the data is %s", sensorId,
+      log.formatWarn("Got data from unregistered sensor %s, the data is %s", sensorId,
         data.asMap())
       unknownSensedEntityHandler.handleUnknownSensor(sensorId)
 
+      return
+    }
+
+    if (!sensor.get.sensorEntityDescription.active) {
       return
     }
 

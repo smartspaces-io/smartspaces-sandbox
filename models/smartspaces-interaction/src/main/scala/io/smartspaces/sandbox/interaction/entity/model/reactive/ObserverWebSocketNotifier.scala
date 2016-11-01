@@ -16,13 +16,12 @@
 
 package io.smartspaces.sandbox.interaction.entity.model.reactive
 
-import io.smartspaces.activity.behavior.web.WebServerActivityBehavior
-import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
-import io.smartspaces.sandbox.sensor.entity.model.PhysicalLocationOccupancyEvent
-import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder
-
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import io.smartspaces.activity.behavior.web.WebServerActivityBehavior
+import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
+import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
+import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder
 
 /**
  * An RX Subscriber for physical location occupancy events that communicates over a web socket.

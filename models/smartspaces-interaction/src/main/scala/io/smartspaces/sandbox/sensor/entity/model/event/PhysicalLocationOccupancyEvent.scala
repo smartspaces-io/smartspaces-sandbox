@@ -14,25 +14,29 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.sensor.entity.model
+package io.smartspaces.sandbox.sensor.entity.model.event
+
+import io.smartspaces.sandbox.sensor.entity.model.PhysicalSpaceSensedEntityModel
+import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
 
 /**
- * An event indicating a sensor going offline.
+ * An event that signals occupancy changes in a physical location.
  *
  * @author Keith M. Hughes
  */
-object SensorOfflineEvent {
+object PhysicalLocationOccupancyEvent {
 
   /**
-   * The name of the event.
+   * The type of the event.
    */
-  val EVENT_TYPE = "sensor.offline"
+  val EVENT_TYPE = "location.occupancy"
 }
 
 /**
- * An event indicating a sensor going offline.
+ * An event that signals occupancy changes in a physical location.
  *
  * @author Keith M. Hughes
  */
-class SensorOfflineEvent(val sensorModel: SensorEntityModel, val timestamp: Long) {
+class PhysicalLocationOccupancyEvent(val physicalSpace: PhysicalSpaceSensedEntityModel,
+    val entered: Set[PersonSensedEntityModel], val exited: Set[PersonSensedEntityModel], val timestamp: Long) {
 }

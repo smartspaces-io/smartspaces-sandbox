@@ -20,20 +20,20 @@ import scala.collection.mutable.ArrayBuffer
 
 /**
  * Details about a sensor.
- * 
+ *
  * @author Keith M. Hughes
  */
-case class SimpleSensorDetail(val id: String, val externalId: String, val displayName: String, val displayDescription: String) extends SensorDetail {
-  
+case class SimpleSensorDetail(val id: String, val externalId: String, val displayName: String, val displayDescription: String, val sensorUpdateTimeLimit: Option[Long]) extends SensorDetail {
+
   /**
    * The measurement units for this type.
    */
   private val channelDetails: ArrayBuffer[SensorChannelDetail] = new ArrayBuffer
-  
+
   override def addSensorChannelDetail(sensorChannelDetail: SensorChannelDetail): Unit = {
     channelDetails += sensorChannelDetail
   }
-  
+
   override def getAllSensorChannelDetails(): List[SensorChannelDetail] = {
     channelDetails.toList
   }

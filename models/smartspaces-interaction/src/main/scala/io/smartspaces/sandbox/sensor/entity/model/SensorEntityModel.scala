@@ -17,6 +17,7 @@
 package io.smartspaces.sandbox.sensor.entity.model
 
 import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
+import org.apache.commons.logging.Log
 
 /**
  * The model of a sensor.

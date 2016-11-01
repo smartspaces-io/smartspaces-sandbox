@@ -35,4 +35,9 @@ trait SensorEntityDescription extends EntityDescription {
    * The time limit on when a sensor update should happen, in milliseconds
    */
   var sensorUpdateTimeLimit: Option[Long]
+  
+  /**
+   * {@code true} if the sensor is active.
+   */
+  var active: Boolean
 }

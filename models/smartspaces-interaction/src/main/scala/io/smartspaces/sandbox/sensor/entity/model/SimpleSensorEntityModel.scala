@@ -20,6 +20,7 @@ import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
 
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
+import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
 
 /**
  * The model of a sensor.

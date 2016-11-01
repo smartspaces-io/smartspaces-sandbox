@@ -50,6 +50,7 @@ import io.smartspaces.util.data.dynamic.DynamicObject
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 import java.io.File
+import io.smartspaces.time.TimeFrequency
 
 /**
  * The sensor integration layer.
@@ -59,10 +60,19 @@ import java.io.File
 class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironment, private val configuration: Configuration, private val managedTasks: ManagedTasks,
     private val managedResources: ManagedResources, private val log: ExtendedLog) extends SensorIntegrator with IdempotentManagedResource {
 
+  /**
+   * The sensor registry for the integrator.
+   */
   private var sensorRegistry: SensorRegistry = null
 
-  private var sensedEntityModelCollection: CompleteSensedEntityModel = null
+  /**
+   * The complete set of models of sensors and sensed entities.
+   */
+  private var completeSensedEntityModel: CompleteSensedEntityModel = null
 
+  /**
+   * The processor for queries against the models.
+   */
   private var _queryProcessor: SensedEntityModelQueryProcessor = null
 
   /**
@@ -86,11 +96,11 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
 
     descriptionImporter.importDescriptions(sensorRegistry)
 
-    sensedEntityModelCollection =
+    completeSensedEntityModel =
       new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log, spaceEnvironment)
-    sensedEntityModelCollection.prepare()
+    completeSensedEntityModel.prepare()
 
-    _queryProcessor = new StandardSensedEntityModelQueryProcessor(sensedEntityModelCollection)
+    _queryProcessor = new StandardSensedEntityModelQueryProcessor(completeSensedEntityModel)
 
     val sensorProcessor: SensorProcessor = new StandardSensorProcessor(log)
 
@@ -121,7 +131,7 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     val unknownSensedEntityHandler = new StandardUnknownSensedEntityHandler();
 
     val sensorHandler =
-      new StandardSensedEntitySensorHandler(sensedEntityModelCollection, unknownSensedEntityHandler, log)
+      new StandardSensedEntitySensorHandler(completeSensedEntityModel, unknownSensedEntityHandler, log)
     sensorRegistry.getSensorSensedEntityAssociations.foreach((association) =>
       sensorHandler.associateSensorWithEntity(association.sensor, association.sensedEntity))
 
@@ -137,7 +147,7 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     });
 
     val modelProcessor =
-      new StandardSensedEntityModelProcessor(sensedEntityModelCollection, log)
+      new StandardSensedEntityModelProcessor(completeSensedEntityModel, log)
     modelProcessor.addSensorValueProcessor(new StandardBleProximitySensorValueProcessor())
     modelProcessor.addSensorValueProcessor(new SimpleMarkerSensorValueProcessor())
     sensorRegistry.getAllMeasurementTypes().filter(_.valueType == "double").foreach {
@@ -149,7 +159,13 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     sensorProcessor.addSensorHandler(sensorHandler)
 
     managedResources.addResource(sensorProcessor)
-
+    
+    val sensorCheckupTask = managedTasks.scheduleAtFixedRate(new Runnable() {
+      override def run(): Unit = {
+        completeSensedEntityModel.checkModels()
+      }
+    }, TimeFrequency.timesPerHour(60.0), false)
+    
     //    if (liveData) {
     //      if (sampleRecord) {
     //        // Recording
