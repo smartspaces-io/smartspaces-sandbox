@@ -21,7 +21,6 @@ import io.smartspaces.service.comm.pubsub.mqtt.MqttCommunicationEndpoint
 import io.smartspaces.service.comm.pubsub.mqtt.MqttCommunicationEndpointService
 import io.smartspaces.service.comm.pubsub.mqtt.MqttSubscriberListener
 import io.smartspaces.system.SmartSpacesEnvironment
-import io.smartspaces.util.SmartSpacesUtilities
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 /**

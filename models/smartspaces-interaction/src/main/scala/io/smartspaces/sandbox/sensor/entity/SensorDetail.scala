@@ -37,6 +37,11 @@ trait SensorDetail extends Displayable {
    * The time limit on when a sensor update should happen, in milliseconds
    */
   val sensorUpdateTimeLimit: Option[Long]
+    
+  /**
+   * The time limit on when a sensor heartbeat update should happen, in milliseconds
+   */
+  val sensorHeartbeatUpdateTimeLimit: Option[Long]
 
   /**
    * Add in a new channel detail to the sensor detail.

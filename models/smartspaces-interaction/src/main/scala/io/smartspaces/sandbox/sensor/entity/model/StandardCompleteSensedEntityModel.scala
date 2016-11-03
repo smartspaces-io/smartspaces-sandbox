@@ -232,7 +232,7 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
 
     log.formatInfo("Performing sensor model check at " + currentTime)
 
-    getAllSensorEntityModels().foreach {
+    getAllSensorEntityModels().filter(_.sensorEntityDescription.active).foreach {
       _.checkIfOfflineTransition(currentTime)
     }
   }

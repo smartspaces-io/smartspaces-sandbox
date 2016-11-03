@@ -113,10 +113,10 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     val mqttHost = configuration.getRequiredPropertyString("smartspaces.comm.mqtt.broker.host")
     val mqttPort = configuration.getRequiredPropertyInteger("smartspaces.comm.mqtt.broker.port")
     if (liveData) {
-      val mqttUrl = "tcp://" + mqttHost + ":" + mqttPort
-      log.formatInfo("MQTT Broker URL %s", mqttUrl)
+      val mqttBrokerDescription = new MqttBrokerDescription(mqttHost, mqttPort, false)
+      log.formatInfo("MQTT Broker URL %s", mqttBrokerDescription.brokerAddress)
       sensorProcessor
-        .addSensorInput(new MqttSensorInputAggregator(new MqttBrokerDescription(mqttUrl),
+        .addSensorInput(new MqttSensorInputAggregator(mqttBrokerDescription,
           "/home/sensor/agregator2", "/home/sensor", spaceEnvironment, log))
 
       if (sampleRecord) {

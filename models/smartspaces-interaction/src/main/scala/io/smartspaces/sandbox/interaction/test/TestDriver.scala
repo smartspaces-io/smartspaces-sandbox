@@ -49,7 +49,8 @@ object TestDriver {
 
   def justYaml(): Unit = {
     val sensorRegistry = new InMemorySensorRegistry()
-    val descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"))
+    val spaceEnvironment = createSpaceEnvironment()
+    val descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"), spaceEnvironment.getExtendedLog)
 
     descriptionImporter.importDescriptions(sensorRegistry)
   }

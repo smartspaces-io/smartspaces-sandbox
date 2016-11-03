@@ -29,32 +29,32 @@ sensors:
   - externalId: /home/livingroom/proximity
     name: Proximity Sensor 1
     description: Raspberry Pi BLE proximity sensor
-    active: false
+    active: true
   - externalId: /sensornode/ESP_8C8E1B
     name: NFC Reader Sensor 1
     description: ESP8266-based NFC Reader
     sensorDetail: /sensor/smartspaces/test/nfc/esp8266  
-    active: false
+    active: true
   - externalId: /sensornode/ESP_8C8E1C
     name: NFC Reader Sensor 2
     description: ESP8266-based NFC Reader
     sensorDetail: /sensor/smartspaces/test/nfc/esp8266  
-    active: false
+    active: true
   - externalId: /sensornode/nodemcu9107700
     name: Sensor 9107700
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-    active: false
+    active: true
   - externalId: /sensornode/nodemcu9107716
     name: Sensor 9107716
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-    active: false
+    active: true
   - externalId: /sensornode/nodemcu9107709
     name: Sensor 9107709
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-    active: false
+    active: true
   - externalId: /sensornode/nodemcu9054868
     name: Sensor 9054868
     description: ESP8266-based temperature/humidity sensor
@@ -64,17 +64,17 @@ sensors:
     name: Sensor 9054793
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-    active: false
+    active: true
   - externalId: /sensornode/nodemcu9107713
     name: Sensor 9107713
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-    active: false
+    active: true
   - externalId: /sensornode/nodemcu9054677
     name: Sensor 9054677
     description: ESP8266-based temperature/humidity sensor
     sensorDetail: /sensor/smartspaces/test/esp8266/foo  
-    active: false
+    active: true
 
 sensorDetails:
   - externalId: /sensor/smartspaces/test/esp8266/foo
@@ -94,6 +94,7 @@ sensorDetails:
   - externalId: /sensor/smartspaces/test/nfc/esp8266
     name: ESP8266 NFC Reader
     description: The wireless NFC reader ESP8266 boards.  
+    sensorHeartbeatUpdateTimeLimit: 120000  
     channels:
       - externalId: marker
         name: Marker

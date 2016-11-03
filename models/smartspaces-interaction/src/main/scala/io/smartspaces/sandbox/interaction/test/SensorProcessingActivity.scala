@@ -63,7 +63,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
 
     sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, getConfiguration, getManagedTasks,
       getManagedResources, getSpaceEnvironment.getExtendedLog)
-    sensorIntegrator.descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"))
+    sensorIntegrator.descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"), log)
     sensorIntegrator.startup()
     addManagedResource(sensorIntegrator)
 

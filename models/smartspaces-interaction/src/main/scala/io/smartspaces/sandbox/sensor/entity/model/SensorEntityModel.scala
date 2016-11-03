@@ -84,12 +84,27 @@ trait SensorEntityModel {
   def updateSensedValue[T <: Any](value: SensedValue[T], updateTime: Long): Unit
 
   /**
+   * Update the heartbeat for the sensor.
+   *
+   * @param updateTime
+   * 		      the time of this update
+   */
+  def updateHeartbeat(updateTime: Long): Unit
+
+  /**
    * Get the last update for the model.
    *
    * @return the last time
    */
   def getLastUpdate(): Option[Long]
   
+   /**
+   * Get the last heartbeat update for the model.
+   *
+   * @return the last time
+   */
+  def getLastHeartbeatUpdate(): Option[Long]
+
   /**
    * Check to see if the sensor is still considered online.
    * 

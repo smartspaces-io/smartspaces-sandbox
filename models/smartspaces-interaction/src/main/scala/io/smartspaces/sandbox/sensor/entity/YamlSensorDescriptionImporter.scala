@@ -16,26 +16,28 @@
 
 package io.smartspaces.sandbox.sensor.entity
 
-import io.smartspaces.util.data.dynamic.DynamicObject
-import io.smartspaces.util.data.json.StandardYamlMapper
-import io.smartspaces.util.data.json.YamlMapper
-import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator
-import io.smartspaces.util.data.dynamic.DynamicObject.ArrayDynamicObjectEntry
-import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry
-
 import java.io.InputStream
 import java.util.Map
 
-import scala.collection.immutable._
-import scala.collection.JavaConversions._
-import scala.util.control.Breaks._
+import scala.collection.JavaConversions.iterableAsScalaIterable
+import scala.collection.JavaConversions.mapAsScalaMap
+import scala.util.control.Breaks.break
+import scala.util.control.Breaks.breakable
+
+import io.smartspaces.logging.ExtendedLog
+import io.smartspaces.util.data.dynamic.DynamicObject
+import io.smartspaces.util.data.dynamic.DynamicObject.ArrayDynamicObjectEntry
+import io.smartspaces.util.data.dynamic.DynamicObject.ObjectDynamicObjectEntry
+import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator
+import io.smartspaces.util.data.json.StandardYamlMapper
+import io.smartspaces.util.data.json.YamlMapper
 
 /**
  * A YAML-based sensor description importer.
  *
  * @author Keith M. Hughes
  */
-class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends SensorDescriptionImporter {
+class YamlSensorDescriptionImporter(descriptionStream: InputStream, log: ExtendedLog) extends SensorDescriptionImporter {
 
   /**
    * The field in all entity descriptions for the entity ID.
@@ -116,9 +118,14 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   val SECTION_FIELD_SENSORS_SENSOR_DETAIL = "sensorDetail"
 
   /**
-   * The section field for the measurement unit of a sensor channel.
+   * The section field for the update time limit for a sensor.
    */
   val SECTION_FIELD_SENSORS_SENSOR_UPDATE_TIME_LIMIT = "sensorUpdateTimeLimit"
+
+  /**
+   * The section field for the heartbeat time limit for a sensor.
+   */
+  val SECTION_FIELD_SENSORS_SENSOR_HEARTBEAT_UPDATE_TIME_LIMIT = "sensorHeartbeatUpdateTimeLimit"
 
   /**
    * The section field for whether a sensor is to be considered active or not.
@@ -274,7 +281,7 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
   def getSensorDetails(sensorRegistry: SensorRegistry, data: DynamicObject): Unit = {
     data.down(SECTION_HEADER_SENSOR_DETAILS)
 
-    data.getArrayEntries().foreach((sensorDetailEntry: ArrayDynamicObjectEntry) => {
+    data.getArrayEntries().foreach((sensorDetailEntry) => {
       val sensorDetailData = sensorDetailEntry.down()
 
       var sensorUpdateTimeLimit: Option[Long] = None
@@ -282,11 +289,18 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
       if (sensorUpdateTimeLimitValue != null) {
         sensorUpdateTimeLimit = Option(sensorUpdateTimeLimitValue)
       }
+
+      var sensorHeartbeatUpdateTimeLimit: Option[Long] = None
+      val sensorHeartbeatUpdateTimeLimitValue: java.lang.Long = sensorDetailData.getLong(SECTION_FIELD_SENSORS_SENSOR_HEARTBEAT_UPDATE_TIME_LIMIT)
+      if (sensorHeartbeatUpdateTimeLimitValue != null) {
+        sensorHeartbeatUpdateTimeLimit = Option(sensorHeartbeatUpdateTimeLimitValue)
+      }
+
       val sensorDetail = new SimpleSensorDetail(getNextId(),
         sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
         sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
         sensorDetailData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION),
-        sensorUpdateTimeLimit)
+        sensorUpdateTimeLimit, sensorHeartbeatUpdateTimeLimit)
 
       sensorDetailData.down(SECTION_FIELD_SENSOR_DETAILS_CHANNELS)
       data.getArrayEntries().foreach((channelDetailEntry: ArrayDynamicObjectEntry) => breakable {
@@ -391,12 +405,21 @@ class YamlSensorDescriptionImporter(descriptionStream: InputStream) extends Sens
         }
       }
 
+      var sensorHeartbeatUpdateTimeLimit: Option[Long] = None
+      val updateHeartbeatTimeLimitValue = itemData.getLong(SECTION_FIELD_SENSORS_SENSOR_UPDATE_TIME_LIMIT)
+      if (updateHeartbeatTimeLimitValue != null) {
+        sensorHeartbeatUpdateTimeLimit = Option(updateHeartbeatTimeLimitValue)
+      } else {
+        if (sensorDetail.isDefined) {
+          sensorHeartbeatUpdateTimeLimit = sensorDetail.get.sensorHeartbeatUpdateTimeLimit
+        } else {
+          sensorHeartbeatUpdateTimeLimit = None
+        }
+      }
       val entity = new SimpleSensorEntityDescription(getNextId(),
         itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_EXTERNAL_ID),
         itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_NAME),
-        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), sensorDetail)
-
-      entity.sensorUpdateTimeLimit = sensorUpdateTimeLimit
+        itemData.getRequiredString(ENTITY_DESCRIPTION_FIELD_DESCRIPTION), sensorDetail, sensorUpdateTimeLimit, sensorHeartbeatUpdateTimeLimit)
 
       entity.active = itemData.getBoolean(SECTION_FIELD_SENSORS_ACTIVE, SECTION_FIELD_DEFAULT_VALUE_SENSORS_ACTIVE)
 

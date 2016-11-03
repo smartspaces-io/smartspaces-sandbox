@@ -77,13 +77,13 @@ class StandardSensedEntityModelProcessorTest extends JUnitSuite {
     val data = builder.toDynamicObject()
 
     val timestamp: Long = 10000
-    val sensorDetail = new SimpleSensorDetail("1", "foo", "foo", "foo", None)
+    val sensorDetail = new SimpleSensorDetail("1", "foo", "foo", "foo", None, None)
     val channelDetail =
       new SimpleSensorChannelDetail(sensorDetail, "test", "glorp", "norp", null, null)
     sensorDetail.addSensorChannelDetail(channelDetail)
 
     val sensor =
-      new SimpleSensorEntityDescription("1", "foo", "foo", "foo", Option.apply(sensorDetail))
+      new SimpleSensorEntityDescription("1", "foo", "foo", "foo", Option.apply(sensorDetail), None, None)
     val sensorModel = new SimpleSensorEntityModel(sensor, completeSensedEntityModel, 0)
 
     val sensedEntity =
@@ -119,13 +119,13 @@ class StandardSensedEntityModelProcessorTest extends JUnitSuite {
     builder.setProperty(SensorMessages.SENSOR_MESSAGE_FIELD_NAME_DATA_TYPE, sensorValueType)
 
     val timestamp: Long = 10000
-    val sensorDetail = new SimpleSensorDetail("1", "foo", "foo", "foo", None)
+    val sensorDetail = new SimpleSensorDetail("1", "foo", "foo", "foo", None, None)
     val channelDetail =
       new SimpleSensorChannelDetail(sensorDetail, channelName, "glorp", "norp", measurementType, null)
     sensorDetail.addSensorChannelDetail(channelDetail)
 
     val sensor =
-      new SimpleSensorEntityDescription("2", "foo", "foo", "foo", Option(sensorDetail))
+      new SimpleSensorEntityDescription("2", "foo", "foo", "foo", Option(sensorDetail), None, None)
     val sensorModel = new SimpleSensorEntityModel(sensor, completeSensedEntityModel, 0)
 
     val sensedEntity =

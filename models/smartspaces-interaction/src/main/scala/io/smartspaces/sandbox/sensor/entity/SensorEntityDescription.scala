@@ -34,7 +34,12 @@ trait SensorEntityDescription extends EntityDescription {
   /**
    * The time limit on when a sensor update should happen, in milliseconds
    */
-  var sensorUpdateTimeLimit: Option[Long]
+  val sensorUpdateTimeLimit: Option[Long]
+  
+  /**
+   * The time limit on when a sensor heartbeat update should happen, in milliseconds
+   */
+  val sensorHeartbeatUpdateTimeLimit: Option[Long]
   
   /**
    * {@code true} if the sensor is active.

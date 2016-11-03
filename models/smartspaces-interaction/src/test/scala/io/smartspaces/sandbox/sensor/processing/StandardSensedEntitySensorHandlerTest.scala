@@ -81,7 +81,7 @@ class StandardSensedEntitySensorHandlerTest extends JUnitSuite {
    */
   @Test def testKnownSensor(): Unit = {
     val sensorId = "foo"
-    val sensor = new SimpleSensorEntityDescription("1", sensorId, "foo", "foo", null)
+    val sensor = new SimpleSensorEntityDescription("1", sensorId, "foo", "foo", null, None, None)
     val sensorModel = new SimpleSensorEntityModel(sensor, allModels, 0)
 
     val sensedEntity =
