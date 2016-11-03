@@ -121,7 +121,7 @@ class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescripti
         // The only way we would ever be considered online is if there was a lastUpdate,
         // so the .get will work.
         online = !isTimeout(currentTime, lastUpdate.get, sensorUpdateTimeLimit.get)
-      } else {
+      } else if (sensorEntityDescription.sensorHeartbeatUpdateTimeLimit.isDefined) {
         // If this sensor requires a heartbeat, the heartbeat time can be checked.
         
         // Would be lovely to have a magic function that could calculate the max of a series of options.
@@ -144,8 +144,9 @@ class SimpleSensorEntityModel(val sensorEntityDescription: SensorEntityDescripti
           if (isTimeout(currentTime, lastUpdate.getOrElse(modelCreationTime), sensorUpdateTimeLimit.get)) {
             signalOffline(currentTime)
           }
-        } else {
+        } else if (sensorEntityDescription.sensorHeartbeatUpdateTimeLimit.isDefined){
           // If this sensor requires a heartbeat, the heartbeat time can be checked.
+          println(sensorEntityDescription)
           val sensorHeartbeatUpdateTimeLimit = sensorEntityDescription.sensorHeartbeatUpdateTimeLimit
           if (isTimeout(currentTime, lastHeartbeatUpdate.getOrElse(modelCreationTime), sensorHeartbeatUpdateTimeLimit.get)) {
             signalOffline(currentTime)
