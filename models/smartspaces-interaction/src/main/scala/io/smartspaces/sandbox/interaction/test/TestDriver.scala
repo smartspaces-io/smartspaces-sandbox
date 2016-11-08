@@ -16,6 +16,8 @@
 
 package io.smartspaces.sandbox.interaction.test
 
+import scala.collection.JavaConversions.enumerationAsScalaIterator
+
 import io.smartspaces.activity.configuration.ActivityConfiguration
 import io.smartspaces.liveactivity.runtime.development.lightweight.StandardLightweightActivityRuntime
 import io.smartspaces.sandbox.sensor.entity.InMemorySensorRegistry
@@ -26,18 +28,8 @@ import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSyn
 import io.smartspaces.service.web.server.internal.netty.NettyWebServerService
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment
 import io.smartspaces.time.provider.LocalTimeProvider
-
-import java.io.IOException
-import java.net.Inet4Address
-import java.net.InetAddress
-import java.net.NetworkInterface
-import java.net.SocketException
-
-import scala.collection.JavaConversions.enumerationAsScalaIterator
-
-import javax.jmdns.JmDNS
-import javax.jmdns.ServiceEvent
-import javax.jmdns.ServiceListener
+import io.smartspaces.communications.network.MdnsService
+import io.smartspaces.communications.network.StandardMdnsService
 
 object TestDriver {
 
@@ -63,41 +55,12 @@ object TestDriver {
   def runEverythingWithmDns(): Unit = {
     val spaceEnvironment = createSpaceEnvironment()
 
-    val ipAddress = getIpAddress()
-    if (ipAddress == null) {
-      return
-    }
-
-    val jmdns = JmDNS.create(InetAddress.getByName(ipAddress))
+    val mdnsService: MdnsService = spaceEnvironment.getServiceRegistry.getRequiredService(MdnsService.SERVICE_NAME)
     val mqttServiceName = "_mqtt._tcp.local."
-    jmdns.addServiceListener(mqttServiceName, new ServiceListener() {
-      override def serviceAdded(event: ServiceEvent): Unit = {
-        val serviceName = event.getName() + "." + event.getType()
-        System.out.println("Service added   : " + serviceName)
-        val services = jmdns.list(mqttServiceName)
-        // jmdns.printServices()
-
-        if (services.length > 0) {
-          val hostname = services(0).getHostAddresses()(0)
-          val port = services(0).getPort
-          runActivity(spaceEnvironment, hostname, port)
-
-          try {
-            jmdns.close()
-          } catch {
-            // TODO Auto-generated catch block
-            case e: IOException => e.printStackTrace()
-          }
-        }
-      }
-
-      override def serviceRemoved(event: ServiceEvent): Unit = {
-        System.out.println("Service removed : " + event.getName() + "." + event.getType())
-      }
-
-      override def serviceResolved(event: ServiceEvent): Unit = {
-        System.out.println("Service resolved: " + event.getInfo())
-      }
+    mdnsService.addSimpleDiscovery(mqttServiceName, (hostName, hostPort) => {
+      println(hostName)
+      println(hostPort)
+      runActivity(spaceEnvironment, hostName, hostPort)
     })
   }
 
@@ -124,11 +87,16 @@ object TestDriver {
     spaceEnvironment.addManagedResource(webServerService)
     spaceEnvironment.getServiceRegistry().registerService(webServerService)
 
+    val mdnsService = new StandardMdnsService()
+    mdnsService.setSpaceEnvironment(spaceEnvironment)
+    spaceEnvironment.addManagedResource(mdnsService)
+    spaceEnvironment.getServiceRegistry().registerService(mdnsService)
+
     return spaceEnvironment
   }
 
   def runActivity(spaceEnvironment: StandaloneSmartSpacesEnvironment,
-    hostname: String, port: Integer): Unit = {
+    hostname: String, port: Int): Unit = {
     spaceEnvironment.getSystemConfiguration().setProperty("smartspaces.comm.mqtt.broker.host",
       hostname)
     spaceEnvironment.getSystemConfiguration().setProperty("smartspaces.comm.mqtt.broker.port",
@@ -162,26 +130,5 @@ object TestDriver {
         }
       }
     }).start()
-  }
-
-  def getIpAddress(): String = {
-    val interfacesToIgnore = Set("docker0", "wlan0")
-    try {
-      val foo =
-        NetworkInterface.getNetworkInterfaces().foreach { (intf) =>
-          System.out.println("Checking " + intf.getName())
-          if (!intf.isLoopback() && !interfacesToIgnore.contains(intf.getName())) {
-            intf.getInetAddresses().foreach { (address) =>
-              if (address.isInstanceOf[Inet4Address]) {
-                return address.getHostAddress()
-              }
-            }
-          }
-        }
-    } catch {
-      case e: SocketException => System.out.println(" (error retrieving network interface list)")
-    }
-
-    return null
   }
 }
