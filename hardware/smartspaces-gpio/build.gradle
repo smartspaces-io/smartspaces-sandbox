@@ -1,0 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+dependencies {
+    compile 'com.pi4j:pi4j-core:1.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+task wrapper(type:Wrapper) {
+  gradleVersion = '3.1'
+}
