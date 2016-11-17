@@ -14,21 +14,22 @@
  * the License.
  */
 
-package io.smartspaces.hardware.gpio;
+package io.smartspaces.hardware.bits;
 
 /**
- * @author keith
- *
+ * Bit order operations for most significant bit ordering.
+ * 
+ * @author Keith M. Hughes
  */
-public class LsbBitOperator implements BitOperator {
+public class MsbBitOrderOperation implements BitOrderOperation {
 
 	@Override
 	public boolean getBit(byte value, int bit) {
-		return ((value >> bit) & (byte)0x01) != 0;
+		return ((byte)(value << bit) & (byte)0x80) != 0;
 	}
 
 	@Override
 	public byte getByteShift(byte value, int bits) {
-		return (byte)(value >> bits);
+		return (byte)(value << bits);
 	}
 }

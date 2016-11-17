@@ -14,24 +14,25 @@
  * the License.
  */
 
-package io.smartspaces.hardware.gpio;
+package io.smartspaces.hardware.bits;
 
-public class MsbBitOperator implements BitOperator {
-
-	public static void main(String[] args) {
-		BitOperator op = new LsbBitOperator();
-		
-		for (int i = 0; i < 8; i++) {
-			System.out.println(op.getBit((byte)0x44, i));
-		}
-	}
-	@Override
-	public boolean getBit(byte value, int bit) {
-		return ((byte)(value << bit) & (byte)0x80) != 0;
-	}
-
-	@Override
-	public byte getByteShift(byte value, int bits) {
-		return (byte)(value << bits);
-	}
+/**
+ * Specification for a bit ordering.
+ * 
+ * <p>
+ * usually used for some sort of serial communication.
+ * 
+ * @author Keith M. Hughes
+ */
+public enum BitOrder {
+	
+	/**
+	 * Place the most significant bit first.
+	 */
+	MSBFIRST,
+	
+	/**
+	 * Place the least significant bit first.
+	 */
+	LSBFIRST
 }

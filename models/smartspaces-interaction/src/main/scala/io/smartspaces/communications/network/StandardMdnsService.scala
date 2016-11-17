@@ -20,18 +20,18 @@ import io.smartspaces.SmartSpacesException
 import io.smartspaces.resource.managed.IdempotentManagedResource
 import io.smartspaces.service.BaseSupportedService
 
+import java.io.IOException
+import java.net.Inet4Address
+import java.net.InetAddress
+import java.net.NetworkInterface
+import java.net.SocketException
+import java.util.concurrent.ConcurrentHashMap
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 
-import java.io.IOException
-import java.net.InetAddress
-import java.net.SocketException
-import java.util.concurrent.ConcurrentHashMap
 import javax.jmdns.JmDNS
 import javax.jmdns.ServiceEvent
 import javax.jmdns.ServiceListener
-import java.net.NetworkInterface
-import java.net.Inet4Address
 
 /**
  * The standard implementation of the mDNS service.

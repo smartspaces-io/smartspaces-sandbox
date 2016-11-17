@@ -1,5 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'application'
+
+mainClassName = 'io.smartspaces.hardware.gpio.Test'
 
 dependencies {
     compile 'com.pi4j:pi4j-core:1.1'

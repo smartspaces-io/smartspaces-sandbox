@@ -16,14 +16,24 @@
 
 package io.smartspaces.hardware.gpio;
 
+import io.smartspaces.hardware.bits.BitOrder;
+
 /**
- * Start up the SPI endpoint.
+ * An SPI endpoint for communicating with SPI hardware.
  * 
  * @author Keith M. Hughes
  */
 public interface Spi {
 
+	/**
+	 * Start up the SPI connection.
+	 */
 	void startup();
+
+	/**
+	 * Close the SPI connection.
+	 */
+	void shutdown();
 
 	/**
 	 * Set the speed of the SPI clock.
@@ -44,58 +54,90 @@ public interface Spi {
 
 	/**
 	 * Set order of bits to be read/written over serial lines. Should be either
-	 * MSBFIRST for most-significant first, or LSBFIRST for least-signifcant
+	 * MSBFIRST for most-significant first, or LSBFIRST for least-significant
 	 * first.
 	 *
 	 * @param order
 	 */
-	void setBitOrder(ByteOrder order);
+	void setBitOrder(BitOrder order);
 
 	/**
-	 * Close the SPI connection.
+	 * Write out the data in half-duplex mode.
+	 * 
+	 * <p>
+	 * The chip will be selected and then deselected in the write.
+	 * 
+	 * @param data
+	 *            the data to write
 	 */
-	void close();
-
 	void write(byte[] data);
 
 	/**
-	 * Half-duplex SPI write. If assert_ss is True, the SS line will be asserted
-	 * low, the specified bytes will be clocked out the MOSI line, and if
-	 * deassert_ss is True the SS line be put back high.
-	 *
+	 * Write data on SPI in half-duplex mode.
 	 * 
 	 * @param data
-	 * @param assert_ss
-	 * @param deassert_ss
+	 *            the data to write
+	 * @param selectChip
+	 *            {@code true} if the method should select the chip before
+	 *            starting the write
+	 * @param deselectChip
+	 *            {@code true} if the method should deselect the chip after the
+	 *            write completes
 	 */
-	void write(byte[] data, boolean assert_ss, boolean deassert_ss);
+	void write(byte[] data, boolean selectChip, boolean deselectChip);
 
+	/**
+	 * Read data in half-duplex mode.
+	 * 
+	 * <p>
+	 * The chip will be selected and then deselected in the read.
+	 * 
+	 * @param length
+	 *            the number of bytes to read
+	 * 
+	 * @return the data read
+	 */
 	byte[] read(int length);
 
 	/**
-	 * Half-duplex SPI read. If assert_ss is true, the SS line will be asserted
-	 * low, the specified length of bytes will be clocked in the MISO line, and
-	 * if deassert_ss is true the SS line will be put back high. Bytes which are
-	 * read will be returned as a bytearray object.
-	 *
+	 * Read data from SPI in half-duplex mode.
+	 * 
 	 * @param length
-	 * @param assert_ss
-	 * @return
+	 *            the number of bytes to read
+	 * @param selectChip
+	 *            {@code true} if the method should select the chip before
+	 *            starting the read
+	 * @param deselectChip
+	 *            {@code true} if the method should deselect the chip after the
+	 *            read completes
+	 * 
+	 * @return the data read
 	 */
-	byte[] read(int length, boolean assert_ss, boolean deassert_ss);
+	byte[] read(int length, boolean selectChip, boolean deselectChip);
 
 	/**
-	 * Full-duplex SPI read and write. If assert_ss is true, the SS line will be
-	 * asserted low, the specified bytes will be clocked out the MOSI line while
-	 * bytes will also be read from the MISO line, and if deassert_ss is true
-	 * the SS line will be put back high. Bytes which are read will be returned
-	 * as a bytearray object.
+	 * Transfer data in full-duplex mode.
 	 *
 	 * @param data
-	 * @param assert_ss
-	 * @param deassert_ss
-	 * @return
+	 *            the data to write
+	 * @param selectChip
+	 *            {@code true} if the method should select the chip before
+	 *            starting the transfer
+	 * @param deselectChip
+	 *            {@code true} if the method should deselect the chip after the
+	 *            transfer completes
+	 * 
+	 * @return the data read
 	 */
-	byte[] transfer(byte[] data, boolean assert_ss, boolean deassert_ss);
+	byte[] transfer(byte[] data, boolean selectChip, boolean deselectChip);
 
+	/**
+	 * Select the chip.
+	 */
+	void selectChip();
+
+	/**
+	 * Deselect the chip.
+	 */
+	void deselectChip();
 }

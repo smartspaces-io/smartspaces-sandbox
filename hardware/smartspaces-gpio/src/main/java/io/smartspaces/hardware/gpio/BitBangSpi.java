@@ -22,31 +22,93 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
+import io.smartspaces.hardware.bits.BitOrderOperation;
+import io.smartspaces.hardware.bits.BitOrder;
+import io.smartspaces.hardware.bits.LsbBitOrderOperation;
+import io.smartspaces.hardware.bits.MsbBitOrderOperation;
+
 /**
  * An SPI driver that performs software based SPI over GPIO pins.
  * 
  * @author Keith M. Hughes
  */
 public class BitBangSpi implements Spi {
+
+	/**
+	 * The GPIO controller.
+	 */
 	private GpioController gpio;
+
+	/**
+	 * The pin to use for the system clock.
+	 */
 	private Pin sclkPin;
+
+	/**
+	 * The digital output to use for the system clock.
+	 */
 	private GpioPinDigitalOutput sclkOutput;
+
+	/**
+	 * The pin to use for MOSI.
+	 */
 	private Pin mosiPin;
+
+	/**
+	 * The digital output to use for MOSI.
+	 */
 	private GpioPinDigitalOutput mosiOutput;
+
+	/**
+	 * The pin to use for MISO.
+	 */
 	private Pin misoPin;
+
+	/**
+	 * The digital output to use for MISO.
+	 */
 	private GpioPinDigitalInput misoInput;
+
+	/**
+	 * The pin to use for chip select.
+	 */
 	private Pin ssPin;
+
+	/**
+	 * The digital output to use for chip select.
+	 */
 	private GpioPinDigitalOutput ssOutput;
+
+	/**
+	 * {@code true} if the clock base is high, {@code false} if the clock base
+	 * is low.
+	 */
 	private boolean clockBase;
+
+	/**
+	 * {@code true} if a bit read should be on the leading edge of a clock
+	 * shift.
+	 */
 	private boolean readLeading;
 
+	/**
+	 * A mask giving the bit position of the "first" bit, dpending on bit
+	 * ordering.
+	 */
 	private byte mask;
 
-	private BitOperator readShift;
+	/**
+	 * The shift to use when reading.
+	 */
+	private BitOrderOperation readShift;
 
-	private BitOperator writeShift;
+	/**
+	 * The shift to use when writing.
+	 */
+	private BitOrderOperation writeShift;
 
-	public BitBangSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin ssPin) {
+	public BitBangSpi(GpioController gpio, Pin sclkPin, Pin mosiPin, Pin misoPin, Pin ssPin) {
+		this.gpio = gpio;
 		this.sclkPin = sclkPin;
 		this.mosiPin = mosiPin;
 		this.misoPin = misoPin;
@@ -56,7 +118,7 @@ public class BitBangSpi implements Spi {
 		setMode(0);
 
 		// Assume most significant bit first order.
-		setBitOrder(ByteOrder.MSBFIRST);
+		setBitOrder(BitOrder.MSBFIRST);
 	}
 
 	@Override
@@ -69,7 +131,7 @@ public class BitBangSpi implements Spi {
 		// with an error, likewise for MISO reads will be disabled. If SS is set
 		// to
 		// None then SS will not be asserted high/low by the library when
-		// transfering data.
+		// transferring data.
 
 		// Set pins as outputs/inputs.
 		sclkOutput = gpio.provisionDigitalOutputPin(sclkPin, "SCLK Pin", PinState.LOW);
@@ -78,6 +140,9 @@ public class BitBangSpi implements Spi {
 
 		// Assert SS high to start with device communication off.
 		ssOutput = gpio.provisionDigitalOutputPin(ssPin, "SS Pin", PinState.HIGH);
+
+		// Put clock into its base state.
+		sclkOutput.setState(clockBase);
 	}
 
 	@Override
@@ -106,31 +171,28 @@ public class BitBangSpi implements Spi {
 			// Read on leading edge in mode 0 and 2.
 			readLeading = true;
 		}
-
-		// Put clock into its base state.
-		sclkOutput.setState(clockBase);
 	}
 
 	@Override
-	public void setBitOrder(ByteOrder order) {
+	public void setBitOrder(BitOrder order) {
 		// Set self._mask to the bitmask which points at the appropriate bit to
 		// read or write, and appropriate left/right shift operator function for
 		// reading/writing.
-		if (order == ByteOrder.MSBFIRST) {
+		if (order == BitOrder.MSBFIRST) {
 			mask = (byte) 0x80;
-			writeShift = new MsbBitOperator();
-			readShift = new LsbBitOperator();
-		} else if (order == ByteOrder.LSBFIRST) {
+			writeShift = new MsbBitOrderOperation();
+			readShift = new LsbBitOrderOperation();
+		} else if (order == BitOrder.LSBFIRST) {
 			mask = (byte) 0x01;
-			writeShift = new LsbBitOperator();
-			readShift = new MsbBitOperator();
+			writeShift = new LsbBitOrderOperation();
+			readShift = new MsbBitOrderOperation();
 		} else {
 			throw new RuntimeException("Order must be MSBFIRST or LSBFIRST.");
 		}
 	}
 
 	@Override
-	public void close() {
+	public void shutdown() {
 		// This is ignored in software SPI so ignore it.
 	}
 
@@ -140,9 +202,9 @@ public class BitBangSpi implements Spi {
 	}
 
 	@Override
-	public void write(byte[] data, boolean assert_ss, boolean deassert_ss) {
-		if (assert_ss) {
-			ssOutput.setState(false);
+	public void write(byte[] data, boolean selectChip, boolean deselectChip) {
+		if (selectChip) {
+			selectChip();
 		}
 		for (byte dataItem : data) {
 			for (int i = 0; i < 8; i++) {
@@ -156,9 +218,19 @@ public class BitBangSpi implements Spi {
 				sclkOutput.setState(clockBase);
 			}
 		}
-		if (deassert_ss) {
-			ssOutput.setState(true);
+		if (deselectChip) {
+			deselectChip();
 		}
+	}
+
+	@Override
+	public void selectChip() {
+		ssOutput.setState(false);
+	}
+
+	@Override
+	public void deselectChip() {
+		ssOutput.setState(true);
 	}
 
 	@Override
@@ -167,10 +239,10 @@ public class BitBangSpi implements Spi {
 	}
 
 	@Override
-	public byte[] read(int length, boolean assert_ss, boolean deassert_ss) {
+	public byte[] read(int length, boolean selectChip, boolean deselectChip) {
 
-		if (assert_ss) {
-			ssOutput.setState(false);
+		if (selectChip) {
+			selectChip();
 		}
 
 		byte[] result = new byte[length];
@@ -202,7 +274,7 @@ public class BitBangSpi implements Spi {
 				}
 			}
 		}
-		if (deassert_ss) {
+		if (deselectChip) {
 			ssOutput.setState(true);
 		}
 
@@ -210,9 +282,9 @@ public class BitBangSpi implements Spi {
 	}
 
 	@Override
-	public byte[] transfer(byte[] data, boolean assert_ss, boolean deassert_ss) {
-		if (assert_ss) {
-			ssOutput.setState(false);
+	public byte[] transfer(byte[] data, boolean selectChip, boolean deselectChip) {
+		if (selectChip) {
+			selectChip();
 		}
 
 		byte[] result = new byte[data.length];
@@ -252,8 +324,8 @@ public class BitBangSpi implements Spi {
 			}
 		}
 
-		if (deassert_ss) {
-			ssOutput.setState(true);
+		if (deselectChip) {
+			deselectChip();
 		}
 
 		return result;
