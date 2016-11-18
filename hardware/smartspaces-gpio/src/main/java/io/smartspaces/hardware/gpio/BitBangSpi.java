@@ -73,12 +73,12 @@ public class BitBangSpi implements Spi {
 	/**
 	 * The pin to use for chip select.
 	 */
-	private Pin ssPin;
+	private Pin csPin;
 
 	/**
 	 * The digital output to use for chip select.
 	 */
-	private GpioPinDigitalOutput ssOutput;
+	private GpioPinDigitalOutput csOutput;
 
 	/**
 	 * {@code true} if the clock base is high, {@code false} if the clock base
@@ -108,12 +108,12 @@ public class BitBangSpi implements Spi {
 	 */
 	private BitOrderOperation writeShift;
 
-	public BitBangSpi(GpioController gpio, Pin sclkPin, Pin mosiPin, Pin misoPin, Pin ssPin) {
+	public BitBangSpi(GpioController gpio, Pin sclkPin, Pin mosiPin, Pin misoPin, Pin csPin) {
 		this.gpio = gpio;
 		this.sclkPin = sclkPin;
 		this.mosiPin = mosiPin;
 		this.misoPin = misoPin;
-		this.ssPin = ssPin;
+		this.csPin = csPin;
 
 		// Assume mode 0.
 		setMode(0);
@@ -136,8 +136,8 @@ public class BitBangSpi implements Spi {
 
 		// Set pins as outputs/inputs.
 
-		// Assert SS high to start with device communication off.
-		ssOutput = gpio.provisionDigitalOutputPin(ssPin, "SS Pin", PinState.HIGH);
+		// Assert CS high to start with device communication off.
+		csOutput = gpio.provisionDigitalOutputPin(csPin, "CS Pin", PinState.HIGH);
 
 		sclkOutput = gpio.provisionDigitalOutputPin(sclkPin, "SCLK Pin", (clockBase) ? PinState.HIGH : PinState.LOW);
 		mosiOutput = gpio.provisionDigitalOutputPin(mosiPin, "MOSI Pin", PinState.LOW);
@@ -224,12 +224,12 @@ public class BitBangSpi implements Spi {
 
 	@Override
 	public void selectChip() {
-		ssOutput.setState(false);
+		csOutput.setState(false);
 	}
 
 	@Override
 	public void deselectChip() {
-		ssOutput.setState(true);
+		csOutput.setState(true);
 	}
 
 	@Override
@@ -274,7 +274,7 @@ public class BitBangSpi implements Spi {
 			}
 		}
 		if (deselectChip) {
-			ssOutput.setState(true);
+			csOutput.setState(true);
 		}
 
 		return result;

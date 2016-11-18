@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2016 Keith M. Hughes
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -20,44 +20,34 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiGpioProvider;
-import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.RaspiPinNumberingScheme;
 
-import io.smartspaces.hardware.gpio.device.Pn532Device;
-import io.smartspaces.hardware.gpio.device.SpiPn532Device;
-
 /**
- * Test driver for the PN532.
+ * A GPIO service using Pi4J.
  * 
  * @author Keith M. Hughes
  */
-public class Test {
-	public static void main(String[] args) {
+public class Pi4jGpioService implements GpioService {
+
+	/**
+	 * The GPIO controller.
+	 */
+	private GpioController gpio;
+
+	@Override
+	public void startup() {
 		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 
-		Pin sclkPin = RaspiPin.GPIO_27;
-		Pin mosiPin = RaspiPin.GPIO_04;
-		Pin misoPin = RaspiPin.GPIO_17;
-		Pin csPin = RaspiPin.GPIO_22;
-
-		GpioService gpioService = new Pi4jGpioService();
-		gpioService.startup();
-
-		Pn532Device pn532 = new SpiPn532Device(gpioService.getSoftwareSpi(sclkPin, mosiPin, misoPin, csPin));
-		pn532.startup();
-
-		pn532.useSamConfiguration();
-
-		while (true) {
-			byte[] uuid = pn532.readPassiveTarget();
-
-			if (uuid != null) {
-				System.out.println("UUID is");
-				for (byte uuidComponent : uuid) {
-					System.out.println(Integer.toHexString(uuidComponent));
-				}
-			}
-		}
+		gpio = GpioFactory.getInstance();
 	}
 
+	@Override
+	public void shutdown() {
+		gpio.shutdown();
+	}
+
+	@Override
+	public Spi getSoftwareSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin csPin) {
+		return new BitBangSpi(gpio, sclkPin, mosiPin, misoPin, csPin);
+	}
 }

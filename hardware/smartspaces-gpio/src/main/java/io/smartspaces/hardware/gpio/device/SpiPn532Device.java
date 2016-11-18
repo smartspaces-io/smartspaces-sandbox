@@ -24,21 +24,30 @@
  * SOFTWARE.
  */
 
-package io.smartspaces.hardware.gpio;
+package io.smartspaces.hardware.gpio.device;
 
 import java.util.Arrays;
 
 import io.smartspaces.hardware.bits.BitOrder;
 import io.smartspaces.hardware.bits.ByteOperations;
+import io.smartspaces.hardware.gpio.Spi;
 
 /**
- * PN532 breakout board representation. Requires a SPI connection to the
- * breakout board. A software SPI connection is recommended as the hardware SPI
- * on the Raspberry Pi has some issues with the LSB first mode used by the PN532
- * (see: http://www.raspberrypi.org/forums/viewtopic.php?f=32&t=98070&p=720659#
+ * An SPI-based PN532 breakout board implementation.
+ * 
+ * <p>
+ * A software SPI connection is recommended as the hardware SPI on the Raspberry
+ * Pi has some issues with the LSB first mode used by the PN532 (see:
+ * http://www.raspberrypi.org/forums/viewtopic.php?f=32&t=98070&p=720659#
  * p720659)
+ * 
+ * <p>
+ * This Java version was transliterated from the Python version mentioned in the
+ * license.
+ * 
+ * @author keith M. Hughes
  */
-public class StandardPn532 {
+public class SpiPn532Device implements Pn532Device {
 	public static final byte PN532_PREAMBLE = (byte) 0x00;
 	public static final byte PN532_STARTCODE1 = (byte) 0x00;
 	public static final byte PN532_STARTCODE2 = (byte) 0xFF;
@@ -150,8 +159,15 @@ public class StandardPn532 {
 	public static final byte PN532_GPIO_P34 = (byte) 4;
 	public static final byte PN532_GPIO_P35 = (byte) 5;
 
+	/**
+	 * A PN532 acknowledgement packet.
+	 */
 	public static final byte[] PN532_ACK = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0xFF, (byte) 0x00,
 			(byte) 0xFF, (byte) 0x00 };
+
+	/**
+	 * A PN532 frame start packet.
+	 */
 	public static final byte[] PN532_FRAME_START = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0xFF };
 
 	/**
@@ -160,16 +176,12 @@ public class StandardPn532 {
 	private Spi spi;
 
 	/**
-	 * Create an instance of the PN532 class using either software SPI (if the
-	 * sclk, mosi, and miso pins are specified) or hardware SPI if a spi
-	 * parameter is passed. The cs pin must be a digital GPIO pin. Optionally
-	 * specify a GPIO controller to override the default that uses the board's
-	 * GPIO pins.
+	 * Construct the device.
 	 * 
 	 * @param spi
 	 *            the SPI driver for the PN532
 	 */
-	public StandardPn532(Spi spi) {
+	public SpiPn532Device(Spi spi) {
 		this.spi = spi;
 
 		// Set SPI mode and LSB first bit order.
@@ -177,14 +189,13 @@ public class StandardPn532 {
 		spi.setBitOrder(BitOrder.LSBFIRST);
 	}
 
-	/**
-	 * Initialize communication with the PN532. Must be called before any other
-	 * calls are made against the PN532.
-	 * 
+	/* (non-Javadoc)
+	 * @see io.smartspaces.hardware.gpio.Pn532Device#startup()
 	 */
-	public void begin() {
+	@Override
+	public void startup() {
 		spi.startup();
-		
+
 		// Assert CS pin low for a second for PN532 to be ready.
 		spi.selectChip();
 		busyWaitMs(1000);
@@ -194,25 +205,33 @@ public class StandardPn532 {
 		spi.deselectChip();
 	}
 
-	/**
-	 * Call PN532 GetFirmwareVersion function and return a tuple with the IC,
-	 * Ver, Rev, and Support values.
-	 * 
+	/* (non-Javadoc)
+	 * @see io.smartspaces.hardware.gpio.Pn532Device#shutdown()
 	 */
-	public void getFirmwareVersion() {
+	@Override
+	public void shutdown() {
+		spi.shutdown();
+	}
+
+	/* (non-Javadoc)
+	 * @see io.smartspaces.hardware.gpio.Pn532Device#getFirmwareVersion()
+	 */
+	@Override
+	public byte[] getFirmwareVersion() {
 		byte[] response = callFunction(PN532_COMMAND_GETFIRMWAREVERSION, 4, null, 1000);
 		if (response == null || response.length == 0) {
 			throw new RuntimeException(
 					"Failed to detect the PN532!  Make sure there is sufficient power (use a 1 amp or greater power supply), the PN532 is wired correctly to the device, and the solder joints on the PN532 headers are solidly connected.");
 		}
 
-		// return (response[0], response[1], response[2], response[3])
+		return response;
 	}
 
-	/**
-	 * Configure the PN532 to read MiFare cards.
+	/* (non-Javadoc)
+	 * @see io.smartspaces.hardware.gpio.Pn532Device#useSamConfiguration()
 	 */
-	public void SAM_configuration() {
+	@Override
+	public void useSamConfiguration() {
 		// Send SAM configuration command with configuration for:
 		// - 0x01, normal mode
 		// - 0x14, timeout 50ms * 20 = 1 second
@@ -222,19 +241,21 @@ public class StandardPn532 {
 		callFunction(PN532_COMMAND_SAMCONFIGURATION, 0, new byte[] { 0x01, 0x14, 0x01 }, 1000);
 	}
 
-	public byte[] read_passive_target() {
-		return read_passive_target(PN532_MIFARE_ISO14443A, 1000);
+	/* (non-Javadoc)
+	 * @see io.smartspaces.hardware.gpio.Pn532Device#read_passive_target()
+	 */
+	@Override
+	public byte[] readPassiveTarget() {
+		return readPassiveTarget(PN532_MIFARE_ISO14443A, 1000);
 	}
 
-	/**
-	 * Wait for a MiFare card to be available and return its UID when found.
-	 * Will wait up to timeout_sec seconds and return None if no card is found,
-	 * otherwise a bytearray with the UID of the found card is returned.
-	 * 
+	/* (non-Javadoc)
+	 * @see io.smartspaces.hardware.gpio.Pn532Device#readPassiveTarget(byte, long)
 	 */
-	public byte[] read_passive_target(byte card_baud, long timeout) {
+	@Override
+	public byte[] readPassiveTarget(byte cardBaud, long timeout) {
 		// Send passive read command for 1 card. Expect at most a 7 byte UUID.
-		byte[] response = callFunction(PN532_COMMAND_INLISTPASSIVETARGET, 17, new byte[] { 0x01, card_baud }, timeout);
+		byte[] response = callFunction(PN532_COMMAND_INLISTPASSIVETARGET, 17, new byte[] { 0x01, cardBaud }, timeout);
 		// If no response is available return None to indicate no card is
 		// present.
 		if (response == null) {
@@ -266,7 +287,10 @@ public class StandardPn532 {
 	}
 
 	/**
-	 * Write a frame to the PN532 with the specified data bytearray.
+	 * Write a frame to the PN532 with the specified data.
+	 * 
+	 * @param data
+	 *            the data to write
 	 */
 	private void writeFrame(byte[] data) {
 		// assert data is not None and 0 < len(data) < 255, 'Data must be array
@@ -303,18 +327,23 @@ public class StandardPn532 {
 	}
 
 	/**
-	 * 
 	 * Read a specified count of bytes from the PN532.
+	 * 
+	 * @param length
+	 *            the number of bytes to read
+	 * 
+	 * @return the bytes read
 	 */
-	private byte[] readData(int count) {
+	private byte[] readData(int length) {
 		// Build a read request frame.
-		byte[] frame = new byte[count];
+		byte[] frame = new byte[length];
 		frame[0] = PN532_SPI_DATAREAD;
 		// Send the frame and return the response, ignoring the SPI header byte.
 		spi.selectChip();
 		busyWaitMs(2);
 		byte[] response = spi.transfer(frame, false, false);
 		spi.deselectChip();
+
 		return response;
 	}
 
@@ -324,6 +353,10 @@ public class StandardPn532 {
 	 * if there is an error parsing the frame. Note that less than length bytes
 	 * might be returned!
 	 * 
+	 * @param length
+	 *            the expected maximum number of bytes to be returned
+	 * 
+	 * @return the response, have have fewer bytes than the number requested
 	 */
 	private byte[] readFrame(int length) {
 		// Read frame with expected length of data.
@@ -343,7 +376,7 @@ public class StandardPn532 {
 			}
 		}
 
-		if (response[offset] != (byte)0xFF) {
+		if (response[offset] != (byte) 0xFF) {
 			throw new RuntimeException("Response frame preamble does not contain 0x00FF!");
 		}
 
@@ -369,16 +402,14 @@ public class StandardPn532 {
 		return result;
 	}
 
-	private boolean waitReady() {
-		return waitReady(1000);
-	}
-
 	/**
-	 * Wait until the PN532 is ready to receive commands. At most wait
-	 * timeout_sec seconds for the PN532 to be ready. If the PN532 is ready
-	 * before the timeout is exceeded then True will be returned, otherwise
-	 * False is returned when the timeout is exceeded.
+	 * Wait until the PN532 is ready to receive commands. if the wait is longer
+	 * than the specified timeout, then the PN532 is not ready.
 	 * 
+	 * @param timeout
+	 *            the timeout, in milliseconds
+	 * 
+	 * @return {@code true} if thePN532 is ready to receive commands
 	 */
 	private boolean waitReady(long timeout) {
 		byte[] statReadPacket = new byte[] { PN532_SPI_STATREAD, 0x00 };
@@ -388,7 +419,7 @@ public class StandardPn532 {
 		busyWaitMs(2);
 		byte[] response = spi.transfer(statReadPacket, false, false);
 		spi.deselectChip();
-		
+
 		// Loop until a ready response is received.
 		while (response[1] != PN532_SPI_READY) {
 			// Check if the timeout has been exceeded.
@@ -398,7 +429,7 @@ public class StandardPn532 {
 
 			// Wait a little while and try reading the status again.
 			busyWaitMs(10);
-			
+
 			spi.selectChip();
 			busyWaitMs(2);
 			response = spi.transfer(statReadPacket, false, false);
@@ -409,14 +440,22 @@ public class StandardPn532 {
 	};
 
 	/**
-	 * Send specified command to the PN532 and expect up to response_length
-	 * bytes back in a response. Note that less than the expected bytes might be
-	 * returned! Params can optionally specify an array of bytes to send as
-	 * parameters to the function call. Will wait up to timeout_secs seconds for
-	 * a response and return a bytearray of response bytes, or None if no
-	 * response is available within the timeout.
+	 * Send specified command to the PN532.
+	 * 
+	 * @param command
+	 *            the command to send
+	 * @param responseLength
+	 *            the number of bytes expected in a response, though the amount
+	 *            returned may be less
+	 * @param params
+	 *            parameters for the command, can be {@code null}
+	 * @param timeout
+	 *            the timeout to wait for a response, in milliseconds
+	 * 
+	 * @return the response, or {@code null} if no response came within the
+	 *         timeout
 	 */
-	private byte[] callFunction(byte command, int response_length, byte[] params, long timeout) {
+	private byte[] callFunction(byte command, int responseLength, byte[] params, long timeout) {
 		// Build frame data with command and parameters.
 		byte[] data = new byte[2 + ((params != null) ? params.length : 0)];
 		data[0] = PN532_HOSTTOPN532;
@@ -443,7 +482,7 @@ public class StandardPn532 {
 		}
 
 		// Read response bytes.
-		response = readFrame(response_length + 2);
+		response = readFrame(responseLength + 2);
 
 		// Check that response is for the called function.
 		if ((response[0] != PN532_PN532TOHOST) || (response[1] != (command + 1))) {
