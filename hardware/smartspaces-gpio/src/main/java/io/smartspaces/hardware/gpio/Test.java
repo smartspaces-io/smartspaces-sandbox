@@ -19,7 +19,9 @@ package io.smartspaces.hardware.gpio;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiGpioProvider;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.gpio.RaspiPinNumberingScheme;
 
 /**
  * Test driver for the PN532.
@@ -28,6 +30,8 @@ import com.pi4j.io.gpio.RaspiPin;
  */
 public class Test {
 	public static void main(String[] args) {
+		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
+		
 		Pin sclkPin = RaspiPin.GPIO_27;
 		Pin mosiPin = RaspiPin.GPIO_04;
 		Pin misoPin = RaspiPin.GPIO_17;
@@ -44,6 +48,7 @@ public class Test {
 			byte[] uuid = pn532.read_passive_target();
 
 			if (uuid != null) {
+				System.out.println("UUID is");
 				for (byte uuidComponent : uuid) {
 					System.out.println(Integer.toHexString(uuidComponent));
 				}

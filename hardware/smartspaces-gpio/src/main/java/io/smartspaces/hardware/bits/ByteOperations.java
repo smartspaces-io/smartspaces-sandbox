@@ -34,7 +34,7 @@ public class ByteOperations {
 	 * @return the final result
 	 */
 	public static byte unsignedAdd(byte a, byte b) {
-		return (byte) ((a & 0xFF) + (b & 0xFF));
+		return (byte) (((int)a & 0xFF) + ((int)b & 0xFF));
 	}
 
 	/**
@@ -66,12 +66,12 @@ public class ByteOperations {
 	 * @return the checksum
 	 */
 	public static byte calculateChecksum(byte[] data, int start, int length, byte checksumStart) {
-		byte checksum = checksumStart;
+		int checksum = checksumStart & 0xff;
 		for (int i = start; i < start + length; i++) {
-			checksum = unsignedAdd(checksum, data[i]);
+			checksum += (int)data[i] & 0xff;
 		}
 
-		return checksum;
+		return (byte)checksum;
 	}
 
 }

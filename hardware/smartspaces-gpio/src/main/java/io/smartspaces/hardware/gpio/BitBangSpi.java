@@ -20,6 +20,7 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
 import io.smartspaces.hardware.bits.BitOrderOperation;
@@ -134,15 +135,13 @@ public class BitBangSpi implements Spi {
 		// transferring data.
 
 		// Set pins as outputs/inputs.
-		sclkOutput = gpio.provisionDigitalOutputPin(sclkPin, "SCLK Pin", PinState.LOW);
-		mosiOutput = gpio.provisionDigitalOutputPin(mosiPin, "MOSI Pin", PinState.LOW);
-		misoInput = gpio.provisionDigitalInputPin(misoPin, "MISO Pin");
 
 		// Assert SS high to start with device communication off.
 		ssOutput = gpio.provisionDigitalOutputPin(ssPin, "SS Pin", PinState.HIGH);
 
-		// Put clock into its base state.
-		sclkOutput.setState(clockBase);
+		sclkOutput = gpio.provisionDigitalOutputPin(sclkPin, "SCLK Pin", (clockBase) ? PinState.HIGH : PinState.LOW);
+		mosiOutput = gpio.provisionDigitalOutputPin(mosiPin, "MOSI Pin", PinState.LOW);
+		misoInput = gpio.provisionDigitalInputPin(misoPin, "MISO Pin", PinPullResistance.OFF);
 	}
 
 	@Override
@@ -292,7 +291,7 @@ public class BitBangSpi implements Spi {
 			byte dataItem = data[i];
 			for (int j = 0; j < 8; j++) {
 				// Write bit to MOSI.
-				mosiOutput.setState(writeShift.getBit(dataItem, i));
+				mosiOutput.setState(writeShift.getBit(dataItem, j));
 
 				// Flip clock off base.
 				sclkOutput.setState(!clockBase);
@@ -302,9 +301,6 @@ public class BitBangSpi implements Spi {
 					if (misoInput.isHigh()) {
 						// Set bit to 1 at appropriate location.
 						result[i] |= readShift.getByteShift(mask, j);
-					} else {
-						// Set bit to 0 at appropriate location.
-						result[i] &= ~readShift.getByteShift(mask, j);
 					}
 				}
 
@@ -316,9 +312,6 @@ public class BitBangSpi implements Spi {
 					if (misoInput.isHigh()) {
 						// Set bit to 1 at appropriate location.
 						result[i] |= readShift.getByteShift(mask, j);
-					} else {
-						// Set bit to 0 at appropriate location.
-						result[i] &= ~readShift.getByteShift(mask, j);
 					}
 				}
 			}

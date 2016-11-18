@@ -178,9 +178,85 @@ public class StandardPn532 {
 	}
 
 	/**
+	 * Initialize communication with the PN532. Must be called before any other
+	 * calls are made against the PN532.
+	 * 
+	 */
+	public void begin() {
+		spi.startup();
+		
+		// Assert CS pin low for a second for PN532 to be ready.
+		spi.selectChip();
+		busyWaitMs(1000);
+		// Call GetFirmwareVersion to sync up with the PN532. This might not be
+		// required but is done in the Arduino library and kept for consistency.
+		getFirmwareVersion();
+		spi.deselectChip();
+	}
+
+	/**
+	 * Call PN532 GetFirmwareVersion function and return a tuple with the IC,
+	 * Ver, Rev, and Support values.
+	 * 
+	 */
+	public void getFirmwareVersion() {
+		byte[] response = callFunction(PN532_COMMAND_GETFIRMWAREVERSION, 4, null, 1000);
+		if (response == null || response.length == 0) {
+			throw new RuntimeException(
+					"Failed to detect the PN532!  Make sure there is sufficient power (use a 1 amp or greater power supply), the PN532 is wired correctly to the device, and the solder joints on the PN532 headers are solidly connected.");
+		}
+
+		// return (response[0], response[1], response[2], response[3])
+	}
+
+	/**
+	 * Configure the PN532 to read MiFare cards.
+	 */
+	public void SAM_configuration() {
+		// Send SAM configuration command with configuration for:
+		// - 0x01, normal mode
+		// - 0x14, timeout 50ms * 20 = 1 second
+		// - 0x01, use IRQ pin
+		// Note that no other verification is necessary as call_function will
+		// check the command was executed as expected.
+		callFunction(PN532_COMMAND_SAMCONFIGURATION, 0, new byte[] { 0x01, 0x14, 0x01 }, 1000);
+	}
+
+	public byte[] read_passive_target() {
+		return read_passive_target(PN532_MIFARE_ISO14443A, 1000);
+	}
+
+	/**
+	 * Wait for a MiFare card to be available and return its UID when found.
+	 * Will wait up to timeout_sec seconds and return None if no card is found,
+	 * otherwise a bytearray with the UID of the found card is returned.
+	 * 
+	 */
+	public byte[] read_passive_target(byte card_baud, long timeout) {
+		// Send passive read command for 1 card. Expect at most a 7 byte UUID.
+		byte[] response = callFunction(PN532_COMMAND_INLISTPASSIVETARGET, 17, new byte[] { 0x01, card_baud }, timeout);
+		// If no response is available return None to indicate no card is
+		// present.
+		if (response == null) {
+			return null;
+		}
+
+		// Check only 1 card with up to a 7 byte UID is present.
+		if (response[0] != 0x01) {
+			throw new RuntimeException("More than one card detected!");
+		}
+		if (response[5] > 7) {
+			throw new RuntimeException("Found card with unexpectedly long UID!");
+		}
+
+		// Return UID of card.
+		return Arrays.copyOfRange(response, 6, 6 + response[5]);
+	}
+
+	/**
 	 * Busy wait for the specified number of milliseconds.
 	 */
-	public void _busy_wait_ms(long ms) {
+	private void busyWaitMs(long ms) {
 		try {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {
@@ -192,7 +268,7 @@ public class StandardPn532 {
 	/**
 	 * Write a frame to the PN532 with the specified data bytearray.
 	 */
-	public void _write_frame(byte[] data) {
+	private void writeFrame(byte[] data) {
 		// assert data is not None and 0 < len(data) < 255, 'Data must be array
 		// of 1 to 255 bytes.'
 		// Build frame to send as:
@@ -221,7 +297,7 @@ public class StandardPn532 {
 		frame[length + 7] = PN532_POSTAMBLE;
 
 		spi.selectChip();
-		_busy_wait_ms(2);
+		busyWaitMs(2);
 		spi.write(frame);
 		spi.deselectChip();
 	}
@@ -230,13 +306,13 @@ public class StandardPn532 {
 	 * 
 	 * Read a specified count of bytes from the PN532.
 	 */
-	public byte[] _read_data(int count) {
+	private byte[] readData(int count) {
 		// Build a read request frame.
 		byte[] frame = new byte[count];
 		frame[0] = PN532_SPI_DATAREAD;
 		// Send the frame and return the response, ignoring the SPI header byte.
 		spi.selectChip();
-		_busy_wait_ms(2);
+		busyWaitMs(2);
 		byte[] response = spi.transfer(frame, false, false);
 		spi.deselectChip();
 		return response;
@@ -249,13 +325,12 @@ public class StandardPn532 {
 	 * might be returned!
 	 * 
 	 */
-	public byte[] _read_frame(int length) {
+	private byte[] readFrame(int length) {
 		// Read frame with expected length of data.
-		byte[] response = _read_data(length + 8);
-		// logger.debug('Read frame: 0x{0}'.format(binascii.hexlify(response)))
+		byte[] response = readData(length + 8);
+
 		// Check frame starts with 0x01 and then has 0x00FF (preceeded by
-		// optional
-		// zeros).
+		// optional zeros).
 		if (response[0] != 0x01) {
 			throw new RuntimeException("Response frame does not start with 0x01!");
 		}
@@ -268,7 +343,7 @@ public class StandardPn532 {
 			}
 		}
 
-		if (response[offset] != 0xFF) {
+		if (response[offset] != (byte)0xFF) {
 			throw new RuntimeException("Response frame preamble does not contain 0x00FF!");
 		}
 
@@ -294,8 +369,8 @@ public class StandardPn532 {
 		return result;
 	}
 
-	public boolean _wait_ready() {
-		return _wait_ready(1000);
+	private boolean waitReady() {
+		return waitReady(1000);
 	}
 
 	/**
@@ -305,14 +380,15 @@ public class StandardPn532 {
 	 * False is returned when the timeout is exceeded.
 	 * 
 	 */
-	public boolean _wait_ready(long timeout) {
+	private boolean waitReady(long timeout) {
 		byte[] statReadPacket = new byte[] { PN532_SPI_STATREAD, 0x00 };
 		long start = System.currentTimeMillis();
 		// Send a SPI status read command and read response.
 		spi.selectChip();
-		_busy_wait_ms(2);
+		busyWaitMs(2);
 		byte[] response = spi.transfer(statReadPacket, false, false);
 		spi.deselectChip();
+		
 		// Loop until a ready response is received.
 		while (response[1] != PN532_SPI_READY) {
 			// Check if the timeout has been exceeded.
@@ -321,11 +397,12 @@ public class StandardPn532 {
 			}
 
 			// Wait a little while and try reading the status again.
-			_busy_wait_ms(10);
+			busyWaitMs(10);
+			
 			spi.selectChip();
-			_busy_wait_ms(2);
+			busyWaitMs(2);
 			response = spi.transfer(statReadPacket, false, false);
-			spi.selectChip();
+			spi.deselectChip();
 		}
 
 		return true;
@@ -338,11 +415,8 @@ public class StandardPn532 {
 	 * parameters to the function call. Will wait up to timeout_secs seconds for
 	 * a response and return a bytearray of response bytes, or None if no
 	 * response is available within the timeout.
-	 * 
-	 * def call_function(self, command, response_length=0, params=[],
-	 * timeout_sec=1):
 	 */
-	public byte[] call_function(byte command, int response_length, byte[] params, long timeout) {
+	private byte[] callFunction(byte command, int response_length, byte[] params, long timeout) {
 		// Build frame data with command and parameters.
 		byte[] data = new byte[2 + ((params != null) ? params.length : 0)];
 		data[0] = PN532_HOSTTOPN532;
@@ -353,23 +427,23 @@ public class StandardPn532 {
 		}
 
 		// Send frame and wait for response.
-		_write_frame(data);
-		if (!_wait_ready(timeout)) {
+		writeFrame(data);
+		if (!waitReady(timeout)) {
 			return null;
 		}
 
 		// Verify ACK response and wait to be ready for function response.
-		byte[] response = _read_data(PN532_ACK.length);
+		byte[] response = readData(PN532_ACK.length);
 		if (!Arrays.equals(response, PN532_ACK)) {
 			throw new RuntimeException("Did not receive expected ACK from PN532!");
 		}
 
-		if (!_wait_ready(timeout)) {
+		if (!waitReady(timeout)) {
 			return null;
 		}
 
 		// Read response bytes.
-		response = _read_frame(response_length + 2);
+		response = readFrame(response_length + 2);
 
 		// Check that response is for the called function.
 		if ((response[0] != PN532_PN532TOHOST) || (response[1] != (command + 1))) {
@@ -379,81 +453,5 @@ public class StandardPn532 {
 		// Return response data.
 		byte[] result = Arrays.copyOfRange(response, 2, response.length);
 		return result;
-	}
-
-	/**
-	 * Initialize communication with the PN532. Must be called before any other
-	 * calls are made against the PN532.
-	 * 
-	 */
-	public void begin() {
-		spi.startup();
-		
-		// Assert CS pin low for a second for PN532 to be ready.
-		spi.selectChip();
-		_busy_wait_ms(1000);
-		// Call GetFirmwareVersion to sync up with the PN532. This might not be
-		// required but is done in the Arduino library and kept for consistency.
-		get_firmware_version();
-		spi.deselectChip();
-	}
-
-	/**
-	 * Call PN532 GetFirmwareVersion function and return a tuple with the IC,
-	 * Ver, Rev, and Support values.
-	 * 
-	 */
-	public void get_firmware_version() {
-		byte[] response = call_function(PN532_COMMAND_GETFIRMWAREVERSION, 4, null, 1000);
-		if (response == null || response.length == 0) {
-			throw new RuntimeException(
-					"Failed to detect the PN532!  Make sure there is sufficient power (use a 1 amp or greater power supply), the PN532 is wired correctly to the device, and the solder joints on the PN532 headers are solidly connected.");
-		}
-
-		// return (response[0], response[1], response[2], response[3])
-	}
-
-	/**
-	 * Configure the PN532 to read MiFare cards.
-	 */
-	public void SAM_configuration() {
-		// Send SAM configuration command with configuration for:
-		// - 0x01, normal mode
-		// - 0x14, timeout 50ms * 20 = 1 second
-		// - 0x01, use IRQ pin
-		// Note that no other verification is necessary as call_function will
-		// check the command was executed as expected.
-		call_function(PN532_COMMAND_SAMCONFIGURATION, 0, new byte[] { 0x01, 0x14, 0x01 }, 1000);
-	}
-
-	public byte[] read_passive_target() {
-		return read_passive_target(PN532_MIFARE_ISO14443A, 1000);
-	}
-
-	/**
-	 * Wait for a MiFare card to be available and return its UID when found.
-	 * Will wait up to timeout_sec seconds and return None if no card is found,
-	 * otherwise a bytearray with the UID of the found card is returned.
-	 * 
-	 */
-	public byte[] read_passive_target(byte card_baud, long timeout) {
-		// Send passive read command for 1 card. Expect at most a 7 byte UUID.
-		byte[] response = call_function(PN532_COMMAND_INLISTPASSIVETARGET, 17, new byte[] { 0x01, card_baud }, timeout);
-		// If no response is available return None to indicate no card is
-		// present.
-		if (response == null) {
-			return null;
-		}
-
-		// Check only 1 card with up to a 7 byte UID is present.
-		if (response[0] != 0x01) {
-			throw new RuntimeException("More than one card detected!");
-		}
-		if (response[5] > 7) {
-			throw new RuntimeException("Found card with unexpectedly long UID!");
-		}
-
-		// Return UID of card.
-		return Arrays.copyOfRange(response, 6, 6 + response[5]);
 	}
 }
