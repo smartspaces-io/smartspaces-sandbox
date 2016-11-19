@@ -21,6 +21,7 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiGpioProvider;
 import com.pi4j.io.gpio.RaspiPinNumberingScheme;
+import com.pi4j.wiringpi.GpioUtil;
 
 /**
  * A GPIO service using Pi4J.
@@ -36,6 +37,10 @@ public class Pi4jGpioService implements GpioService {
 
 	@Override
 	public void startup() {
+		// Enable non sudo access to GPIO.
+		GpioUtil.enableNonPrivilegedAccess();
+		
+		// Use the Broadcom pin numberings.
 		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 
 		gpio = GpioFactory.getInstance();

@@ -5,13 +5,11 @@ apply plugin: 'application'
 mainClassName = 'io.smartspaces.hardware.gpio.Test'
 
 dependencies {
-    compile 'com.pi4j:pi4j-core:1.1'
+	compile 'com.pi4j:pi4j-core:1.1'
+
+	compile 'io.reactivex.rxjava2:rxjava:2.0.1'
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
-task wrapper(type:Wrapper) {
-  gradleVersion = '3.1'
-}
+task wrapper(type:Wrapper) { gradleVersion = '3.1' }
