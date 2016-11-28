@@ -28,8 +28,8 @@ import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSyn
 import io.smartspaces.service.web.server.internal.netty.NettyWebServerService
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment
 import io.smartspaces.time.provider.LocalTimeProvider
-import io.smartspaces.communications.network.MdnsService
-import io.smartspaces.communications.network.StandardMdnsService
+import io.smartspaces.comm.network.zeroconf.ZeroconfService
+import io.smartspaces.comm.network.zeroconf.StandardZeroconfService
 
 object TestDriver {
 
@@ -55,7 +55,7 @@ object TestDriver {
   def runEverythingWithmDns(): Unit = {
     val spaceEnvironment = createSpaceEnvironment()
 
-    val mdnsService: MdnsService = spaceEnvironment.getServiceRegistry.getRequiredService(MdnsService.SERVICE_NAME)
+    val mdnsService: ZeroconfService = spaceEnvironment.getServiceRegistry.getRequiredService(ZeroconfService.SERVICE_NAME)
     val mqttServiceName = "_mqtt._tcp.local."
     mdnsService.addSimpleDiscovery(mqttServiceName, (hostName, hostPort) => {
       println(hostName)
@@ -87,10 +87,10 @@ object TestDriver {
     spaceEnvironment.addManagedResource(webServerService)
     spaceEnvironment.getServiceRegistry().registerService(webServerService)
 
-    val mdnsService = new StandardMdnsService()
-    mdnsService.setSpaceEnvironment(spaceEnvironment)
-    spaceEnvironment.addManagedResource(mdnsService)
-    spaceEnvironment.getServiceRegistry().registerService(mdnsService)
+    val zeroconfService = new StandardZeroconfService()
+    zeroconfService.setSpaceEnvironment(spaceEnvironment)
+    spaceEnvironment.addManagedResource(zeroconfService)
+    spaceEnvironment.getServiceRegistry().registerService(zeroconfService)
 
     return spaceEnvironment
   }

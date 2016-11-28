@@ -38,6 +38,7 @@ import io.smartspaces.tasks.ManagedTasks
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
+import io.smartspaces.scope.ManagedScope
 
 /**
  * An activity to merge sensors across the entire space.
@@ -53,6 +54,8 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     val spaceEnvironment = getSpaceEnvironment
     val managedTasks: ManagedTasks = getManagedTasks
     val managedResources: ManagedResources = getManagedResources
+    val managedScope: ManagedScope = getActivityManagedScope
+    
     val log = getSpaceEnvironment.getExtendedLog
 
     val speechSynthesisService = spaceEnvironment.getServiceRegistry().
@@ -61,8 +64,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     managedResources.addResource(speechPlayer)
     speechPlayer.speak("Hello world", false)
 
-    sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, getConfiguration, getManagedTasks,
-      getManagedResources, getSpaceEnvironment.getExtendedLog)
+    sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, getConfiguration, managedScope, getSpaceEnvironment.getExtendedLog)
     sensorIntegrator.descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"), log)
     sensorIntegrator.startup()
     addManagedResource(sensorIntegrator)

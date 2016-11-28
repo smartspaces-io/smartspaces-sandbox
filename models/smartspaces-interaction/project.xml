@@ -10,7 +10,7 @@
   <library>
     <container>
       <activator>
-        io.smartspaces.sandbox.service.action.internal.osgi.ActionServiceActivator
+        io.smartspaces.sandbox.interaction.entity.osgi.InteractionServiceActivator
       </activator>
     </container>
   </library>

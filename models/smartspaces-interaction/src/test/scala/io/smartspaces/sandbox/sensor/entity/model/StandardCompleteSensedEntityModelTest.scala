@@ -65,6 +65,7 @@ class StandardCompleteSensedEntityModelTest extends JUnitSuite {
     
     
     Mockito.when(sensorDescription.externalId).thenReturn(externalId)
+    Mockito.when(sensorDescription.active).thenReturn(true)
     
     timeProvider.setCurrentTime(10000)
     

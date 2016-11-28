@@ -51,14 +51,14 @@ import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 import java.io.File
 import io.smartspaces.time.TimeFrequency
+import io.smartspaces.scope.ManagedScope
 
 /**
  * The sensor integration layer.
  *
  * @author Keith M. Hughes
  */
-class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironment, private val configuration: Configuration, private val managedTasks: ManagedTasks,
-    private val managedResources: ManagedResources, private val log: ExtendedLog) extends SensorIntegrator with IdempotentManagedResource {
+class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironment, private val configuration: Configuration, private val managedScope: ManagedScope, private val log: ExtendedLog) extends SensorIntegrator with IdempotentManagedResource {
 
   /**
    * The sensor registry for the integrator.
@@ -86,7 +86,7 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     val speechSynthesisService = spaceEnvironment.getServiceRegistry().
       getRequiredService(SpeechSynthesisService.SERVICE_NAME).asInstanceOf[SpeechSynthesisService]
     val speechPlayer = speechSynthesisService.newPlayer(log)
-    managedResources.addResource(speechPlayer)
+    managedScope.managedResources.addResource(speechPlayer)
     speechPlayer.speak("Hello world", false)
 
     val eventObservableService = spaceEnvironment.getServiceRegistry().
@@ -158,9 +158,9 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
 
     sensorProcessor.addSensorHandler(sensorHandler)
 
-    managedResources.addResource(sensorProcessor)
+    managedScope.managedResources.addResource(sensorProcessor)
     
-    val sensorCheckupTask = managedTasks.scheduleAtFixedRate(new Runnable() {
+    val sensorCheckupTask = managedScope.managedTasks.scheduleAtFixedRate(new Runnable() {
       override def run(): Unit = {
         completeSensedEntityModel.checkModels()
       }
