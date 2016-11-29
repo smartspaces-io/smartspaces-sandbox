@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="library" language="java">
+<project type="library" language="scala">
   <name>OrientDB Database Service</name>
   <description>
     A service for working with OrientDB databases.

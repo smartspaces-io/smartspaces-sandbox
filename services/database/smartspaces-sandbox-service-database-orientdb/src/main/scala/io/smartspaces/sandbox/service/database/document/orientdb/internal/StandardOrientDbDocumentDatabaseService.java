@@ -18,12 +18,14 @@
 package io.smartspaces.sandbox.service.database.document.orientdb.internal;
 
 import io.smartspaces.SmartSpacesException;
+import io.smartspaces.resource.managed.BaseManagedResource;
 import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDocumentDatabaseEndpoint;
 import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDocumentDatabaseService;
 import io.smartspaces.service.BaseSupportedService;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
@@ -44,7 +46,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Oleksandr Kelepko
  * @author Keith M. Hughes
  */
-public class StandardOrientDbDocumentDatabaseService extends BaseSupportedService implements OrientDbDocumentDatabaseService {
+public class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
+    implements OrientDbDocumentDatabaseService {
   /**
    * The name of the service.
    */
@@ -142,13 +145,24 @@ public class StandardOrientDbDocumentDatabaseService extends BaseSupportedServic
 
   @Override
   public void startup() {
-    active.compareAndSet(false, true);
+    if (active.compareAndSet(false, true)) {
+      // Make sure when SmartSpaces shuts down that orientDB is shut down.
+      // Other code may be using OrientDB so we want this at container shutdown.
+      getSpaceEnvironment().getContainerManagedScope().managedResources()
+          .addResource(new BaseManagedResource() {
+            @Override
+            public void shutdown() {
+              Orient.instance().shutdown();
+            }
+          });
+    }
   }
 
   @Override
   public void shutdown() {
-    active.compareAndSet(true, false);
-    control.shutdown();
+    if (active.compareAndSet(true, false)) {
+      control.shutdown();
+    }
   }
 
   @Override
