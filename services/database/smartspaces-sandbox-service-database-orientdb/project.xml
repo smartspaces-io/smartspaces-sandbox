@@ -18,6 +18,7 @@
     </container>
   </library>
 
+<!-- 
   <dependencies>
     <dependency identifyingName="com.orientechnologies.orientdb-core"
         version="[2.2.0, 2.3.0)" required="true" />
@@ -28,4 +29,5 @@
     <dependency identifyingName="com.orientechnologies.orientdb-tools"
         version="[2.2.0, 2.3.0)" required="true" />
   </dependencies>
+   -->
 </project>

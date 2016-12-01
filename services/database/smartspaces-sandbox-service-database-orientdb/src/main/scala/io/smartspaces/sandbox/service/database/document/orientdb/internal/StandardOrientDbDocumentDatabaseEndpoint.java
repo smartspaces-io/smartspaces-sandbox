@@ -36,7 +36,7 @@ public class StandardOrientDbDocumentDatabaseEndpoint implements OrientDbDocumen
   /**
    * Database connections managed by this endpoint.
    */
-  private Collection<ODatabase> connections;
+  private Collection<ODatabase<?>> connections;
 
   /**
    * Base service.
@@ -104,7 +104,7 @@ public class StandardOrientDbDocumentDatabaseEndpoint implements OrientDbDocumen
   @Override
   public synchronized void shutdown() {
     if (connections != null) {
-      for (ODatabase connection : connections) {
+      for (ODatabase<?> connection : connections) {
         try {
           connection.close();
         } catch (Throwable e) {

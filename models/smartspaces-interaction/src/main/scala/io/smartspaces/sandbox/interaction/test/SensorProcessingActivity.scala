@@ -56,7 +56,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     val managedResources: ManagedResources = getManagedResources
     val managedScope: ManagedScope = getActivityManagedScope
     
-    val log = getSpaceEnvironment.getExtendedLog
+    val log = getSpaceEnvironment.getLog
 
     val speechSynthesisService = spaceEnvironment.getServiceRegistry().
       getRequiredService(SpeechSynthesisService.SERVICE_NAME).asInstanceOf[SpeechSynthesisService]
@@ -64,7 +64,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     managedResources.addResource(speechPlayer)
     speechPlayer.speak("Hello world", false)
 
-    sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, getConfiguration, managedScope, getSpaceEnvironment.getExtendedLog)
+    sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, getConfiguration, managedScope, getSpaceEnvironment.getLog)
     sensorIntegrator.descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"), log)
     sensorIntegrator.startup()
     addManagedResource(sensorIntegrator)
