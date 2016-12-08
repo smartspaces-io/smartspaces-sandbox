@@ -16,56 +16,62 @@
 
 package io.smartspaces.sandbox.interaction.test
 
-import scala.collection.JavaConversions.enumerationAsScalaIterator
-
+import io.smartspaces.activity.Activity
 import io.smartspaces.activity.configuration.ActivityConfiguration
+import io.smartspaces.comm.network.zeroconf.StandardZeroconfService
+import io.smartspaces.comm.network.zeroconf.ZeroconfService
 import io.smartspaces.liveactivity.runtime.development.lightweight.StandardLightweightActivityRuntime
 import io.smartspaces.sandbox.sensor.entity.InMemorySensorRegistry
 import io.smartspaces.sandbox.sensor.entity.YamlSensorDescriptionImporter
+import io.smartspaces.sandbox.sensor.test.StandardTestClient
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService
 import io.smartspaces.service.event.observable.StandardEventObservableService
 import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService
 import io.smartspaces.service.web.server.internal.netty.NettyWebServerService
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment
 import io.smartspaces.time.provider.LocalTimeProvider
-import io.smartspaces.comm.network.zeroconf.ZeroconfService
-import io.smartspaces.comm.network.zeroconf.StandardZeroconfService
+import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 object TestDriver {
 
+  var activity: Activity = null
+
+  var testClient: StandardTestClient = null
+  
+  var spaceEnvironment: StandaloneSmartSpacesEnvironment = null;
+
   def main(args: Array[String]): Unit = {
-    // justYaml()
-    runEverythingWithmDns()
-    //runEverythingLocal()
+createSpaceEnvironment()
+
+// justYaml()
+    //runEverythingWithmDns()
+    runEverythingLocal()
   }
 
   def justYaml(): Unit = {
     val sensorRegistry = new InMemorySensorRegistry()
-    val spaceEnvironment = createSpaceEnvironment()
     val descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"), spaceEnvironment.getLog)
 
     descriptionImporter.importDescriptions(sensorRegistry)
   }
 
   def runEverythingLocal(): Unit = {
-    runActivity(createSpaceEnvironment(), "127.0.0.1", 1883)
+    runActivity("127.0.0.1", 1883)
 
   }
 
   def runEverythingWithmDns(): Unit = {
-    val spaceEnvironment = createSpaceEnvironment()
-
     val mdnsService: ZeroconfService = spaceEnvironment.getServiceRegistry.getRequiredService(ZeroconfService.SERVICE_NAME)
     val mqttServiceName = "_mqtt._tcp.local."
     mdnsService.addSimpleDiscovery(mqttServiceName, (hostName, hostPort) => {
       println(hostName)
       println(hostPort)
-      runActivity(spaceEnvironment, hostName, hostPort)
+      runActivity(hostName, hostPort)
     })
   }
 
   def createSpaceEnvironment(): StandaloneSmartSpacesEnvironment = {
-    val spaceEnvironment =
+    spaceEnvironment =
       StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment()
     spaceEnvironment.setTimeProvider(new LocalTimeProvider())
 
@@ -95,17 +101,21 @@ object TestDriver {
     return spaceEnvironment
   }
 
-  def runActivity(spaceEnvironment: StandaloneSmartSpacesEnvironment,
-    hostname: String, port: Int): Unit = {
+  def runActivity(hostname: String, port: Int): Unit = {
     spaceEnvironment.getSystemConfiguration().setProperty("smartspaces.comm.mqtt.broker.host",
       hostname)
     spaceEnvironment.getSystemConfiguration().setProperty("smartspaces.comm.mqtt.broker.port",
       Integer.toString(port))
+
+    var mqttBrokerDescription = new MqttBrokerDescription(hostname, port, false)
+    testClient = new StandardTestClient(spaceEnvironment, mqttBrokerDescription, "/home/sensor")
+    spaceEnvironment.addManagedResource(testClient)
+
     new Thread(new Runnable() {
 
       override def run(): Unit = {
         try {
-          val activity = new SensorProcessingActivity()
+          activity = new SensorProcessingActivity()
 
           val runtime =
             new StandardLightweightActivityRuntime(spaceEnvironment)
@@ -130,5 +140,10 @@ object TestDriver {
         }
       }
     }).start()
+  }
+  
+  def shutdown(): Unit = {
+    activity.shutdown()
+    spaceEnvironment.shutdown
   }
 }

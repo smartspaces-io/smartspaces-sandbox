@@ -24,12 +24,12 @@ import io.smartspaces.system.SmartSpacesEnvironment
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 /**
- * A sensor input aggregator for sensor message over MQTT.
- * 
+ * A sensor input for sensor message over MQTT.
+ *
  * @author Keith M. Hughes
  */
-class MqttSensorInputAggregator(private val mqttBrokerDescription: MqttBrokerDescription, private val mqttClientId: String,
-      private val mqttSensorTopicName:String, private val spaceEnvironment: SmartSpacesEnvironment, private val log: ExtendedLog) extends SensorInput {
+class StandardMqttSensorInput(private val mqttBrokerDescription: MqttBrokerDescription, private val mqttClientId: String,
+    private val spaceEnvironment: SmartSpacesEnvironment, private val log: ExtendedLog) extends MqttSensorInput {
 
   /**
    * The sensor processor the sensor input is running under.
@@ -48,18 +48,11 @@ class MqttSensorInputAggregator(private val mqttBrokerDescription: MqttBrokerDes
 
   override def startup(): Unit = {
     val service: MqttCommunicationEndpointService = spaceEnvironment.getServiceRegistry()
-        .getRequiredService(MqttCommunicationEndpointService.SERVICE_NAME)
+      .getRequiredService(MqttCommunicationEndpointService.SERVICE_NAME)
     mqttEndpoint = service.newMqttCommunicationEndpoint(mqttBrokerDescription, mqttClientId, log)
 
-    mqttEndpoint.subscribe(mqttSensorTopicName, new MqttSubscriberListener() {
-      override def handleMessage( endpoint: MqttCommunicationEndpoint,  topicName: String,
-           payload: Array[Byte]): Unit = {
-        handleSensorMessage(topicName, payload)
-      }
-    }, 0, true)
-    
     mqttEndpoint.startup()
-   }
+  }
 
   override def shutdown(): Unit = {
     if (mqttEndpoint != null) {
@@ -67,19 +60,38 @@ class MqttSensorInputAggregator(private val mqttBrokerDescription: MqttBrokerDes
     }
   }
 
- override def setSensorProcessor(sensorProcessor: SensorProcessor): Unit = {
+  override def setSensorProcessor(sensorProcessor: SensorProcessor): Unit = {
     this.sensorProcessor = sensorProcessor
   }
 
   /**
+   * Add in a new MQTT subscription.
+   *
+   * @param mqttSensorTopicName
+   *       the sensor topic name
+   * @param qos
+   *       the Quality of Service for the connection
+   */
+  def addMqttSubscription(mqttSensorTopicName: String, qos: Int): Unit = {
+    mqttEndpoint.subscribe(mqttSensorTopicName, new MqttSubscriberListener() {
+      override def handleMessage(endpoint: MqttCommunicationEndpoint, topicName: String,
+        payload: Array[Byte]): Unit = {
+        handleSensorMessage(topicName, payload)
+      }
+    }, qos, true)
+
+    log.info(s"Subscribing to MQTT topic $mqttSensorTopicName with QoS $qos")
+  }
+
+  /**
    * Handle an incoming sensor message.
-   * 
+   *
    * @param topicName
-   *          the name of the topic the message cam in on
+   *          the name of the topic the message came in on
    * @param payload
    *          the message payload
    */
-  private def handleSensorMessage(topicName: String ,payload: Array[Byte]): Unit = {
+  private def handleSensorMessage(topicName: String, payload: Array[Byte]): Unit = {
     val message = codec.decode(payload)
     log.formatDebug("Got message on topic %s", topicName)
 

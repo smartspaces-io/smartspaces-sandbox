@@ -34,7 +34,7 @@ object DynamicObjectByteArrayCodec {
   /**
    * The default charset for the codec.
    */
-  private val CHARSET_DEFAULT = Charsets.UTF_8
+  val CHARSET_DEFAULT = Charsets.UTF_8
 }
 
 /**

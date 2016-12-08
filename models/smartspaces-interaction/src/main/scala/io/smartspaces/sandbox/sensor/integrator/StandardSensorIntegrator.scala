@@ -19,7 +19,6 @@ package io.smartspaces.sandbox.sensor.integrator
 import io.smartspaces.configuration.Configuration
 import io.smartspaces.logging.ExtendedLog
 import io.smartspaces.resource.managed.IdempotentManagedResource
-import io.smartspaces.resource.managed.ManagedResources
 import io.smartspaces.sandbox.sensor.entity.InMemorySensorRegistry
 import io.smartspaces.sandbox.sensor.entity.SensorDescriptionImporter
 import io.smartspaces.sandbox.sensor.entity.SensorRegistry
@@ -30,7 +29,6 @@ import io.smartspaces.sandbox.sensor.entity.model.StandardCompleteSensedEntityMo
 import io.smartspaces.sandbox.sensor.entity.model.query.SensedEntityModelQueryProcessor
 import io.smartspaces.sandbox.sensor.entity.model.query.StandardSensedEntityModelQueryProcessor
 import io.smartspaces.sandbox.sensor.processing.ContinuousValueSensorValueProcessor
-import io.smartspaces.sandbox.sensor.processing.MqttSensorInputAggregator
 import io.smartspaces.sandbox.sensor.processing.SensedEntitySensorHandler
 import io.smartspaces.sandbox.sensor.processing.SensedEntitySensorListener
 import io.smartspaces.sandbox.sensor.processing.SensorProcessor
@@ -38,27 +36,27 @@ import io.smartspaces.sandbox.sensor.processing.SimpleMarkerSensorValueProcessor
 import io.smartspaces.sandbox.sensor.processing.StandardBleProximitySensorValueProcessor
 import io.smartspaces.sandbox.sensor.processing.StandardFilePersistenceSensorHandler
 import io.smartspaces.sandbox.sensor.processing.StandardFilePersistenceSensorInput
+import io.smartspaces.sandbox.sensor.processing.StandardMqttSensorInput
 import io.smartspaces.sandbox.sensor.processing.StandardSensedEntityModelProcessor
 import io.smartspaces.sandbox.sensor.processing.StandardSensedEntitySensorHandler
 import io.smartspaces.sandbox.sensor.processing.StandardSensorProcessor
 import io.smartspaces.sandbox.sensor.processing.StandardUnknownSensedEntityHandler
+import io.smartspaces.scope.ManagedScope
 import io.smartspaces.service.event.observable.EventObservableService
-import io.smartspaces.service.speech.synthesis.SpeechSynthesisService
 import io.smartspaces.system.SmartSpacesEnvironment
-import io.smartspaces.tasks.ManagedTasks
+import io.smartspaces.time.TimeFrequency
 import io.smartspaces.util.data.dynamic.DynamicObject
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 import java.io.File
-import io.smartspaces.time.TimeFrequency
-import io.smartspaces.scope.ManagedScope
+import io.smartspaces.sandbox.sensor.processing.MqttSensorInput
 
 /**
  * The sensor integration layer.
  *
  * @author Keith M. Hughes
  */
-class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironment, private val configuration: Configuration, private val managedScope: ManagedScope, private val log: ExtendedLog) extends SensorIntegrator with IdempotentManagedResource {
+class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironment, private val managedScope: ManagedScope, private val log: ExtendedLog) extends SensorIntegrator with IdempotentManagedResource {
 
   /**
    * The sensor registry for the integrator.
@@ -80,15 +78,14 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
    */
   var descriptionImporter: SensorDescriptionImporter = null
 
+  /**
+   * The sensor processor for the integrator
+   */
+  private var sensorProcessor: SensorProcessor = null
+
   def queryProcessor: SensedEntityModelQueryProcessor = _queryProcessor
 
   override def onStartup(): Unit = {
-    val speechSynthesisService = spaceEnvironment.getServiceRegistry().
-      getRequiredService(SpeechSynthesisService.SERVICE_NAME).asInstanceOf[SpeechSynthesisService]
-    val speechPlayer = speechSynthesisService.newPlayer(log)
-    managedScope.managedResources.addResource(speechPlayer)
-    speechPlayer.speak("Hello world", false)
-
     val eventObservableService = spaceEnvironment.getServiceRegistry().
       getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
 
@@ -102,7 +99,7 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
 
     _queryProcessor = new StandardSensedEntityModelQueryProcessor(completeSensedEntityModel)
 
-    val sensorProcessor: SensorProcessor = new StandardSensorProcessor(log)
+    sensorProcessor = new StandardSensorProcessor(log)
 
     val sampleFile = new File("/var/tmp/sensordata.json")
     val liveData = true
@@ -110,14 +107,7 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
 
     var persistedSensorInput: StandardFilePersistenceSensorInput = null
 
-    val mqttHost = configuration.getRequiredPropertyString("smartspaces.comm.mqtt.broker.host")
-    val mqttPort = configuration.getRequiredPropertyInteger("smartspaces.comm.mqtt.broker.port")
     if (liveData) {
-      val mqttBrokerDescription = new MqttBrokerDescription(mqttHost, mqttPort, false)
-      log.formatInfo("MQTT Broker URL %s", mqttBrokerDescription.brokerAddress)
-      sensorProcessor
-        .addSensorInput(new MqttSensorInputAggregator(mqttBrokerDescription,
-          "/home/sensor/agregator2", "/home/sensor", spaceEnvironment, log))
 
       if (sampleRecord) {
         val persistenceHandler = new StandardFilePersistenceSensorHandler(sampleFile);
@@ -159,13 +149,13 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     sensorProcessor.addSensorHandler(sensorHandler)
 
     managedScope.managedResources.addResource(sensorProcessor)
-    
+
     val sensorCheckupTask = managedScope.managedTasks.scheduleAtFixedRate(new Runnable() {
       override def run(): Unit = {
         completeSensedEntityModel.checkModels()
       }
     }, TimeFrequency.timesPerHour(60.0), false)
-    
+
     //    if (liveData) {
     //      if (sampleRecord) {
     //        // Recording
@@ -188,6 +178,15 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
     //      latch.await()
     //
     //      //spaceEnvironment.shutdown()
-    //    }
+    //    } 
+  }
+
+  override def addMqttSensorInput(mqttBrokerDecription: MqttBrokerDescription, clientId: String): MqttSensorInput = {
+    log.formatInfo("MQTT Broker URL %s", mqttBrokerDecription.brokerAddress)
+    var mqttSensorInput = new StandardMqttSensorInput(mqttBrokerDecription,
+      clientId, spaceEnvironment, log)
+    sensorProcessor.addSensorInput(mqttSensorInput)
+
+    return mqttSensorInput
   }
 }

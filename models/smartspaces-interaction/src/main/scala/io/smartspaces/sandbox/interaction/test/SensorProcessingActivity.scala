@@ -39,6 +39,7 @@ import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import io.smartspaces.scope.ManagedScope
+import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
 
 /**
  * An activity to merge sensors across the entire space.
@@ -55,7 +56,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     val managedTasks: ManagedTasks = getManagedTasks
     val managedResources: ManagedResources = getManagedResources
     val managedScope: ManagedScope = getActivityManagedScope
-    
+
     val log = getSpaceEnvironment.getLog
 
     val speechSynthesisService = spaceEnvironment.getServiceRegistry().
@@ -64,15 +65,20 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     managedResources.addResource(speechPlayer)
     speechPlayer.speak("Hello world", false)
 
-    sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, getConfiguration, managedScope, getSpaceEnvironment.getLog)
+    sensorIntegrator = new StandardSensorIntegrator(getSpaceEnvironment, managedScope, getSpaceEnvironment.getLog)
     sensorIntegrator.descriptionImporter = new YamlSensorDescriptionImporter(getClass().getResourceAsStream("testdescription.yaml"), log)
     sensorIntegrator.startup()
     addManagedResource(sensorIntegrator)
 
+    val mqttHost = getConfiguration.getRequiredPropertyString("smartspaces.comm.mqtt.broker.host")
+    val mqttPort = getConfiguration.getRequiredPropertyInteger("smartspaces.comm.mqtt.broker.port")
+    val mqttSensorInput = sensorIntegrator.addMqttSensorInput(new MqttBrokerDescription(mqttHost, mqttPort, false), "/home/sensor/agregator2")
+    mqttSensorInput.addMqttSubscription("/home/sensor", 2)
+
     val eventObservableService = spaceEnvironment.getServiceRegistry.
       getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
 
-    setUpObservables(eventObservableService, log)
+    setUpObservables(log)
 
     //    managedTasks.scheduleAtFixedRate(new Runnable {
     //      override def run {
@@ -86,8 +92,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     //    }, 10000l, 10000l, TimeUnit.MILLISECONDS)
   }
 
-  private def setUpObservables(eventObservableService: EventObservableService,
-    log: ExtendedLog): Unit = {
+  private def setUpObservables(log: ExtendedLog): Unit = {
 
     val eventObservableService = getSpaceEnvironment.getServiceRegistry().
       getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]

@@ -19,24 +19,38 @@ package io.smartspaces.sandbox.sensor.integrator
 import io.smartspaces.resource.managed.ManagedResource
 import io.smartspaces.sandbox.sensor.entity.SensorDescriptionImporter
 import io.smartspaces.sandbox.sensor.entity.model.query.SensedEntityModelQueryProcessor
+import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
+import io.smartspaces.sandbox.sensor.processing.MqttSensorInput
 
 /**
  * The sensor integration layer.
- * 
+ *
  * <p>
  * It is important to start up the integrator so that its observables are available for subscribing to.
  *
  * @author Keith M. Hughes
  */
 trait SensorIntegrator extends ManagedResource {
-  
+
   /**
    * The sensor query processor.
    */
   def queryProcessor: SensedEntityModelQueryProcessor
-  
+
   /**
    * The description importer
    */
-  var descriptionImporter: SensorDescriptionImporter 
+  var descriptionImporter: SensorDescriptionImporter
+
+  /**
+   * Add in an MQTT sensor input.
+   *
+   * @param brokerDescription
+   *      the description for the MQTT broker
+   * @param clientId
+   *      the broker client ID to use
+   *      
+   * @return the MQTT sensor input that has been created
+   */
+  def addMqttSensorInput(brokerDecription: MqttBrokerDescription, clientId: String): MqttSensorInput
 }
