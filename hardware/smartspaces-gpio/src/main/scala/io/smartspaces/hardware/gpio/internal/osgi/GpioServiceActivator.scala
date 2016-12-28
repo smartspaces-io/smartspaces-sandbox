@@ -14,25 +14,18 @@
  * the License.
  */
 
-package io.smartspaces.hardware.bits;
+package io.smartspaces.hardware.gpio.internal.osgi
+
+import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator
+import io.smartspaces.hardware.gpio.Pi4jGpioService
 
 /**
- * Specification for a bit ordering.
- * 
- * <p>
- * usually used for some sort of serial communication.
+ * The OSGi bundle activator for the GPIO service classes.
  * 
  * @author Keith M. Hughes
  */
-public enum BitOrder {
-	
-	/**
-	 * Place the most significant bit first.
-	 */
-	MSBFIRST,
-	
-	/**
-	 * Place the least significant bit first.
-	 */
-	LSBFIRST
+class GpioServiceActivator extends SmartSpacesServiceOsgiBundleActivator {
+  override protected def allRequiredServicesAvailable(): Unit = {
+    registerNewSmartSpacesService(new Pi4jGpioService)
+  }
 }

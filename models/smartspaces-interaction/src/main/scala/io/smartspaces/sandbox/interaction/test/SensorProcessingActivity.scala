@@ -40,6 +40,7 @@ import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import io.smartspaces.scope.ManagedScope
 import io.smartspaces.util.messaging.mqtt.MqttBrokerDescription
+import io.smartspaces.event.observable.BaseObserver
 
 /**
  * An activity to merge sensors across the entire space.
@@ -107,15 +108,9 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     val sensorOfflineEventObservable: EventPublisherSubject[SensorOfflineEvent] =
       eventObservableService.getObservable(SensorOfflineEvent.EVENT_TYPE)
     if (sensorOfflineEventObservable != null) {
-      sensorOfflineEventObservable.subscribe(new Observer[SensorOfflineEvent]() {
-        override def onComplete(): Unit = {}
-        override def onError(e: Throwable): Unit = {}
+      sensorOfflineEventObservable.subscribe(new BaseObserver[SensorOfflineEvent]() {
         override def onNext(event: SensorOfflineEvent): Unit = {
           log.formatWarn("Sensor offline %s", event.sensorModel.sensorEntityDescription)
-        }
-
-        override def onSubscribe(d: Disposable): Unit = {
-          // Nothing to do
         }
       })
     }

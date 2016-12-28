@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 Keith M. Hughes
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -14,25 +14,22 @@
  * the License.
  */
 
-package io.smartspaces.hardware.services;
-
-import io.reactivex.Observable;
+package io.smartspaces.hardware.bits;
 
 /**
- * An NFC scanner.
+ * Bit order operations for most significant bit ordering.
  * 
  * @author Keith M. Hughes
  */
-public interface NfcScanner {
+public class MsbBitOrderOperation implements BitOrderOperation {
 
-	void startup();
+  @Override
+  public boolean getBit(byte value, int bit) {
+    return ((byte) (value << bit) & (byte) 0x80) != 0;
+  }
 
-	void shutdown();
-	
-	/**
-	 * Get the observable for the scanner that publishes the UUIDs scanned.
-	 * 
-	 * @return the observable
-	 */
-	Observable<String> getObservable();
+  @Override
+  public byte getByteShift(byte value, int bits) {
+    return (byte) (value << bits);
+  }
 }

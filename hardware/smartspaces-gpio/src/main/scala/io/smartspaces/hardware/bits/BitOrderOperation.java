@@ -27,27 +27,27 @@ package io.smartspaces.hardware.bits;
  */
 public interface BitOrderOperation {
 
-	/**
-	 * Get the bit from a value.
-	 * 
-	 * @param value
-	 *            the value to get the bit from
-	 * @param bit
-	 *            the number of the bit
-	 * 
-	 * @return {@code true} if the bit was {@code 1}
-	 */
-	boolean getBit(byte value, int bit);
+  /**
+   * Get the bit from a value.
+   * 
+   * @param value
+   *          the value to get the bit from
+   * @param bit
+   *          the number of the bit
+   * 
+   * @return {@code true} if the bit was {@code 1}
+   */
+  boolean getBit(byte value, int bit);
 
-	/**
-	 * Shift the byte by the number of bits specified.
-	 * 
-	 * @param value
-	 *            the value to be shifted
-	 * @param bits
-	 *            the number of bits to shift
-	 * 
-	 * @return the new byte after shifting
-	 */
-	byte getByteShift(byte value, int bits);
+  /**
+   * Shift the byte by the number of bits specified.
+   * 
+   * @param value
+   *          the value to be shifted
+   * @param bits
+   *          the number of bits to shift
+   * 
+   * @return the new byte after shifting
+   */
+  byte getByteShift(byte value, int bits);
 }

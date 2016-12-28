@@ -16,10 +16,10 @@
 
 package io.smartspaces.hardware.gpio;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.smartspaces.event.observable.BaseObserver;
 import io.smartspaces.hardware.services.NfcScanner;
 import io.smartspaces.hardware.services.Pn532NfcScanner;
+import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
 
 /**
  * Test driver for the PN532.
@@ -28,35 +28,24 @@ import io.smartspaces.hardware.services.Pn532NfcScanner;
  */
 public class Test {
 
-	  public static void main(String[] args) {
-		  NfcScanner nfc = new Pn532NfcScanner();
-		  
-		  nfc.startup();
-		  
-		  nfc.getObservable().subscribe(new Observer<String>() {
+  public static void main(String[] args) {
+    StandaloneSmartSpacesEnvironment spaceEnvironment =
+        StandaloneSmartSpacesEnvironment.newStandaloneSmartSpacesEnvironment();
+    
+    spaceEnvironment.registerAndStartService(new Pi4jGpioService());
+    
+    NfcScanner nfc =
+        new Pn532NfcScanner(spaceEnvironment, spaceEnvironment.getContainerManagedScope());
 
-			@Override
-			public void onSubscribe(Disposable d) {
-				// TODO Auto-generated method stub
-				
-			}
+    spaceEnvironment.addManagedResource(nfc);
 
-			@Override
-			public void onNext(String value) {
-				System.out.println("UUID is " + value);
-			}
+    nfc.getObservable().subscribe(new BaseObserver<String>() {
 
-			@Override
-			public void onError(Throwable e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onComplete() {
-				// TODO Auto-generated method stub
-				
-			} });
-	}
+      @Override
+      public void onNext(String value) {
+        System.out.println("UUID is " + value);
+      }
+    });
+  }
 
 }

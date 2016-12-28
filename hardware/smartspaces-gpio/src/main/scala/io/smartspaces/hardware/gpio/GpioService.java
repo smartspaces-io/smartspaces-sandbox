@@ -16,6 +16,8 @@
 
 package io.smartspaces.hardware.gpio;
 
+import io.smartspaces.service.SupportedService;
+
 import com.pi4j.io.gpio.Pin;
 
 /**
@@ -23,25 +25,26 @@ import com.pi4j.io.gpio.Pin;
  * 
  * @author Keith M. Hughes
  */
-public interface GpioService {
-	
-	void startup();
-	
-	void shutdown();
-	
-	/**
-	 * Get a software SPI instance.
-	 * 
-	 * @param sclkPin
-	 *      the system clock pin
-	 * @param mosiPin
-	 *      the MOSI pin
-	 * @param misoPin
-	 *      the MISO pin
-	 * @param csPin
-	 *      the chip select pin
-	 *      
-	 * @return the SPI implementation
-	 */
-	Spi getSoftwareSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin ssPin);
+public interface GpioService extends SupportedService {
+
+  /**
+   * Name of the service.
+   */
+  public static final String SERVICE_NAME = "rpi.gpio";
+
+  /**
+   * Get a software SPI instance.
+   * 
+   * @param sclkPin
+   *          the system clock pin
+   * @param mosiPin
+   *          the MOSI pin
+   * @param misoPin
+   *          the MISO pin
+   * @param csPin
+   *          the chip select pin
+   * 
+   * @return the SPI implementation
+   */
+  Spi getSoftwareSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin ssPin);
 }

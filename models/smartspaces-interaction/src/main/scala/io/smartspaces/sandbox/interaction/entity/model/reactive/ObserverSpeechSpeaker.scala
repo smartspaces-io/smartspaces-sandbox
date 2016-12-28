@@ -16,10 +16,7 @@
 
 package io.smartspaces.sandbox.interaction.entity.model.reactive
 
-
-import org.reactivestreams.Subscriber
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
+import io.smartspaces.event.observable.BaseObserver
 import io.smartspaces.sandbox.interaction.behavior.speech.SpeechSpeaker
 import io.smartspaces.sandbox.sensor.entity.model.PersonSensedEntityModel
 import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
@@ -29,15 +26,7 @@ import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupanc
  *
  * @author Keith M. Hughes
  */
-class ObserverSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends Observer[PhysicalLocationOccupancyEvent] {
-
-  override def onComplete(): Unit = {
-    // Nothing to do
-  }
-
-  override def onError(error: Throwable): Unit = {
-    // Nothing to do
-  }
+class ObserverSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends BaseObserver[PhysicalLocationOccupancyEvent] {
 
   override def onNext(event: PhysicalLocationOccupancyEvent): Unit = {
     val entered = event.entered
@@ -57,9 +46,5 @@ class ObserverSpeechSpeaker(private val speechSpeaker: SpeechSpeaker) extends Ob
             event.physicalSpace.sensedEntityDescription.displayName))
       })
     }
-  }
-
-  override def onSubscribe(d: Disposable): Unit = {
-    // Nothing to do
   }
 }

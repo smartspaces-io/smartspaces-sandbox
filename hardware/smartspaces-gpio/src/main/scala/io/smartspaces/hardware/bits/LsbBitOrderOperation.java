@@ -14,16 +14,22 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.interaction.entity.osgi;
-
-import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
+package io.smartspaces.hardware.bits;
 
 /**
- * The OSGi bundle activator for the interaction service classes.
+ * Bit order operations for least significant bit ordering.
  * 
  * @author Keith M. Hughes
  */
-class InteractionServiceActivator extends SmartSpacesServiceOsgiBundleActivator {
-  override protected def allRequiredServicesAvailable(): Unit = {
+public class LsbBitOrderOperation implements BitOrderOperation {
+
+  @Override
+  public boolean getBit(byte value, int bit) {
+    return ((value >> bit) & (byte) 0x01) != 0;
+  }
+
+  @Override
+  public byte getByteShift(byte value, int bits) {
+    return (byte) (value >> bits);
   }
 }

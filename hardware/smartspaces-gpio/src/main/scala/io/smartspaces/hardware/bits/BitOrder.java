@@ -17,19 +17,22 @@
 package io.smartspaces.hardware.bits;
 
 /**
- * Bit order operations for least significant bit ordering.
+ * Specification for a bit ordering.
+ * 
+ * <p>
+ * usually used for some sort of serial communication.
  * 
  * @author Keith M. Hughes
  */
-public class LsbBitOrderOperation implements BitOrderOperation {
+public enum BitOrder {
 
-	@Override
-	public boolean getBit(byte value, int bit) {
-		return ((value >> bit) & (byte)0x01) != 0;
-	}
+  /**
+   * Place the most significant bit first.
+   */
+  MSBFIRST,
 
-	@Override
-	public byte getByteShift(byte value, int bits) {
-		return (byte)(value >> bits);
-	}
+  /**
+   * Place the least significant bit first.
+   */
+  LSBFIRST
 }

@@ -16,6 +16,8 @@
 
 package io.smartspaces.hardware.gpio;
 
+import io.smartspaces.service.BaseSupportedService;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.Pin;
@@ -28,31 +30,37 @@ import com.pi4j.wiringpi.GpioUtil;
  * 
  * @author Keith M. Hughes
  */
-public class Pi4jGpioService implements GpioService {
+public class Pi4jGpioService extends BaseSupportedService implements GpioService {
 
-	/**
-	 * The GPIO controller.
-	 */
-	private GpioController gpio;
+  /**
+   * The GPIO controller.
+   */
+  private GpioController gpio;
 
-	@Override
-	public void startup() {
-		// Enable non sudo access to GPIO.
-		GpioUtil.enableNonPrivilegedAccess();
-		
-		// Use the Broadcom pin numberings.
-		GpioFactory.setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
+  @Override
+  public String getName() {
+    return GpioService.SERVICE_NAME;
+  }
 
-		gpio = GpioFactory.getInstance();
-	}
+  @Override
+  public void startup() {
+    // Enable non sudo access to GPIO.
+    GpioUtil.enableNonPrivilegedAccess();
 
-	@Override
-	public void shutdown() {
-		gpio.shutdown();
-	}
+    // Use the Broadcom pin numberings.
+    GpioFactory
+        .setDefaultProvider(new RaspiGpioProvider(RaspiPinNumberingScheme.BROADCOM_PIN_NUMBERING));
 
-	@Override
-	public Spi getSoftwareSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin csPin) {
-		return new BitBangSpi(gpio, sclkPin, mosiPin, misoPin, csPin);
-	}
+    gpio = GpioFactory.getInstance();
+  }
+
+  @Override
+  public void shutdown() {
+    gpio.shutdown();
+  }
+
+  @Override
+  public Spi getSoftwareSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin csPin) {
+    return new BitBangSpi(gpio, sclkPin, mosiPin, misoPin, csPin);
+  }
 }
