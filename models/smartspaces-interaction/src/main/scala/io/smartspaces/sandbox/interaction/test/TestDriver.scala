@@ -18,14 +18,15 @@ package io.smartspaces.sandbox.interaction.test
 
 import io.smartspaces.activity.Activity
 import io.smartspaces.activity.configuration.ActivityConfiguration
-import io.smartspaces.comm.network.zeroconf.StandardZeroconfService
-import io.smartspaces.comm.network.zeroconf.ZeroconfService
 import io.smartspaces.liveactivity.runtime.development.lightweight.StandardLightweightActivityRuntime
 import io.smartspaces.sandbox.sensor.entity.InMemorySensorRegistry
 import io.smartspaces.sandbox.sensor.entity.YamlSensorDescriptionImporter
 import io.smartspaces.sandbox.sensor.test.StandardTestClient
+import io.smartspaces.service.comm.network.zeroconf.BaseZeroconfNotificationListener
+import io.smartspaces.service.comm.network.zeroconf.StandardZeroconfService
+import io.smartspaces.service.comm.network.zeroconf.ZeroconfService
+import io.smartspaces.service.comm.network.zeroconf.ZeroconfServiceInfo
 import io.smartspaces.service.comm.pubsub.mqtt.paho.PahoMqttCommunicationEndpointService
-import io.smartspaces.service.event.observable.StandardEventObservableService
 import io.smartspaces.service.speech.synthesis.internal.freetts.FreeTtsSpeechSynthesisService
 import io.smartspaces.service.web.server.internal.netty.NettyWebServerService
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment
@@ -63,10 +64,12 @@ createSpaceEnvironment()
   def runEverythingWithmDns(): Unit = {
     val mdnsService: ZeroconfService = spaceEnvironment.getServiceRegistry.getRequiredService(ZeroconfService.SERVICE_NAME)
     val mqttServiceName = "_mqtt._tcp.local."
-    mdnsService.addSimpleDiscovery(mqttServiceName, (hostName, hostPort) => {
-      println(hostName)
-      println(hostPort)
-      runActivity(hostName, hostPort)
+    mdnsService.addSimpleDiscovery(mqttServiceName, new BaseZeroconfNotificationListener() {
+      override def zeroconfServiceAdded(serviceInfo: ZeroconfServiceInfo): Unit = {
+      println(serviceInfo.hostName())
+      println(serviceInfo.port())
+      runActivity(serviceInfo.hostName, serviceInfo.port)
+      }
     })
   }
 
@@ -83,10 +86,6 @@ createSpaceEnvironment()
       new FreeTtsSpeechSynthesisService()
     spaceEnvironment.addManagedResource(freeTtsSpeechSynthesisService)
     spaceEnvironment.getServiceRegistry().registerService(freeTtsSpeechSynthesisService)
-
-    val observableService = new StandardEventObservableService()
-    spaceEnvironment.addManagedResource(observableService)
-    spaceEnvironment.getServiceRegistry().registerService(observableService)
 
     val webServerService = new NettyWebServerService()
     webServerService.setSpaceEnvironment(spaceEnvironment)
@@ -130,7 +129,7 @@ createSpaceEnvironment()
           // conf.setProperty("space.activity.webapp.url.initial",
           // "index.html")
           // conf.setProperty("space.activity.webapp.url.query_string", "foo")
-          conf.setProperty(ActivityConfiguration.CONFIGURATION_PROPERTY_ACTIVITY_NAME,
+          conf.setProperty(ActivityConfiguration.CONFIGURATION_NAME_ACTIVITY_NAME,
             activity.getName())
 
           activity.startup()

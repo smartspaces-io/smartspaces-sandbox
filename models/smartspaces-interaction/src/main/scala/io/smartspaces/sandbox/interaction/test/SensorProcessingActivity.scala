@@ -32,7 +32,6 @@ import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
 import io.smartspaces.sandbox.sensor.integrator.SensorIntegrator
 import io.smartspaces.sandbox.sensor.integrator.StandardSensorIntegrator
 import io.smartspaces.sandbox.sensor.value.converter.PhysicalLocationWebConverter
-import io.smartspaces.service.event.observable.EventObservableService
 import io.smartspaces.service.speech.synthesis.SpeechSynthesisService
 import io.smartspaces.tasks.ManagedTasks
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator
@@ -76,9 +75,6 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
     val mqttSensorInput = sensorIntegrator.addMqttSensorInput(new MqttBrokerDescription(mqttHost, mqttPort, false), "/home/sensor/agregator2")
     mqttSensorInput.addMqttSubscription("/home/sensor", 2)
 
-    val eventObservableService = spaceEnvironment.getServiceRegistry.
-      getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
-
     setUpObservables(log)
 
     //    managedTasks.scheduleAtFixedRate(new Runnable {
@@ -95,8 +91,7 @@ class SensorProcessingActivity() extends BaseActivity with StandardActivityWebSe
 
   private def setUpObservables(log: ExtendedLog): Unit = {
 
-    val eventObservableService = getSpaceEnvironment.getServiceRegistry().
-      getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
+    val eventObservableService = getSpaceEnvironment.getEventObservableRegistry
     val physicalLocationOccupancyEventObservable: EventPublisherSubject[PhysicalLocationOccupancyEvent] =
       eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_TYPE)
     if (physicalLocationOccupancyEventObservable != null) {

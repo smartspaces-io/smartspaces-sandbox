@@ -24,8 +24,6 @@ import io.smartspaces.sandbox.sensor.entity.SensedEntityDescription
 import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
 import io.smartspaces.sandbox.sensor.entity.SensorRegistry
 import io.smartspaces.sandbox.sensor.entity.SimpleSensorSensedEntityAssociation
-import io.smartspaces.service.event.observable.EventObservableService
-import io.smartspaces.service.event.observable.ObservableCreator
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
@@ -34,6 +32,8 @@ import scala.collection.mutable.Map
 import io.smartspaces.system.SmartSpacesEnvironment
 import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
 import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
+import io.smartspaces.event.observable.EventObservableRegistry
+import io.smartspaces.event.observable.ObservableCreator
 
 /**
  * A collection of sensed entity models.
@@ -41,7 +41,7 @@ import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupanc
  * @author Keith M. Hughes
  */
 class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
-    private val eventObservableService: EventObservableService, override val log: ExtendedLog, private val spaceEnvironment: SmartSpacesEnvironment) extends CompleteSensedEntityModel {
+    override val log: ExtendedLog, private val spaceEnvironment: SmartSpacesEnvironment) extends CompleteSensedEntityModel {
 
   /**
    * Map of entity IDs to their sensor entity models.
@@ -104,12 +104,13 @@ class StandardCompleteSensedEntityModel(val sensorRegistry: SensorRegistry,
   private val readWriteLock = new ReentrantReadWriteLock
 
   override def prepare(): Unit = {
+    val eventObservableRegistry = spaceEnvironment.getEventObservableRegistry
     physicalLocationOccupancyEventSubject =
-      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_TYPE,
+      eventObservableRegistry.getObservable(PhysicalLocationOccupancyEvent.EVENT_TYPE,
         physicalLocationOccupancyEventCreator)
 
     sensorOfflineEventSubject =
-      eventObservableService.getObservable(SensorOfflineEvent.EVENT_TYPE,
+      eventObservableRegistry.getObservable(SensorOfflineEvent.EVENT_TYPE,
         sensorOfflineEventCreator)
 
     createModelsFromDescriptions()

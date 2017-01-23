@@ -17,13 +17,13 @@
 package io.smartspaces.sandbox.sensor.test
 
 import io.smartspaces.event.observable.EventPublisherSubject
-import io.smartspaces.service.event.observable.ObservableCreator
+import io.smartspaces.event.observable.ObservableCreator
 import io.smartspaces.system.SmartSpacesEnvironment
 
 import io.smartspaces.sandbox.sensor.entity.model.event._
-import io.smartspaces.service.event.observable.EventObservableService
 import io.smartspaces.sandbox.sensor.entity.model.event.SensorOfflineEvent
 import io.smartspaces.sandbox.sensor.entity.model.event.PhysicalLocationOccupancyEvent
+import io.smartspaces.event.observable.ObservableCreator
 
 
 class StandardSensorEventTester(val spaceEnvironment: SmartSpacesEnvironment) {
@@ -59,15 +59,14 @@ class StandardSensorEventTester(val spaceEnvironment: SmartSpacesEnvironment) {
     }
 
   def startup(): Unit = {
-    val eventObservableService = spaceEnvironment.getServiceRegistry.
-      getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
+    val eventObservableRegistry = spaceEnvironment.getEventObservableRegistry
 
     physicalLocationOccupancyEventSubject =
-      eventObservableService.getObservable(PhysicalLocationOccupancyEvent.EVENT_TYPE,
+      eventObservableRegistry.getObservable(PhysicalLocationOccupancyEvent.EVENT_TYPE,
         physicalLocationOccupancyEventCreator)
 
     sensorOfflineEventSubject =
-      eventObservableService.getObservable(SensorOfflineEvent.EVENT_TYPE,
+      eventObservableRegistry.getObservable(SensorOfflineEvent.EVENT_TYPE,
         sensorOfflineEventCreator)
   }
   

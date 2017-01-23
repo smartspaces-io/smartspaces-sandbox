@@ -16,10 +16,10 @@
 
 package io.smartspaces.sandbox.sensor.entity.model
 
+import io.smartspaces.event.observable.EventObservableRegistry
 import io.smartspaces.logging.ExtendedLog
 import io.smartspaces.sandbox.sensor.entity.SensorEntityDescription
 import io.smartspaces.sandbox.sensor.entity.SensorRegistry
-import io.smartspaces.service.event.observable.EventObservableService
 import io.smartspaces.system.SmartSpacesEnvironment
 import io.smartspaces.time.provider.SettableTimeProvider
 
@@ -29,6 +29,7 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.MockitoAnnotations.Mock
 import org.scalatest.junit.JUnitSuite
+import io.smartspaces.event.observable.EventObservableRegistry
 
 /**
  * Test the {@link #StandardCompleteSensedEntityModel}.
@@ -40,7 +41,7 @@ class StandardCompleteSensedEntityModelTest extends JUnitSuite {
 
   @Mock var sensorRegistry: SensorRegistry = null
 
-  @Mock var eventObservableService: EventObservableService = null
+  @Mock var eventObservableRegistry: EventObservableRegistry = null
 
   @Mock var log: ExtendedLog = null
 
@@ -52,30 +53,30 @@ class StandardCompleteSensedEntityModelTest extends JUnitSuite {
     MockitoAnnotations.initMocks(this)
 
     Mockito.when(spaceEnvironment.getTimeProvider).thenReturn(timeProvider)
+    Mockito.when(spaceEnvironment.getEventObservableRegistry).thenReturn(eventObservableRegistry)
 
-    allModels = new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log, spaceEnvironment)
+    allModels = new StandardCompleteSensedEntityModel(sensorRegistry, log, spaceEnvironment)
   }
 
   @Test def testModelUpdate(): Unit = {
     val sensorModel = Mockito.mock(classOf[SensorEntityModel])
     val sensorDescription = Mockito.mock(classOf[SensorEntityDescription])
     Mockito.when(sensorModel.sensorEntityDescription).thenReturn(sensorDescription)
-    
+
     val externalId = "foo"
-    
-    
+
     Mockito.when(sensorDescription.externalId).thenReturn(externalId)
     Mockito.when(sensorDescription.active).thenReturn(true)
-    
+
     timeProvider.setCurrentTime(10000)
-    
+
     allModels.registerSensorModel(sensorModel)
-    
+
     val checkTime = 12345l
     timeProvider.setCurrentTime(checkTime)
-    
+
     allModels.performModelCheck()
-    
+
     Mockito.verify(sensorModel).checkIfOfflineTransition(checkTime)
   }
 }

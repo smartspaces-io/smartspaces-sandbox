@@ -42,7 +42,6 @@ import io.smartspaces.sandbox.sensor.processing.StandardSensedEntitySensorHandle
 import io.smartspaces.sandbox.sensor.processing.StandardSensorProcessor
 import io.smartspaces.sandbox.sensor.processing.StandardUnknownSensedEntityHandler
 import io.smartspaces.scope.ManagedScope
-import io.smartspaces.service.event.observable.EventObservableService
 import io.smartspaces.system.SmartSpacesEnvironment
 import io.smartspaces.time.TimeFrequency
 import io.smartspaces.util.data.dynamic.DynamicObject
@@ -86,15 +85,12 @@ class StandardSensorIntegrator(private val spaceEnvironment: SmartSpacesEnvironm
   def queryProcessor: SensedEntityModelQueryProcessor = _queryProcessor
 
   override def onStartup(): Unit = {
-    val eventObservableService = spaceEnvironment.getServiceRegistry().
-      getRequiredService(EventObservableService.SERVICE_NAME).asInstanceOf[EventObservableService]
-
     sensorRegistry = new InMemorySensorRegistry()
 
     descriptionImporter.importDescriptions(sensorRegistry)
 
     completeSensedEntityModel =
-      new StandardCompleteSensedEntityModel(sensorRegistry, eventObservableService, log, spaceEnvironment)
+      new StandardCompleteSensedEntityModel(sensorRegistry, log, spaceEnvironment)
     completeSensedEntityModel.prepare()
 
     _queryProcessor = new StandardSensedEntityModelQueryProcessor(completeSensedEntityModel)
