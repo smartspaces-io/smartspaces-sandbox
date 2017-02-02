@@ -73,12 +73,12 @@ class StandardMqttSensorInput(private val mqttBrokerDescription: MqttBrokerDescr
    *       the Quality of Service for the connection
    */
   def addMqttSubscription(mqttSensorTopicName: String, qos: Int): Unit = {
-    mqttEndpoint.subscribe(mqttSensorTopicName, new MqttSubscriberListener() {
+    mqttEndpoint.subscribe(mqttSensorTopicName, qos, true, new MqttSubscriberListener() {
       override def handleMessage(endpoint: MqttCommunicationEndpoint, topicName: String,
         payload: Array[Byte]): Unit = {
         handleSensorMessage(topicName, payload)
       }
-    }, qos, true)
+    })
 
     log.info(s"Subscribing to MQTT topic $mqttSensorTopicName with QoS $qos")
   }
