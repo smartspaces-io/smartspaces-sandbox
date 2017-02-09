@@ -248,10 +248,10 @@ public class SpiPn532Device implements Pn532Device {
 
     // Check only 1 card with up to a 7 byte UID is present.
     if (response[0] != 0x01) {
-      throw new RuntimeException("More than one card detected!");
+      throw new RuntimeException("More than one card detected by PN532!");
     }
     if (response[5] > 7) {
-      throw new RuntimeException("Found card with unexpectedly long UID!");
+      throw new RuntimeException("Found card with unexpectedly long UID with PN532!");
     }
 
     // Return UID of card.
@@ -349,36 +349,36 @@ public class SpiPn532Device implements Pn532Device {
     // Check frame starts with 0x01 and then has 0x00FF (preceeded by
     // optional zeros).
     if (response[0] != 0x01) {
-      throw new RuntimeException("Response frame does not start with 0x01!");
+      throw new RuntimeException("Response frame does not start with 0x01 in PN532 read frame!");
     }
     // Swallow all the 0x00 values that preceed 0xFF.
     int offset = 1;
     while (response[offset] == 0x00) {
       offset += 1;
       if (offset >= response.length) {
-        throw new RuntimeException("Response frame preamble does not contain 0x00FF!");
+        throw new RuntimeException("Response frame preamble does not contain 0x00FF in PN532 read frame!");
       }
     }
 
     if (response[offset] != (byte) 0xFF) {
-      throw new RuntimeException("Response frame preamble does not contain 0x00FF!");
+      throw new RuntimeException("Response frame preamble does not contain 0x00FF in PN532 read frame!");
     }
 
     offset += 1;
     if (offset >= response.length) {
-      throw new RuntimeException("Response contains no data!");
+      throw new RuntimeException("Response contains no data in PN532 read frame!");
     }
 
     // Check length & length checksum match.
     int frame_len = response[offset];
     if (((frame_len + response[offset + 1]) & 0xFF) != 0) {
-      throw new RuntimeException("Response length checksum did not match length!");
+      throw new RuntimeException("Response length checksum did not match length in PN532 read frame!");
     }
 
     // Check frame checksum value matches bytes.
     byte checksum = ByteOperations.calculateChecksum(response, offset + 2, frame_len + 1, (byte) 0);
     if (checksum != 0) {
-      throw new RuntimeException("Response checksum did not match expected value!");
+      throw new RuntimeException("Response checksum did not match expected value in PN532 read frame!");
     }
 
     // Return frame data.
@@ -470,7 +470,7 @@ public class SpiPn532Device implements Pn532Device {
 
     // Check that response is for the called function.
     if ((response[0] != PN532_PN532TOHOST) || (response[1] != (command + 1))) {
-      throw new RuntimeException("Received unexpected command response!");
+      throw new RuntimeException("Received unexpected command response to PN532 command!");
     }
 
     // Return response data.
