@@ -15,24 +15,20 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.service.database.document.orientdb;
+package io.smartspaces.sandbox.service.database.document.orientdb.internal.osgi
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-
-import io.smartspaces.resource.managed.ManagedResource;
+import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator
+import io.smartspaces.sandbox.service.database.document.orientdb.internal.StandardOrientDbDocumentDatabaseService
 
 /**
- * Endpoint for an OrientDB document database.
+ * OSGi bundle activator for the OrientDB database service.
  *
  * @author Oleksandr Kelepko
  * @author Keith M. Hughes
  */
-public interface OrientDbDocumentDatabaseEndpoint extends ManagedResource {
+ class OrientDbDocumentDatabaseServiceOsgiBundleActivator  extends SmartSpacesServiceOsgiBundleActivator {
 
-  /**
-   * Creates a new connection to the database managed by this endpoint.
-   *
-   * @return OrientDB database connection
-   */
-  ODatabaseDocumentTx createConnection();
+  override def allRequiredServicesAvailable(): Unit = {
+    registerNewSmartSpacesService(new StandardOrientDbDocumentDatabaseService())
+  }
 }

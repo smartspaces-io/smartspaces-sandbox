@@ -22,52 +22,60 @@ import org.apache.commons.logging.Log;
 
 import java.io.File;
 
+object OrientDbDocumentDatabaseService {
+
+  /**
+   * The name of the service.
+   */
+  val SERVICE_NAME = "database.orientdb";
+
+}
+
 /**
  * A database service for OrientDB.
- * 
+ *
  * @author Keith M. Hughes
  */
-public interface OrientDbDocumentDatabaseService extends SupportedService {
+trait OrientDbDocumentDatabaseService extends SupportedService {
 
   /**
    * Creates new endpoint for a database with the given name.
    *
    * @param databaseName
-   *          OrientDB database name
+   *            OrientDB database name
    * @param log
-   *          logger
+   *            logger
    *
    * @return new endpoint for accessing the database
    */
-  OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(String databaseName,
-      Log log);
+  def getOrientDbDocumentDatabaseEndpoint(databaseName: String, log: Log): OrientDbDocumentDatabaseEndpoint
 
   /**
    * Creates new endpoint for a database with at the given location.
    *
    * @param dbDirectory
-   *          OrientDB database storage
+   *            OrientDB database storage
    * @param log
-   *          logger
+   *            logger
    *
    * @return new endpoint for accessing the database
    */
-  OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(File dbDirectory, Log log);
+  def getOrientDbDocumentDatabaseEndpoint(dbDirectory: File, log: Log): OrientDbDocumentDatabaseEndpoint
 
   /**
    * Creates new endpoint for a database with the given URL and credentials.
    *
    * @param databaseUrl
-   *          OrientDB database URL
+   *            OrientDB database URL
    * @param login
-   *          login for the database access
+   *            login for the database access
    * @param password
-   *          password for the database access
+   *            password for the database access
    * @param log
-   *          logger
+   *            logger
    *
    * @return new endpoint for accessing the database
    */
-  OrientDbDocumentDatabaseEndpoint getOrientDbDocumentDatabaseEndpoint(String databaseUrl,
-      String login, String password, Log log);
+  def getOrientDbDocumentDatabaseEndpoint(databaseUrl: String, login: String,
+    password: String, log: Log): OrientDbDocumentDatabaseEndpoint
 }

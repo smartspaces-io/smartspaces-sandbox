@@ -16,32 +16,57 @@
 
 package io.smartspaces.hardware.services;
 
+import io.smartspaces.SmartSpacesException;
+import io.smartspaces.event.observable.EventPublisherSubject;
 import io.smartspaces.hardware.gpio.GpioService;
 import io.smartspaces.hardware.gpio.device.Pn532Device;
 import io.smartspaces.hardware.gpio.device.SpiPn532Device;
+import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.scope.ManagedScope;
 import io.smartspaces.system.SmartSpacesEnvironment;
 import io.smartspaces.tasks.ManagedTask;
 
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.RaspiPin;
 import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * An NFC scanner that uses a local SPI-based PN532 board.
  * 
+ * <p>
+ * The scanner has a debounce interval. This specifies how much time must pass
+ * before a second scan of the last known scan counts as a new scan. If the next
+ * scan is a different tag, the scanner will immediately emit it, even if within
+ * the debounce interval.
+ * 
  * @author Keith M. Hughes
  */
 public class Pn532NfcScanner implements NfcScanner {
 
   /**
+   * The default interval between scans, in milliseconds.
+   */
+  private static final long SCAN_INTERVAL_DEFAULT = 2000;
+
+  /**
+   * The default interval for debounce, in milliseconds.
+   */
+  private static final long DEBOUNCE_INTERVAL_DEFAULT = 10000;
+
+  /**
    * The device for controlling a PN532.
    */
   private Pn532Device pn532;
+
+  /**
+   * The interval between scans, in milliseconds.
+   */
+  private long scanInterval = SCAN_INTERVAL_DEFAULT;
+
+  /**
+   * The interval for debounce, in milliseconds.
+   */
+  private long debounceInterval = DEBOUNCE_INTERVAL_DEFAULT;
 
   /**
    * The last good UUID obtained.
@@ -56,7 +81,7 @@ public class Pn532NfcScanner implements NfcScanner {
   /**
    * The observable for the UUID events.
    */
-  private Subject<String> observable = PublishSubject.create();
+  private EventPublisherSubject<String> observable;
 
   /**
    * The space environment to run under.
@@ -69,6 +94,36 @@ public class Pn532NfcScanner implements NfcScanner {
   private ManagedScope managedScope;
 
   /**
+   * The logger for the scanner.
+   */
+  private ExtendedLog log;
+
+  /**
+   * The last time a scan was done.
+   */
+  private long lastScanTime;
+
+  /**
+   * The pin name for the SPI system clock pin.
+   */
+  private String sclkPinName;
+
+  /**
+   * The pin name for the SPI MOSI pin.
+   */
+  private String mosiPinName;
+
+  /**
+   * The pin name for the SPI MISO pin.
+   */
+  private String misoPinName;
+
+  /**
+   * The pin name for the SPI chip select pin.
+   */
+  private String csPinName;
+
+  /**
    * Construct a scanner.
    * 
    * @param spaceEnvironment
@@ -76,35 +131,44 @@ public class Pn532NfcScanner implements NfcScanner {
    * @param managedScope
    *          the managed scope to run under.
    */
-  public Pn532NfcScanner(SmartSpacesEnvironment spaceEnvironment, ManagedScope managedScope) {
+  public Pn532NfcScanner(SmartSpacesEnvironment spaceEnvironment, ManagedScope managedScope,
+      ExtendedLog log) {
     this.spaceEnvironment = spaceEnvironment;
     this.managedScope = managedScope;
+    this.log = log;
+
+    observable = EventPublisherSubject.create(log);
   }
 
   @Override
   public void startup() {
+    if (csPinName == null || sclkPinName == null || mosiPinName == null || misoPinName == null) {
+      throw new SmartSpacesException("A pin name has not been set for the PN532 Scanner");
+    }
+    
+    GpioService gpioService =
+        spaceEnvironment.getServiceRegistry().getRequiredService(GpioService.SERVICE_NAME);
 
-    GpioService gpioService = spaceEnvironment.getServiceRegistry().getRequiredService(GpioService.SERVICE_NAME);
-    gpioService.startup();
+    try {
+      pn532 = new SpiPn532Device(
+          gpioService.getSoftwareSpi(sclkPinName, mosiPinName, misoPinName, csPinName));
+      pn532.startup();
 
-    Pin sclkPin = RaspiPin.GPIO_27;
-    Pin mosiPin = RaspiPin.GPIO_04;
-    Pin misoPin = RaspiPin.GPIO_17;
-    Pin csPin = RaspiPin.GPIO_22;
+      pn532.useSamConfiguration();
 
-    pn532 = new SpiPn532Device(gpioService.getSoftwareSpi(sclkPin, mosiPin, misoPin, csPin));
-    pn532.startup();
+      log.info("Successfully initialized PN532 NFC scanner.");
 
-    pn532.useSamConfiguration();
+      tagScanTask = managedScope.managedTasks().scheduleWithFixedDelay(new Runnable() {
+        @Override
+        public void run() {
+          scanForTag();
+        }
+      }, 0, scanInterval, TimeUnit.MILLISECONDS);
+    } catch (Throwable e) {
+      pn532.shutdown();
 
-    tagScanTask = managedScope.managedTasks().scheduleWithFixedDelay(new Runnable() {
-
-      @Override
-      public void run() {
-        scanForTag();
-      }
-    }, 0, 2000, TimeUnit.MILLISECONDS);
-
+      throw new SmartSpacesException("Could not start up PN532 Scanner", e);
+    }
   }
 
   @Override
@@ -120,24 +184,76 @@ public class Pn532NfcScanner implements NfcScanner {
   }
 
   /**
+   * Set the scan interval between scans for tags.
+   * 
+   * <p>
+   * Calling this after running {@link #startup()} will have no effect.
+   * 
+   * @param scanInterval
+   *          the scan interval, in milliseconds
+   */
+  public void setScanInterval(long scanInterval) {
+    this.scanInterval = scanInterval;
+  }
+
+  /**
+   * Set the names of the pins that the scanner uses for control via SPI.
+   * 
+   * @param mosiPinName
+   *          the MOSI pin
+   * @param misoPinName
+   *          the MISO pin
+   * @param sclkPinName
+   *          the clock pin
+   * @param csPinName
+   *          the chip select pin
+   */
+  public void setPinNames(String mosiPinName, String misoPinName, String sclkPinName,
+      String csPinName) {
+    this.mosiPinName = mosiPinName;
+    this.misoPinName = misoPinName;
+    this.sclkPinName = sclkPinName;
+    this.csPinName = csPinName;
+  }
+
+  /**
    * Scan for a tag and generate an event if found.
    */
   private void scanForTag() {
-    byte[] uuidComponents = pn532.readPassiveTarget();
+    try {
+      byte[] uuidComponents = pn532.readPassiveTarget();
 
-    if (uuidComponents != null) {
-      String uuid = toHexString(uuidComponents);
+      if (uuidComponents != null) {
+        long newScanTime = spaceEnvironment.getTimeProvider().getCurrentTime();
 
-      if (lastGoodUuid != null) {
-        if (!lastGoodUuid.equals(uuid)) {
+        String uuid = toHexString(uuidComponents);
+
+        if (lastGoodUuid != null) {
+          if (!lastGoodUuid.equals(uuid)) {
+            lastScanTime = newScanTime;
+            processUuid(uuid);
+          } else {
+            // UUID is the same as was last scanned. See if in debounce time.
+            long timeDiff = newScanTime - lastScanTime;
+
+            // Immediate change the time so that if the tag is left on the
+            // scanner, we never time out.
+            lastScanTime = newScanTime;
+
+            if (timeDiff > debounceInterval) {
+              processUuid(uuid);
+            }
+          }
+        } else {
+          lastScanTime = newScanTime;
           processUuid(uuid);
         }
       } else {
-        processUuid(uuid);
+        // No scan this time so clear things out.
+        lastGoodUuid = null;
       }
-    } else {
-      // No scan this time so clear things out.
-      lastGoodUuid = null;
+    } catch (Throwable e) {
+      log.error("PN532 RFID scan failed", e);
     }
   }
 
@@ -172,5 +288,4 @@ public class Pn532NfcScanner implements NfcScanner {
       return String.format("%02x%02x%02x%02x", ba[0], ba[1], ba[2], ba[3]);
     }
   }
-
 }

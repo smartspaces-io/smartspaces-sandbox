@@ -192,7 +192,10 @@ public class BitBangSpi implements Spi {
 
   @Override
   public void shutdown() {
-    // This is ignored in software SPI so ignore it.
+    csOutput.unexport();
+    mosiOutput.unexport();
+    misoInput.unexport();
+    sclkOutput.unexport();
   }
 
   @Override

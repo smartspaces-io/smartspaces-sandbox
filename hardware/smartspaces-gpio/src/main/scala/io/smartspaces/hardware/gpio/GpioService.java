@@ -18,8 +18,6 @@ package io.smartspaces.hardware.gpio;
 
 import io.smartspaces.service.SupportedService;
 
-import com.pi4j.io.gpio.Pin;
-
 /**
  * A service for getting GPIO resources.
  * 
@@ -35,16 +33,16 @@ public interface GpioService extends SupportedService {
   /**
    * Get a software SPI instance.
    * 
-   * @param sclkPin
+   * @param sclkPinName
    *          the system clock pin
-   * @param mosiPin
+   * @param mosiPinName
    *          the MOSI pin
-   * @param misoPin
+   * @param misoPinName
    *          the MISO pin
-   * @param csPin
+   * @param csPinName
    *          the chip select pin
    * 
    * @return the SPI implementation
    */
-  Spi getSoftwareSpi(Pin sclkPin, Pin mosiPin, Pin misoPin, Pin ssPin);
+  Spi getSoftwareSpi(String sclkPinName, String mosiPinName, String misoPinName, String ssPinName);
 }

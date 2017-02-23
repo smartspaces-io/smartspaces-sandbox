@@ -30,6 +30,9 @@ public interface NfcScanner extends ManagedResource {
   /**
    * Get the observable for the scanner that publishes the UUIDs scanned.
    * 
+   * <p>
+   * The event will be a string of only the scanned UUID.
+   * 
    * @return the observable
    */
   Observable<String> getObservable();

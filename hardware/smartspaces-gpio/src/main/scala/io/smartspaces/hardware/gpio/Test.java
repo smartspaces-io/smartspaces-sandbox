@@ -35,7 +35,7 @@ public class Test {
     spaceEnvironment.registerAndStartService(new Pi4jGpioService());
     
     NfcScanner nfc =
-        new Pn532NfcScanner(spaceEnvironment, spaceEnvironment.getContainerManagedScope());
+        new Pn532NfcScanner(spaceEnvironment, spaceEnvironment.getContainerManagedScope(), spaceEnvironment.getLog());
 
     spaceEnvironment.addManagedResource(nfc);
 
