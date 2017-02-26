@@ -94,7 +94,7 @@ object StandardOrientDbDocumentDatabaseService {
   /**
    * Username of the database user.
    */
-  val DEFAULT_LOGIN = "admin"
+  val DEFAULT_LOGIN = "root"
 
   /**
    * Password of the database user.

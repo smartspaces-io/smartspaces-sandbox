@@ -35,6 +35,9 @@ import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDatabas
 class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocumentDatabaseService,
     databaseUrl: String, username: String, password: String, log: Log) extends OrientDbDocumentDatabaseEndpoint with IdempotentManagedResource {
 
+  /**
+   * The creator for the OrientDB database if the database didn't exist and is now being created.
+   */
   override var creator: Option[OrientDbDatabaseCreator] = None
 
   /**

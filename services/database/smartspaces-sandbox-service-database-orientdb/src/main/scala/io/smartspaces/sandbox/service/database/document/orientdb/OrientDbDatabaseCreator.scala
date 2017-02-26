@@ -30,7 +30,7 @@ trait OrientDbDatabaseCreator {
    * The database has just been created from scratch.
    *
    * <p>
-   * These is no need to cal close on the database. This is done automatically.
+   * These is no need to call close on the database. This is done automatically.
    *
    * @param db
    *        the database
