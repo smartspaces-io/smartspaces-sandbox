@@ -17,15 +17,15 @@
 
 package io.smartspaces.sandbox.service.control.remotecontrol.internal.osgi;
 
-import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
 import io.smartspaces.sandbox.service.control.remotecontrol.internal.lirc.NetworkLircRemoteControlCommunicationEndpointService;
+import io.smartspaces.system.osgi.SmartSpacesOsgiBundleActivator;
 
 /**
  * The OSGi bundle activator for the Remote Control services.
  *
  * @author Keith M. Hughes
  */
-public class RemoteControlServiceOsgiBundleActivator extends SmartSpacesServiceOsgiBundleActivator {
+public class RemoteControlServiceOsgiBundleActivator extends SmartSpacesOsgiBundleActivator {
   @Override
   protected void allRequiredServicesAvailable() {
     registerNewSmartSpacesService(new NetworkLircRemoteControlCommunicationEndpointService());

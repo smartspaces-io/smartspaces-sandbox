@@ -17,9 +17,9 @@
 
 package io.smartspaces.sandbox.service.database.document.orientdb
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
-
 import io.smartspaces.resource.managed.ManagedResource
+
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 
 /**
  * Endpoint for an OrientDB document database.
@@ -31,8 +31,17 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
   
   /**
    * The creator for the database.
+   * 
+   * This is called on startup.
    */
   var creator: Option[OrientDbDatabaseCreator]
+  
+  /**
+   * The initializer for the database.
+   * 
+   * This is called on startup.
+   */
+  var initializor: Option[OrientDbEndpointInitializer]
 
   /**
    * Creates a new connection to the database managed by this endpoint.

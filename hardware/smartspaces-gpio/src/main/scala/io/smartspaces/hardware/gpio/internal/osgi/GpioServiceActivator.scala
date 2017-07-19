@@ -16,15 +16,15 @@
 
 package io.smartspaces.hardware.gpio.internal.osgi
 
-import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator
 import io.smartspaces.hardware.gpio.Pi4jGpioService
+import io.smartspaces.system.osgi.SmartSpacesOsgiBundleActivator
 
 /**
  * The OSGi bundle activator for the GPIO service classes.
  * 
  * @author Keith M. Hughes
  */
-class GpioServiceActivator extends SmartSpacesServiceOsgiBundleActivator {
+class GpioServiceActivator extends SmartSpacesOsgiBundleActivator {
   override protected def allRequiredServicesAvailable(): Unit = {
     registerNewSmartSpacesService(new Pi4jGpioService)
   }

@@ -17,16 +17,15 @@
 
 package io.smartspaces.sandbox.service.control.opensoundcontrol.internal.osgi;
 
-import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
 import io.smartspaces.sandbox.service.control.opensoundcontrol.internal.SmartSpacesOpenSoundControlServerCommunicationEndpointService;
+import io.smartspaces.system.osgi.SmartSpacesOsgiBundleActivator;
 
 /**
  * The OSGi bundle activator for the Open Sound Control services.
  *
  * @author Keith M. Hughes
  */
-public class OpenSoundControlServiceOsgiBundleActivator extends
-    SmartSpacesServiceOsgiBundleActivator {
+public class OpenSoundControlServiceOsgiBundleActivator extends SmartSpacesOsgiBundleActivator {
   @Override
   protected void allRequiredServicesAvailable() {
     registerNewSmartSpacesService(new SmartSpacesOpenSoundControlServerCommunicationEndpointService());

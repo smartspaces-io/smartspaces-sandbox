@@ -17,15 +17,16 @@
 
 package io.smartspaces.sandbox.service.control.dmx.internal.osgi;
 
-import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
-import io.smartspaces.sandbox.service.control.dmx.internal.enttecpro.EnttecProDmxControlService;
+import io.smartspaces.sandbox.service.control.dmx.internal.enttecpro.EnttecProDm
+xControlService;
+import io.smartspaces.system.osgi.SmartSpacesOsgiBundleActivator;
 
 /**
  * The OSGi bundle activator for the DMX services.
  *
  * @author Keith M. Hughes
  */
-public class DmxControlServiceOsgiBundleActivator extends SmartSpacesServiceOsgiBundleActivator {
+public class DmxControlServiceOsgiBundleActivator extends SmartSpacesOsgiBundleActivator {
   @Override
   protected void allRequiredServicesAvailable() {
     registerNewSmartSpacesService(new EnttecProDmxControlService());

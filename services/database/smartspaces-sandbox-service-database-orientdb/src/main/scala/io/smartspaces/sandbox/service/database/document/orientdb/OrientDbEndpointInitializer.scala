@@ -17,24 +17,16 @@
 package io.smartspaces.sandbox.service.database.document.orientdb
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
-import com.orientechnologies.orient.core.metadata.schema.OSchema
 
 /**
- * A creator for an OrientDB database.
- *
+ * An initializer for an OrientDB endpoint. This includes creating compiled queries, etc.
+ * 
  * @author Keith M. Hughes
  */
-trait OrientDbDatabaseCreator {
-
+trait OrientDbEndpointInitializer {
+  
   /**
-   * The database has just been created from scratch.
-   *
-   * These is no need to call close on the database. This is done automatically.
-   *
-   * @param db
-   *        the database
-   * @param schema
-   *        the schema object for creating schemas
+   * The database exists. Do any initialization for the endpoint usage.
    */
-  def onDatabaseCreate(db: ODatabaseDocumentTx, schema: OSchema): Unit
+  def onDatabaseInit(db: ODatabaseDocumentTx): Unit
 }

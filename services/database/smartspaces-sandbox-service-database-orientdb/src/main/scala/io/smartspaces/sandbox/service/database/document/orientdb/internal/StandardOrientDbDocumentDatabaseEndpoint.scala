@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool
 import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDatabaseCreator
+import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbEndpointInitializer
 
 /**
  * Endpoint for an OrientDB document database.
@@ -39,6 +40,11 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
    * The creator for the OrientDB database if the database didn't exist and is now being created.
    */
   override var creator: Option[OrientDbDatabaseCreator] = None
+  
+  /**
+   * The initializer for the database session.
+   */
+  override var initializor: Option[OrientDbEndpointInitializer] = None
 
   /**
    * The pool of database connections.
@@ -49,6 +55,10 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
     checkDataBaseExists()
 
     pool = new OPartitionedDatabasePool(databaseUrl, username, password)
+    
+    initializor.foreach( (i) => {
+      doVoidOperation( i.onDatabaseInit )
+    })
   }
 
   override def onShutdown(): Unit = {
@@ -107,7 +117,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
         if (creator.isDefined) {
           val schema = db.getMetadata().getSchema()
 
-          creator.get.onCreate(db, schema)
+          creator.get.onDatabaseCreate(db, schema)
         }
       }
     } finally {

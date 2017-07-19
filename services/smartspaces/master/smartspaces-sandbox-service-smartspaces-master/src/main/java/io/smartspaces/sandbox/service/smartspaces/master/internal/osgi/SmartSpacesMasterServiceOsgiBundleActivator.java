@@ -17,8 +17,8 @@
 
 package io.smartspaces.sandbox.service.smartspaces.master.internal.osgi;
 
-import io.smartspaces.osgi.service.SmartSpacesServiceOsgiBundleActivator;
 import io.smartspaces.sandbox.service.smartspaces.master.internal.NativeSmartSpacesMasterClientService;
+import io.smartspaces.system.osgi.SmartSpacesOsgiBundleActivator;
 
 /**
  * The OSGi bundle activator for the Master API Client services.
@@ -26,7 +26,7 @@ import io.smartspaces.sandbox.service.smartspaces.master.internal.NativeSmartSpa
  * @author Keith M. Hughes
  */
 public class SmartSpacesMasterServiceOsgiBundleActivator extends
-    SmartSpacesServiceOsgiBundleActivator {
+    SmartSpacesOsgiBundleActivator {
   @Override
   protected void allRequiredServicesAvailable() {
     registerNewSmartSpacesService(new NativeSmartSpacesMasterClientService());
