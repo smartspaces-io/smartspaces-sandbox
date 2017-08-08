@@ -27,6 +27,14 @@ import com.orientechnologies.orient.core.db.OPartitionedDatabasePool
 import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDatabaseCreator
 import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbEndpointInitializer
 
+object StandardOrientDbDocumentDatabaseEndpoint {
+  
+  /**
+   * The role the admin will have for the OrientDB database.
+   */
+  val ORIENTDB_ADMIN_ROLE = "admin"
+}
+
 /**
  * Endpoint for an OrientDB document database.
  *
@@ -40,7 +48,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
    * The creator for the OrientDB database if the database didn't exist and is now being created.
    */
   override var creator: Option[OrientDbDatabaseCreator] = None
-  
+
   /**
    * The initializer for the database session.
    */
@@ -55,9 +63,9 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
     checkDataBaseExists()
 
     pool = new OPartitionedDatabasePool(databaseUrl, username, password)
-    
-    initializor.foreach( (i) => {
-      doVoidOperation( i.onDatabaseInit )
+
+    initializor.foreach((i) => {
+      doVoidOperation(i.onDatabaseInit)
     })
   }
 
@@ -77,7 +85,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
     } catch {
       case e: Throwable => {
         connection.rollback
-        
+
         throw e
       }
     } finally {
@@ -92,7 +100,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
     } catch {
       case e: Throwable => {
         connection.rollback
-        
+
         throw e
       }
     } finally {
@@ -112,14 +120,14 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
         db.create()
 
         val sm = db.getMetadata().getSecurity()
-        val user = sm.createUser(username, password, "admin")
-
-        if (creator.isDefined) {
-          val schema = db.getMetadata().getSchema()
-
-          creator.get.onDatabaseCreate(db, schema)
-        }
+        val user = sm.createUser(username, password, StandardOrientDbDocumentDatabaseEndpoint.ORIENTDB_ADMIN_ROLE)
       }
+
+      creator.foreach( (c) => {
+        val schema = db.getMetadata().getSchema()
+
+        c.onDatabaseCreate(db, schema)
+      })
     } finally {
       db.close
     }
