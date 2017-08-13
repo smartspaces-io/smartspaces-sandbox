@@ -112,7 +112,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
    * Check to see if the database exists. If it doesn't, create it.
    */
   private def checkDataBaseExists(): Unit = {
-    log.debug(s"Creating connection to ${databaseUrl}")
+    log.info(s"Creating connection to ${databaseUrl}")
     val db = new ODatabaseDocumentTx(databaseUrl)
 
     try {
@@ -121,6 +121,8 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
 
         val sm = db.getMetadata().getSecurity()
         val user = sm.createUser(username, password, StandardOrientDbDocumentDatabaseEndpoint.ORIENTDB_ADMIN_ROLE)
+      } else {
+        db.open(username, password)
       }
 
       creator.foreach( (c) => {
