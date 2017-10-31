@@ -22,15 +22,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.logging.Log;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.master.api.messages.MasterApiMessages;
+import io.smartspaces.messaging.codec.MapStringMessageCodec;
+import io.smartspaces.messaging.dynamic.SmartSpacesMessages;
 import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterApiMessageHandler;
 import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterClient;
-import io.smartspaces.service.web.WebSocketHandler;
+import io.smartspaces.service.web.WebSocketMessageHandler;
 import io.smartspaces.service.web.client.WebSocketClient;
 import io.smartspaces.service.web.client.WebSocketClientService;
 import io.smartspaces.util.data.dynamic.DynamicObjectBuilder;
@@ -51,12 +52,12 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
   /**
    * The web socket client for communicating with the master.
    */
-  private final WebSocketClient webSocketClient;
+  private final WebSocketClient<Map<String, Object>> webSocketClient;
 
   /**
    * Log for the endpoint.
    */
-  private final Log log;
+  private final ExtendedLog log;
 
   /**
    * The map of request IDs to their requests.
@@ -76,7 +77,7 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
   /**
    * The list of callbacks for event messages from the master.
    */
-  private List<SmartSpacesMasterApiMessageHandler> eventHandlers = Lists.newCopyOnWriteArrayList();
+  private List<SmartSpacesMasterApiMessageHandler> eventMessageHandlers = Lists.newCopyOnWriteArrayList();
 
   /**
    * Construct a new endpoint.
@@ -91,15 +92,14 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    *          the logger
    */
   public NativeSmartSpacesMasterClient(WebSocketClientService webSocketClientService,
-      String masterApiHost, int masterApiPort, Log log) {
+      String masterApiHost, int masterApiPort, ExtendedLog log) {
     masterAddress = "ws://" + masterApiHost + ":" + masterApiPort + MASTERAPI_WEBSOCKET_URI_PREFIX;
     this.webSocketClient =
-        webSocketClientService.newWebSocketClient(masterAddress, new WebSocketHandler() {
+        webSocketClientService.newWebSocketClient(masterAddress, new WebSocketMessageHandler<Map<String, Object>>() {
 
-          @SuppressWarnings("unchecked")
           @Override
-          public void onReceive(Object data) {
-            handleMasterMessage((Map<String, Object>) data);
+          public void onNewMessage(Map<String, Object> data) {
+            handleMasterMessage(data);
           }
 
           @Override
@@ -111,7 +111,7 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
           public void onClose() {
             handleMasterClose();
           }
-        }, log);
+        }, new MapStringMessageCodec(), log);
     this.log = log;
 
   }
@@ -266,13 +266,13 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
   }
 
   @Override
-  public void addEventHandler(SmartSpacesMasterApiMessageHandler handler) {
-    eventHandlers.add(handler);
+  public void addEventMessageHandler(SmartSpacesMasterApiMessageHandler handler) {
+    eventMessageHandlers.add(handler);
   }
 
   @Override
-  public void removeEventHandler(SmartSpacesMasterApiMessageHandler handler) {
-    eventHandlers.remove(handler);
+  public void removeEventMessageHandler(SmartSpacesMasterApiMessageHandler handler) {
+    eventMessageHandlers.remove(handler);
   }
 
   /**
@@ -348,10 +348,10 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
     Request request = newRequest(callback);
 
     DynamicObjectBuilder builder = new StandardDynamicObjectBuilder();
-    builder.setProperty(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_TYPE, command);
-    builder.setProperty(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_REQUEST_ID,
+    builder.setProperty(SmartSpacesMessages.MESSAGE_ENVELOPE_TYPE, command);
+    builder.setProperty(SmartSpacesMessages.MESSAGE_ENVELOPE_REQUEST_ID,
         request.getRequestId());
-    builder.newObject(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_DATA);
+    builder.newObject(SmartSpacesMessages.MESSAGE_ENVELOPE_DATA);
 
     return builder;
   }
@@ -378,7 +378,7 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    *          the builder containing the message to send
    */
   private void sendApiCall(DynamicObjectBuilder builder) {
-    webSocketClient.writeDataAsJson(builder.buildAsMap());
+    webSocketClient.sendMessage(builder.toMap());
   }
 
   /**
@@ -403,7 +403,7 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    */
   private void handleMasterMessage(Map<String, Object> message) {
     String requestId =
-        (String) message.get(MasterApiMessages.MASTER_API_MESSAGE_ENVELOPE_REQUEST_ID);
+        (String) message.get(SmartSpacesMessages.MESSAGE_ENVELOPE_REQUEST_ID);
     if (requestId != null) {
       Request request = requestIdToRequest.remove(requestId);
       if (request != null) {
@@ -423,9 +423,9 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
    *          the message to handle
    */
   private void handleEventMessage(Map<String, Object> message) {
-    for (SmartSpacesMasterApiMessageHandler handler : eventHandlers) {
+    for (SmartSpacesMasterApiMessageHandler handler : eventMessageHandlers) {
       try {
-        handler.onMasterApiMessage(this, message);
+        handler.onNewMasterApiMessage(this, message);
       } catch (Throwable e) {
         log.error("Error handling Master API message", e);
       }
@@ -493,7 +493,7 @@ public class NativeSmartSpacesMasterClient implements SmartSpacesMasterClient {
      */
     public void responseReceived(Map<String, Object> response) {
       if (callback != null) {
-        callback.onMasterApiMessage(NativeSmartSpacesMasterClient.this, response);
+        callback.onNewMasterApiMessage(NativeSmartSpacesMasterClient.this, response);
       }
     }
   }

@@ -17,9 +17,8 @@
 
 package io.smartspaces.sandbox.service.smartspaces.master;
 
+import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.service.SupportedService;
-
-import org.apache.commons.logging.Log;
 
 /**
  * A service for obtaining clients to work with the Smart Spaces Master API.
@@ -48,5 +47,5 @@ public interface SmartSpacesMasterClientService extends SupportedService {
    *
    * @return the new client
    */
-  SmartSpacesMasterClient newMasterClient(String masterApiHost, int masterApiPort, Log log);
+  SmartSpacesMasterClient newMasterClient(String masterApiHost, int masterApiPort, ExtendedLog log);
 }

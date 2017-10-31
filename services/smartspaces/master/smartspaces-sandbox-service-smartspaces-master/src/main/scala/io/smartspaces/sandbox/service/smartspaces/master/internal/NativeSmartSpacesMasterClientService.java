@@ -17,12 +17,11 @@
 
 package io.smartspaces.sandbox.service.smartspaces.master.internal;
 
+import io.smartspaces.logging.ExtendedLog;
 import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterClient;
 import io.smartspaces.sandbox.service.smartspaces.master.SmartSpacesMasterClientService;
 import io.smartspaces.service.BaseSupportedService;
 import io.smartspaces.service.web.client.WebSocketClientService;
-
-import org.apache.commons.logging.Log;
 
 /**
  * An implementation of the service for obtaining Smart Spaces Master API
@@ -40,7 +39,7 @@ public class NativeSmartSpacesMasterClientService extends BaseSupportedService i
 
   @Override
   public SmartSpacesMasterClient newMasterClient(String masterApiHost, int masterApiPort,
-      Log log) {
+      ExtendedLog log) {
     WebSocketClientService clientService =
         getSpaceEnvironment().getServiceRegistry().getRequiredService(
             WebSocketClientService.SERVICE_NAME);

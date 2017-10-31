@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
  *
  * @author Keith M. Hughes
  */
-public class BlockingSmartSpacesMasterApiCallback implements
+public class BlockingSmartSpacesMasterApiMessageHandler implements
     SmartSpacesMasterApiMessageHandler {
 
   /**
@@ -45,7 +45,7 @@ public class BlockingSmartSpacesMasterApiCallback implements
   /**
    * Construct a callback that only expects one callback.
    */
-  public BlockingSmartSpacesMasterApiCallback() {
+  public BlockingSmartSpacesMasterApiMessageHandler() {
     this(1);
   }
 
@@ -55,13 +55,13 @@ public class BlockingSmartSpacesMasterApiCallback implements
    * @param count
    *          the number of callbacks expected
    */
-  public BlockingSmartSpacesMasterApiCallback(int count) {
+  public BlockingSmartSpacesMasterApiMessageHandler(int count) {
     countdown = new CountDownLatch(count);
   }
 
   @Override
   public void
-      onMasterApiMessage(SmartSpacesMasterClient client, Map<String, Object> response) {
+      onNewMasterApiMessage(SmartSpacesMasterClient client, Map<String, Object> response) {
     responses.add(response);
 
     countdown.countDown();

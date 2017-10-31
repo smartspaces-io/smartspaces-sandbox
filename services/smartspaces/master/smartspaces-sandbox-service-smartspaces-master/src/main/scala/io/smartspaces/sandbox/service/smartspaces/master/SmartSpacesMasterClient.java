@@ -17,9 +17,9 @@
 
 package io.smartspaces.sandbox.service.smartspaces.master;
 
-import io.smartspaces.util.resource.ManagedResource;
-
 import java.util.Map;
+
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**
  * A client for Smart with the Smart Spaces Master API.
@@ -281,20 +281,20 @@ public interface SmartSpacesMasterClient extends ManagedResource {
   void shutdownSpace(String id, SmartSpacesMasterApiMessageHandler callback);
 
   /**
-   * Add an event handler.
+   * Add an event message handler.
    *
    * <p>
-   * Event handlers are handlers that are not in response to a call initiated in
+   * Event message handlers are handlers that are not in response to a call initiated in
    * this service. They include events like a live activity starting up or
    * shutting down.
    *
    * @param handler
    *          the handler to be called
    */
-  void addEventHandler(SmartSpacesMasterApiMessageHandler handler);
+  void addEventMessageHandler(SmartSpacesMasterApiMessageHandler handler);
 
   /**
-   * Remove an event handler.
+   * Remove an event message handler.
    *
    * <p>
    * Does nothing if the handler was never added.
@@ -302,5 +302,5 @@ public interface SmartSpacesMasterClient extends ManagedResource {
    * @param handler
    *          the handler to be removed
    */
-  void removeEventHandler(SmartSpacesMasterApiMessageHandler handler);
+  void removeEventMessageHandler(SmartSpacesMasterApiMessageHandler handler);
 }

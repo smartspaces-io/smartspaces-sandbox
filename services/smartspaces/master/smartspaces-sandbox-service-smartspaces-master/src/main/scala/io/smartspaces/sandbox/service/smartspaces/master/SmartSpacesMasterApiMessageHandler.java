@@ -34,5 +34,5 @@ public interface SmartSpacesMasterApiMessageHandler {
    * @param message
    *          the message
    */
-  void onMasterApiMessage(SmartSpacesMasterClient client, Map<String, Object> message);
+  void onNewMasterApiMessage(SmartSpacesMasterClient client, Map<String, Object> message);
 }

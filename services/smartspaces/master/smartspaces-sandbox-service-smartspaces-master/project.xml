@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project type="library" language="java">
+<project type="library" language="scala">
   <name>Smart Spaces Master API Client Service</name>
   <description>
     A service for controlling an Smart Spaces environment via the Smart Spaces Master API.
