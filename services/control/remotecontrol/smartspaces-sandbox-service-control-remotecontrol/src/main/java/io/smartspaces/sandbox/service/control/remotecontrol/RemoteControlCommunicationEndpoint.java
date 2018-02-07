@@ -17,7 +17,7 @@
 
 package io.smartspaces.sandbox.service.control.remotecontrol;
 
-import io.smartspaces.util.resource.ManagedResource;
+import io.smartspaces.resource.managed.ManagedResource;
 
 /**
  * A communication endpoint for working with Infrared Remote Controls.

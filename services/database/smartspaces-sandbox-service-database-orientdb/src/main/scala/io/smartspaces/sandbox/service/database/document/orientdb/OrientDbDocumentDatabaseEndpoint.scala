@@ -20,6 +20,7 @@ package io.smartspaces.sandbox.service.database.document.orientdb
 import io.smartspaces.resource.managed.ManagedResource
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
+import java.io.File
 
 /**
  * Endpoint for an OrientDB document database.
@@ -78,4 +79,12 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
    * @returns the result of the operation
    */
   def doOperation[T](operation: (ODatabaseDocumentTx) => T): T
+  
+  /**
+   * Backup the database.
+   * 
+   * @param outputLocation
+   *        the file where th backup should be stored
+   */
+  def backup(outputLocation: File): Unit
 }
