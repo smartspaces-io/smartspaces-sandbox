@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log
 import com.orientechnologies.orient.core.Orient
 
 import java.io.File
+import com.orientechnologies.orient.core.db.ODatabaseLifecycleListener
 
 object StandardOrientDbDocumentDatabaseService {
 
@@ -115,7 +116,7 @@ object StandardOrientDbDocumentDatabaseService {
  * @author Keith M. Hughes
  */
 class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
-    with OrientDbDocumentDatabaseService with IdempotentManagedResource {
+  with OrientDbDocumentDatabaseService with IdempotentManagedResource {
 
   override def getName(): String = {
     return OrientDbDocumentDatabaseService.SERVICE_NAME
@@ -126,7 +127,11 @@ class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
     // Other code may be using OrientDB so we want this at container shutdown.
     getSpaceEnvironment().getContainerManagedScope().managedResources.addResource(new BaseManagedResource() {
       override def shutdown(): Unit = {
-        Orient.instance().shutdown()
+        new Thread() {
+          override def run(): Unit = {
+            Orient.instance().shutdown()
+          }
+        }.start()
       }
     })
   }
@@ -135,18 +140,22 @@ class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
     val databaseUrl = StandardOrientDbDocumentDatabaseService.DATABASE_URL_PROTOCOL_PLOCAL +
       getSpaceEnvironment().getFilesystem().getDataDirectory(getName()).getAbsolutePath() +
       File.separator + databaseName
-    return getOrientDbDocumentDatabaseEndpoint(databaseUrl,
+    return getOrientDbDocumentDatabaseEndpoint(
+      databaseUrl,
       StandardOrientDbDocumentDatabaseService.DEFAULT_LOGIN, StandardOrientDbDocumentDatabaseService.DEFAULT_PASSWORD, log)
   }
 
-  override def getOrientDbDocumentDatabaseEndpoint(dbDirectory: File,
+  override def getOrientDbDocumentDatabaseEndpoint(
+    dbDirectory: File,
     log: Log): OrientDbDocumentDatabaseEndpoint = {
     val databaseUrl = StandardOrientDbDocumentDatabaseService.DATABASE_URL_PROTOCOL_PLOCAL + dbDirectory.getAbsolutePath()
-    return getOrientDbDocumentDatabaseEndpoint(databaseUrl,
+    return getOrientDbDocumentDatabaseEndpoint(
+      databaseUrl,
       StandardOrientDbDocumentDatabaseService.DEFAULT_LOGIN, StandardOrientDbDocumentDatabaseService.DEFAULT_PASSWORD, log)
   }
 
-  override def getOrientDbDocumentDatabaseEndpoint(databaseUrl: String,
+  override def getOrientDbDocumentDatabaseEndpoint(
+    databaseUrl: String,
     login: String, password: String, log: Log): OrientDbDocumentDatabaseEndpoint = {
     return new StandardOrientDbDocumentDatabaseEndpoint(this, databaseUrl, login, password, log)
   }

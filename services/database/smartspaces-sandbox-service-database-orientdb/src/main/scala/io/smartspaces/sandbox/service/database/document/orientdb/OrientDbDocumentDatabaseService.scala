@@ -40,6 +40,8 @@ trait OrientDbDocumentDatabaseService extends SupportedService {
 
   /**
    * Creates new endpoint for a database with the given name.
+   * 
+   * The database will be a plocal database in the smartspaces data directory.
    *
    * @param databaseName
    *            OrientDB database name
@@ -52,6 +54,8 @@ trait OrientDbDocumentDatabaseService extends SupportedService {
 
   /**
    * Creates new endpoint for a database with at the given location.
+   * 
+   * The database will be a plocal database.
    *
    * @param dbDirectory
    *            OrientDB database storage
