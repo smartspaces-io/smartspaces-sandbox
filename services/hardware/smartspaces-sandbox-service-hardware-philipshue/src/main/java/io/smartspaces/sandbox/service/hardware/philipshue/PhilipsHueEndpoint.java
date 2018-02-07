@@ -16,10 +16,10 @@
 
 package io.smartspaces.sandbox.service.hardware.philipshue;
 
-import io.smartspaces.sandbox.service.action.ActionSource;
-import io.smartspaces.util.resource.ManagedResource;
-
 import java.util.List;
+
+import io.smartspaces.resource.managed.ManagedResource;
+import io.smartspaces.service.action.ActionSource;
 
 /**
  * An endpoint for controlling Philips Hue lights.

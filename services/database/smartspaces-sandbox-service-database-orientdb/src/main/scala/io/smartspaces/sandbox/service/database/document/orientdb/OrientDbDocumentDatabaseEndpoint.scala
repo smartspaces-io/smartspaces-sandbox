@@ -46,7 +46,6 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
   /**
    * Creates a new connection to the database managed by this endpoint.
    * 
-   * [[p]]
    * You must close this connection when through with it.
    *
    * @return OrientDB database connection
@@ -56,7 +55,6 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
   /**
    * Perform a void operation.
    * 
-   * [[p]]
    * Do not save the database connection. It is closed upon completion of the operation.
    * The operation is rolled back if an exception is thrown.
    *
@@ -68,7 +66,6 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
   /**
    * Perform an operation.
    * 
-   * [[p]]
    * Do not save the database connection. It is closed upon completion of the operation.
    * The operation is rolled back if an exception is thrown.
    *

@@ -17,14 +17,13 @@
 package io.smartspaces.sandbox.service.hardware.philipshue.internal;
 
 import io.smartspaces.SimpleSmartSpacesException;
-import io.smartspaces.sandbox.service.action.Action;
-import io.smartspaces.sandbox.service.action.ActionSource;
+import io.smartspaces.evaluation.ExecutionContext;
 import io.smartspaces.sandbox.service.hardware.philipshue.PhilipsHueEndpoint;
 import io.smartspaces.sandbox.service.hardware.philipshue.PhilipsHueLight;
+import io.smartspaces.service.action.Action;
+import io.smartspaces.service.action.ActionSource;
 import io.smartspaces.system.SmartSpacesEnvironment;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
-
-import java.util.Map;
 
 /**
  * An action source for Philips Hue lights.
@@ -85,8 +84,8 @@ public class StandardPhilipsHueActionSource implements ActionSource {
   public class PhilipsHueLightChangeAction implements Action {
 
     @Override
-    public void perform(Map<String, ? extends Object> data) {
-      StandardDynamicObjectNavigator actionArguments = new StandardDynamicObjectNavigator(data);
+    public void perform(ExecutionContext context) {
+      StandardDynamicObjectNavigator actionArguments = new StandardDynamicObjectNavigator(context.);
 
       String lightId = actionArguments.getRequiredString(LIGHT_ARGUMENT_LIGHT_ID);
       PhilipsHueLight light = philipsHueEndpoint.getLightByName(lightId);

@@ -112,7 +112,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(service: StandardOrientDbDocument
    * Check to see if the database exists. If it doesn't, create it.
    */
   private def checkDataBaseExists(): Unit = {
-    log.info(s"Creating connection to ${databaseUrl}")
+    log.info(s"Creating OrientDB database connection to ${databaseUrl}")
     val db = new ODatabaseDocumentTx(databaseUrl)
 
     try {

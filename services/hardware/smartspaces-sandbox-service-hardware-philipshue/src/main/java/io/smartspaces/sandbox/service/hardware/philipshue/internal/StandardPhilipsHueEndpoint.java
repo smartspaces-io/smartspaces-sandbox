@@ -16,13 +16,21 @@
 
 package io.smartspaces.sandbox.service.hardware.philipshue.internal;
 
-import io.smartspaces.sandbox.service.action.ActionService;
-import io.smartspaces.sandbox.service.action.ActionSource;
-import io.smartspaces.sandbox.service.action.internal.StandardActionService;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import io.smartspaces.sandbox.service.hardware.philipshue.PhilipsHueEndpoint;
 import io.smartspaces.sandbox.service.hardware.philipshue.PhilipsHueEndpointService;
 import io.smartspaces.sandbox.service.hardware.philipshue.PhilipsHueLight;
 import io.smartspaces.sandbox.service.hardware.philipshue.PhilipsHueRestMessages;
+import io.smartspaces.service.action.ActionService;
+import io.smartspaces.service.action.ActionSource;
+import io.smartspaces.service.action.internal.StandardActionService;
 import io.smartspaces.service.web.HttpClientRestWebClient;
 import io.smartspaces.system.SmartSpacesEnvironment;
 import io.smartspaces.system.StandaloneSmartSpacesEnvironment;
@@ -34,13 +42,6 @@ import io.smartspaces.util.data.dynamic.StandardDynamicObjectBuilder;
 import io.smartspaces.util.data.dynamic.StandardDynamicObjectNavigator;
 import io.smartspaces.util.data.json.JsonMapper;
 import io.smartspaces.util.data.json.StandardJsonMapper;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.commons.logging.Log;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Standard endpoint for controlling Philips Hue Lights.

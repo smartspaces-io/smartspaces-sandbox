@@ -16,14 +16,14 @@
 
 package org.robotbrains.house.sensors;
 
-import io.smartspaces.SmartSpacesException;
-import io.smartspaces.messages.ByteMessageTranslator;
-
-import com.google.common.collect.Maps;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Map;
+
+import com.google.common.collect.Maps;
+
+import io.smartspaces.SmartSpacesException;
+import io.smartspaces.messages.ByteMessageTranslator;
 
 /**
  * A translator for byte messages from the XBee radio sensor module.
