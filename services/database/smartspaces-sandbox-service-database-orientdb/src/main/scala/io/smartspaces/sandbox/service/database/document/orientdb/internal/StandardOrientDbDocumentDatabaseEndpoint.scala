@@ -17,21 +17,20 @@
 
 package io.smartspaces.sandbox.service.database.document.orientdb.internal;
 
-import io.smartspaces.resource.managed.IdempotentManagedResource
-import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDocumentDatabaseEndpoint
+import java.io.File
+import java.io.FileOutputStream
+import java.util.concurrent.Callable
 
 import org.apache.commons.logging.Log
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
-import com.orientechnologies.orient.core.db.OPartitionedDatabasePool
-import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDatabaseCreator
-import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbEndpointInitializer
-import java.io.File
 import com.orientechnologies.orient.core.command.OCommandOutputListener
-import java.io.OutputStream
-import java.util.concurrent.Callable
-import io.smartspaces.util.io.FileSupportImpl
-import java.io.FileOutputStream
+import com.orientechnologies.orient.core.db.OPartitionedDatabasePool
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
+
+import io.smartspaces.resource.managed.IdempotentManagedResource
+import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDatabaseCreator
+import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbDocumentDatabaseEndpoint
+import io.smartspaces.sandbox.service.database.document.orientdb.OrientDbEndpointInitializer
 
 object StandardOrientDbDocumentDatabaseEndpoint {
 
@@ -128,7 +127,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(
           },
           new OCommandOutputListener() {
             override def onMessage(text: String): Unit = {
-              log.info(s"Database backup update: ${text}")
+              log.info(s"OrientDB Database backup for database ${databaseUrl} update: ${text}")
             }
           },
           1, 4096)
@@ -136,7 +135,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(
         connection.close
       }
     } catch {
-      case e: Throwable => log.error(s"Database backup to ${outputLocation} failed", e)
+      case e: Throwable => log.error(s"OrientDB Database backup for database ${databaseUrl} to ${outputLocation} failed", e)
     } finally {
       if (out != null) {
         out.flush
