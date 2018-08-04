@@ -39,8 +39,23 @@ object OrientDbDocumentDatabaseService {
 trait OrientDbDocumentDatabaseService extends SupportedService {
 
   /**
+   * Get the maximum poolsize for database connections.
+   *
+   * @return the maximum pool size
+   */
+  def maxPoolSize: Int
+
+  /**
+   * Set the maximum poolsize for database connections.
+   *
+   * @param newSize
+   *        the new maximum pool size
+   */
+  def maxPoolSize_=(newSize: Int): Unit
+
+  /**
    * Creates new endpoint for a database with the given name.
-   * 
+   *
    * The database will be a plocal database in the smartspaces data directory.
    *
    * @param databaseName
@@ -54,7 +69,7 @@ trait OrientDbDocumentDatabaseService extends SupportedService {
 
   /**
    * Creates new endpoint for a database with at the given location.
-   * 
+   *
    * The database will be a plocal database.
    *
    * @param dbDirectory

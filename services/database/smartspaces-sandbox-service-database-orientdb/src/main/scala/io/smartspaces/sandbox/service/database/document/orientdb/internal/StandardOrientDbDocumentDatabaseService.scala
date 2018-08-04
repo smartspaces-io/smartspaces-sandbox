@@ -29,68 +29,9 @@ import com.orientechnologies.orient.core.Orient
 
 import java.io.File
 import com.orientechnologies.orient.core.db.ODatabaseLifecycleListener
+import com.orientechnologies.orient.client.remote.OEngineRemote
 
 object StandardOrientDbDocumentDatabaseService {
-
-  /**
-   * Protocol used by the server.
-   */
-  val PROTOCOL = "binary"
-
-  /**
-   * Name of the class that implements the protocol used by the server.
-   */
-  val PROTOCOL_IMPLEMENTATION =
-    "com.orientechnologies.orient.server.network.protocol.binary.ONetworkProtocolBinary"
-
-  /**
-   * IP address to which server binds.
-   */
-  val IP_ADDRESS = "0.0.0.0"
-
-  /**
-   * Range of ports to which the server tries to bind.
-   */
-  val PORT_RANGE = "2424-2500"
-
-  /**
-   * Username of a server user.
-   */
-  val SERVER_USER_LOGIN = "root"
-
-  /**
-   * Password of the server user.
-   */
-  val SERVER_USER_PASSWORD = "ThisIsA_TEST"
-
-  /**
-   * Resources accessible to the server user.
-   */
-  val SERVER_USER_RESOURCES = ""
-
-  /**
-   * Configuration property for caching static contents. If enabled the files
-   * will be kept in memory the first time they are loaded. Changes to the files
-   * will be taken on the next restart.
-   */
-  val CONFIGURATION_CACHE_STATIC_RESOURCES = "server.cache.staticResources"
-
-  /**
-   * Configuration property for the logging level of the logger that outputs to
-   * the console.
-   */
-  val CONFIGURATION_LOG_CONSOLE_LEVEL = "log.console.level"
-
-  /**
-   * Configuration property for the logging level of the logger that outputs to
-   * a file.
-   */
-  val CONFIGURATION_LOG_FILE_LEVEL = "log.file.level"
-
-  /**
-   * Configuration property for attaching dynamic plugins to the server.
-   */
-  val CONFIGURATION_PLUGIN_DYNAMIC = "plugin.dynamic"
 
   /**
    * Username of the database user.
@@ -118,6 +59,8 @@ object StandardOrientDbDocumentDatabaseService {
 class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
   with OrientDbDocumentDatabaseService with IdempotentManagedResource {
 
+  var _maxPoolSize: Int = 32
+  
   override def getName(): String = {
     return OrientDbDocumentDatabaseService.SERVICE_NAME
   }
@@ -135,12 +78,19 @@ class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
       }
     })
   }
+  
+  override def maxPoolSize: Int = _maxPoolSize
+  
+  def maxPoolSize_=(newSize: Int): Unit = {
+    _maxPoolSize = newSize
+  }
 
   override def getOrientDbDocumentDatabaseEndpoint(databaseName: String, log: Log): OrientDbDocumentDatabaseEndpoint = {
     val databaseUrl = StandardOrientDbDocumentDatabaseService.DATABASE_URL_PROTOCOL_PLOCAL +
       getSpaceEnvironment().getFilesystem().getDataDirectory(getName()).getAbsolutePath() +
       File.separator + databaseName
-    return getOrientDbDocumentDatabaseEndpoint(
+
+    getOrientDbDocumentDatabaseEndpoint(
       databaseUrl,
       StandardOrientDbDocumentDatabaseService.DEFAULT_LOGIN, StandardOrientDbDocumentDatabaseService.DEFAULT_PASSWORD, log)
   }
@@ -149,7 +99,8 @@ class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
     dbDirectory: File,
     log: Log): OrientDbDocumentDatabaseEndpoint = {
     val databaseUrl = StandardOrientDbDocumentDatabaseService.DATABASE_URL_PROTOCOL_PLOCAL + dbDirectory.getAbsolutePath()
-    return getOrientDbDocumentDatabaseEndpoint(
+
+    getOrientDbDocumentDatabaseEndpoint(
       databaseUrl,
       StandardOrientDbDocumentDatabaseService.DEFAULT_LOGIN, StandardOrientDbDocumentDatabaseService.DEFAULT_PASSWORD, log)
   }
@@ -157,6 +108,7 @@ class StandardOrientDbDocumentDatabaseService extends BaseSupportedService
   override def getOrientDbDocumentDatabaseEndpoint(
     databaseUrl: String,
     login: String, password: String, log: Log): OrientDbDocumentDatabaseEndpoint = {
-    return new StandardOrientDbDocumentDatabaseEndpoint(this, databaseUrl, login, password, log)
+
+    new StandardOrientDbDocumentDatabaseEndpoint(this, databaseUrl, login, password, log)
   }
 }

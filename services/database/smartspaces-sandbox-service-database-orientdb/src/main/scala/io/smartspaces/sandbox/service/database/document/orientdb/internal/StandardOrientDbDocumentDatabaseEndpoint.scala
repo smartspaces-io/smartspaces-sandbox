@@ -68,7 +68,9 @@ class StandardOrientDbDocumentDatabaseEndpoint(
   override def onStartup(): Unit = {
     checkDataBaseExists()
 
-    pool = new OPartitionedDatabasePool(databaseUrl, username, password)
+    pool = new OPartitionedDatabasePool(
+        databaseUrl, username, password, 
+        Runtime.getRuntime.availableProcessors(), service.maxPoolSize)
 
     initializor.foreach((i) => {
       doVoidOperation(i.onDatabaseInit)
@@ -81,7 +83,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(
   }
 
   override def createConnection(): ODatabaseDocumentTx = {
-    return pool.acquire()
+    pool.acquire()
   }
 
   override def doVoidOperation(operation: (ODatabaseDocumentTx) => Unit): Unit = {
@@ -119,7 +121,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(
     try {
       val connection = createConnection
       try {
-        connection.backup(out,  null,
+        connection.backup(out, null,
           new Callable[Object]() {
             override def call(): Object = {
               null
@@ -157,8 +159,8 @@ class StandardOrientDbDocumentDatabaseEndpoint(
         db.create()
 
         val sm = db.getMetadata().getSecurity()
-        val user = sm.createUser(username, password, 
-            StandardOrientDbDocumentDatabaseEndpoint.ORIENTDB_ADMIN_ROLE)
+        val user = sm.createUser(username, password,
+          StandardOrientDbDocumentDatabaseEndpoint.ORIENTDB_ADMIN_ROLE)
       } else {
         db.open(username, password)
       }
