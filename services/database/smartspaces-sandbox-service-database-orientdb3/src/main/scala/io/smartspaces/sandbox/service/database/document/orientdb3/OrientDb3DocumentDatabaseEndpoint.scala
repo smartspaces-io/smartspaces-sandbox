@@ -15,12 +15,12 @@
  * the License.
  */
 
-package io.smartspaces.sandbox.service.database.document.orientdb
+package io.smartspaces.sandbox.service.database.document.orientdb3
 
-import io.smartspaces.resource.managed.ManagedResource
-
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 import java.io.File
+
+import com.orientechnologies.orient.core.db.ODatabaseSession
+import io.smartspaces.resource.managed.ManagedResource
 
 /**
  * Endpoint for an OrientDB document database.
@@ -28,21 +28,21 @@ import java.io.File
  * @author Oleksandr Kelepko
  * @author Keith M. Hughes
  */
-trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
+trait OrientDb3DocumentDatabaseEndpoint extends ManagedResource {
   
   /**
    * The creator for the database.
    * 
    * This is called on startup.
    */
-  var creator: Option[OrientDbDatabaseCreator]
+  var creator: Option[OrientDb3DatabaseCreator]
   
   /**
    * The initializer for the database.
    * 
    * This is called on startup.
    */
-  var initializer: Option[OrientDbEndpointInitializer]
+  var initializer: Option[OrientDb3EndpointInitializer]
 
   /**
    * Creates a new connection to the database managed by this endpoint.
@@ -51,7 +51,7 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
    *
    * @return OrientDB database connection
    */
-  def createConnection(): ODatabaseDocumentTx
+  def createConnection(): ODatabaseSession
   
   /**
    * Perform a void operation.
@@ -62,7 +62,7 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
    * @param operation
    *          the code to run
    */
-  def doVoidOperation(operation: (ODatabaseDocumentTx) => Unit): Unit
+  def doVoidOperation(operation: (ODatabaseSession) => Unit): Unit
 
   /**
    * Perform an operation.
@@ -75,7 +75,7 @@ trait OrientDbDocumentDatabaseEndpoint extends ManagedResource {
    *
    * @returns the result of the operation
    */
-  def doOperation[T](operation: (ODatabaseDocumentTx) => T): T
+  def doOperation[T](operation: (ODatabaseSession) => T): T
   
   /**
    * Backup the database.

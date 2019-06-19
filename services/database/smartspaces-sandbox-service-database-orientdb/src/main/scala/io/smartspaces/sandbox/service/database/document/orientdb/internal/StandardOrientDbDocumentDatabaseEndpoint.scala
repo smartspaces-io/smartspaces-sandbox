@@ -58,7 +58,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(
   /**
    * The initializer for the database session.
    */
-  override var initializor: Option[OrientDbEndpointInitializer] = None
+  override var initializer: Option[OrientDbEndpointInitializer] = None
 
   /**
    * The pool of database connections.
@@ -72,7 +72,7 @@ class StandardOrientDbDocumentDatabaseEndpoint(
         databaseUrl, username, password, 
         Runtime.getRuntime.availableProcessors(), service.maxPoolSize)
 
-    initializor.foreach((i) => {
+    initializer.foreach((i) => {
       doVoidOperation(i.onDatabaseInit)
     })
   }

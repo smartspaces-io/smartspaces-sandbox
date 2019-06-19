@@ -1,0 +1,779 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager">
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.jdom-2.0.6_1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jmdns-3.4.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/guice-4.1.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.gogo.runtime-1.0.6.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-core-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/rosjava_osgi_node-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/guava-21.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/commons-pool-1.6.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-space-controller-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/httpclient-osgi-4.5.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-interaction-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.codec-1.4.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/snakeyaml-1.17.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/rxjava-2.0.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-master-controller-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-core-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.aopalliance-1.0_6.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/nrosjava_bootstrap-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.javassist-3.12.1.GA.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-activity-runtime-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/reactive-streams-1.0.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-testing-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.ros.rosjava.dnsjava-2.1.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/napache_xmlrpc_common-3.1.3.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-system-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/joda-time-2.9.9.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.javax-inject-1_2.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/nrosjava-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-activity-core-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.io-1.4.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-script-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/httpcore-osgi-4.4.5.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-databind-2.9.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.gogo.shell-1.0.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/bcprov-jdk15on-1.59.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/antlr4-runtime-4.5.3.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-core-2.9.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-dataformat-yaml-2.9.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.lang-2.4.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.rome-1.0_1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces.com.google.zxing.all-2.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.net-2.0.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.eclipse.paho.client.mqttv3-1.1.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/netty-3.9.3.Final.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.gogo.command-1.0.2.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/scala-library-2.11.8.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/nrosjava_messages-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/napache_xmlrpc_server-3.1.3.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/napache_xmlrpc_client-3.1.3.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/bcpkix-jdk15on-1.59.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.shell.remote-1.2.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.httpclient-3.1.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/rosjava_osgi-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-activity-wrapper-script-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.ws-commons-util-1.0.2_2.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-web-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-domain-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.configadmin-1.8.12.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-data-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-action-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/commons-ognl-4.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-annotations-2.9.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/org.apache.felix.framework-5.6.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/smartspaces-launcher-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/smartspaces-launcher-bootstrap-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/com.springsource.org.apache.commons.logging-1.1.1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/smartspaces-bootstrap-core-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/com.springsource.org.apache.log4j-1.2.16.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/controller/startup/orientdb-complete-osgi-3.0.20.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/smartspaces-workbench-testing-0.14.0-SNAPSHOT.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/org.apache.servicemix.bundles.junit-4.11_1.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/scalactic_2.11-3.0.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/scalatest_2.11-3.0.0.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/hamcrest-core-1.3.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/scala-xml_2.11-1.0.5.jar!/" />
+    <libelement value="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/mockito-all-1.9.5.jar!/" />
+    <conelement value="org.scala-ide.sdt.launching.SCALA_CONTAINER" />
+    <src_description expected_position="0">
+      <src_folder value="file://$MODULE_DIR$/src/main/scala" expected_position="0" />
+    </src_description>
+  </component>
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="library" name="org.scala-ide.sdt.launching.SCALA_CONTAINER" level="application" />
+    <orderEntry type="module-library">
+      <library name="org.apache.servicemix.bundles.jdom-2.0.6_1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.jdom-2.0.6_1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jmdns-3.4.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jmdns-3.4.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="guice-4.1.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/guice-4.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.felix.gogo.runtime-1.0.6.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.gogo.runtime-1.0.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-service-core-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-core-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="rosjava_osgi_node-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/rosjava_osgi_node-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="guava-21.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/guava-21.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-pool-1.6.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/commons-pool-1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-space-controller-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-space-controller-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="httpclient-osgi-4.5.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/httpclient-osgi-4.5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-interaction-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-interaction-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.commons.codec-1.4.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.codec-1.4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="snakeyaml-1.17.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/snakeyaml-1.17.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="rxjava-2.0.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/rxjava-2.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-master-controller-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-master-controller-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-core-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-core-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.servicemix.bundles.aopalliance-1.0_6.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.aopalliance-1.0_6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="nrosjava_bootstrap-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/nrosjava_bootstrap-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.javassist-3.12.1.GA.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.javassist-3.12.1.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-activity-runtime-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-activity-runtime-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="reactive-streams-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/reactive-streams-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-testing-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-testing-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.ros.rosjava.dnsjava-2.1.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.ros.rosjava.dnsjava-2.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="napache_xmlrpc_common-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/napache_xmlrpc_common-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-system-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-system-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="joda-time-2.9.9.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/joda-time-2.9.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.servicemix.bundles.javax-inject-1_2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.javax-inject-1_2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="nrosjava-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/nrosjava-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-activity-core-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-activity-core-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.commons.io-1.4.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.io-1.4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-service-script-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-script-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="httpcore-osgi-4.4.5.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/httpcore-osgi-4.4.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jackson-databind-2.9.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-databind-2.9.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.felix.gogo.shell-1.0.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.gogo.shell-1.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="bcprov-jdk15on-1.59.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/bcprov-jdk15on-1.59.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="antlr4-runtime-4.5.3.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/antlr4-runtime-4.5.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jackson-core-2.9.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-core-2.9.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jackson-dataformat-yaml-2.9.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-dataformat-yaml-2.9.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.commons.lang-2.4.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.lang-2.4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.servicemix.bundles.rome-1.0_1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.rome-1.0_1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces.com.google.zxing.all-2.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces.com.google.zxing.all-2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.commons.net-2.0.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.net-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.eclipse.paho.client.mqttv3-1.1.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.eclipse.paho.client.mqttv3-1.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="netty-3.9.3.Final.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/netty-3.9.3.Final.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.felix.gogo.command-1.0.2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.gogo.command-1.0.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="scala-library-2.11.8.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/scala-library-2.11.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="nrosjava_messages-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/nrosjava_messages-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="napache_xmlrpc_server-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/napache_xmlrpc_server-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="napache_xmlrpc_client-3.1.3.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/napache_xmlrpc_client-3.1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="bcpkix-jdk15on-1.59.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/bcpkix-jdk15on-1.59.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.felix.shell.remote-1.2.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.shell.remote-1.2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.commons.httpclient-3.1.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/com.springsource.org.apache.commons.httpclient-3.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="rosjava_osgi-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/rosjava_osgi-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-activity-wrapper-script-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-activity-wrapper-script-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.servicemix.bundles.ws-commons-util-1.0.2_2.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.servicemix.bundles.ws-commons-util-1.0.2_2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-service-web-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-web-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-domain-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-domain-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.felix.configadmin-1.8.12.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/org.apache.felix.configadmin-1.8.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-data-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-data-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-service-action-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/smartspaces-service-action-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-ognl-4.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/commons-ognl-4.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jackson-annotations-2.9.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/bootstrap/jackson-annotations-2.9.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.felix.framework-5.6.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/org.apache.felix.framework-5.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-launcher-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/smartspaces-launcher-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-launcher-bootstrap-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/smartspaces-launcher-bootstrap-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.commons.logging-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/com.springsource.org.apache.commons.logging-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-bootstrap-core-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/smartspaces-bootstrap-core-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.springsource.org.apache.log4j-1.2.16.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/lib/system/jvm/com.springsource.org.apache.log4j-1.2.16.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="orientdb-complete-osgi-3.0.20.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/controller/startup/orientdb-complete-osgi-3.0.20.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="smartspaces-workbench-testing-0.14.0-SNAPSHOT.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/smartspaces-workbench-testing-0.14.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="org.apache.servicemix.bundles.junit-4.11_1.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/org.apache.servicemix.bundles.junit-4.11_1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="scalactic_2.11-3.0.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/scalactic_2.11-3.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="scalatest_2.11-3.0.0.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/scalatest_2.11-3.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="hamcrest-core-1.3.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/hamcrest-core-1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="scala-xml_2.11-1.0.5.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/scala-xml_2.11-1.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="mockito-all-1.9.5.jar">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/smartspaces/hestia/workbench/extras/testing/mockito-all-1.9.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
